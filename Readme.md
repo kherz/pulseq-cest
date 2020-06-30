@@ -1,9 +1,9 @@
 # pulseq-cest
 
-Welcome to the **pulseq-cest** repository. Here published and approved CESt saturation blocks are made available in the open pulseq standard (https://pulseq.github.io/).
+Welcome to the **pulseq-cest** repository. Here, published and approved CEST saturation blocks are made available in the open pulseq standard (https://pulseq.github.io/).
 This allows exact comparison of new CEST saturation blocks with newly developed or adapted saturation blocks and by this enables reproducible CEST research.
-Below you find a list of already defined CEST presaturation scheems as .seq files, together with the corresponding  Matlab generation file.
-All .seq files can be loaded in Matlab for plotting and detailed inspection, but also for simulation via the built-in Bloch-McConnel simulation in [pulseq-cest-sim](pulseq-cest-sim)
+Below you find a list of already defined CEST presaturation schemes as .seq files, together with the corresponding  Matlab generation file.
+All .seq files can be loaded in Matlab for plotting and detailed inspection, but also for simulation via the built-in Bloch-McConnell simulation in [pulseq-cest-sim](pulseq-cest-sim)
 
 
 | SAT identifier with .seq file   and .m file                                                                   |            scheme  (seq.plot)                         |  Description              |  Publication                                                                  | Approved by Authors|
