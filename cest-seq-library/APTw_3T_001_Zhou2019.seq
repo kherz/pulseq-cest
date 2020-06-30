@@ -1,0 +1,88 @@
+# Pulseq sequence file
+# Created by MATLAB mr toolbox
+
+[VERSION]
+major 1
+minor 3
+revision 0
+
+[DEFINITIONS]
+offsets_ppm -10 0 10 
+run_m0_scan 0 
+
+# Format of blocks:
+#  #  D RF  GX  GY  GZ ADC EXT
+[BLOCKS]
+ 1  0  1   0   0   0  0  0
+ 2  1  0   0   0   0  0  0
+ 3  0  1   0   0   0  0  0
+ 4  1  0   0   0   0  0  0
+ 5  0  1   0   0   0  0  0
+ 6  1  0   0   0   0  0  0
+ 7  0  1   0   0   0  0  0
+ 8  0  0   1   1   1  0  0
+ 9  0  0   0   0   0  1  0
+10  0  2   0   0   0  0  0
+11  1  0   0   0   0  0  0
+12  0  2   0   0   0  0  0
+13  1  0   0   0   0  0  0
+14  0  2   0   0   0  0  0
+15  1  0   0   0   0  0  0
+16  0  2   0   0   0  0  0
+17  0  0   1   1   1  0  0
+18  0  0   0   0   0  1  0
+19  0  3   0   0   0  0  0
+20  1  0   0   0   0  0  0
+21  0  3   0   0   0  0  0
+22  1  0   0   0   0  0  0
+23  0  3   0   0   0  0  0
+24  1  0   0   0   0  0  0
+25  0  3   0   0   0  0  0
+26  0  0   1   1   1  0  0
+27  0  0   0   0   0  1  0
+
+# Format of RF events:
+# id amplitude mag_id phase_id delay freq phase
+# ..        Hz   ....     ....    us   Hz   rad
+[RF]
+1      85.1528 1 2 100 -1277.29 0
+2      85.1528 1 2 100 0 0
+3      85.1528 1 2 100 1277.29 0
+
+# Format of trapezoid gradients:
+# id amplitude rise flat fall delay
+# ..      Hz/m   us   us   us    us
+[TRAP]
+ 1  1.36243e+06 250 4000 250   0
+
+# Format of ADC events:
+# id num dwell delay freq phase
+# ..  ..    ns    us   Hz   rad
+[ADC]
+1 1 10000000 0 0 0
+
+# Format of delays:
+# id delay (us)
+[DELAYS]
+1 10000
+
+# Sequence Shapes
+[SHAPES]
+
+shape_id 1
+num_samples 200030
+1
+0
+0
+199997
+-1
+0
+0
+27
+
+shape_id 2
+num_samples 200030
+0
+0
+200028
+

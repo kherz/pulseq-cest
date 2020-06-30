@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['scanner',['Scanner',['../struct_scanner.html',1,'Scanner'],['../class_simulation_parameters.html#a55057dd40ad159b731ae402a7c74298d',1,'SimulationParameters::scanner()']]],
+  ['sequence',['sequence',['../class_simulation_parameters.html#a24064eca2ac1750ab10f90cb73bfb9ea',1,'SimulationParameters']]],
+  ['setcestpool',['SetCESTPool',['../class_simulation_parameters.html#a4b8d5a5a3a4a897676d3f1640a57f07b',1,'SimulationParameters']]],
+  ['setexchangerateinhz',['SetExchangeRateInHz',['../class_c_e_s_t_pool.html#aa9a98597710896a38fc83ab8457260a8',1,'CESTPool']]],
+  ['setexternalsequence',['SetExternalSequence',['../class_simulation_parameters.html#a595c7854f08e8bcc16a8298a968bc8a1',1,'SimulationParameters']]],
+  ['setfraction',['SetFraction',['../class_water_pool.html#af364cb3a15d955fa780586c7130f2b67',1,'WaterPool']]],
+  ['setmaxnumberofpulsesamples',['SetMaxNumberOfPulseSamples',['../class_simulation_parameters.html#a4a2ef3f82048d142e0429b11678ac0a2',1,'SimulationParameters']]],
+  ['setmtlineshape',['SetMTLineShape',['../class_m_t_pool.html#abd2c08b5407ace4e56376c8333765abd',1,'MTPool']]],
+  ['setmtpool',['SetMTPool',['../class_simulation_parameters.html#af2036948e60ce19a1474e00caf6f4bfd',1,'SimulationParameters']]],
+  ['setnumstepsforpadeapprox',['SetNumStepsForPadeApprox',['../class_bloch_mc_connell_solver.html#a397390e9c564fbc50cf15b270903a250',1,'BlochMcConnellSolver']]],
+  ['setr1',['SetR1',['../class_water_pool.html#a13ea21b46196b7fa7627828986c124b6',1,'WaterPool']]],
+  ['setr2',['SetR2',['../class_water_pool.html#af336f9e39c388fa0c92b22ae25292773',1,'WaterPool']]],
+  ['setshiftinppm',['SetShiftinPPM',['../class_c_e_s_t_pool.html#a80e1f7b805dd8fd2864ed403778807fb',1,'CESTPool']]],
+  ['setuseinitmagnetization',['SetUseInitMagnetization',['../class_simulation_parameters.html#a614a7a424d43519848b96f29daf79cb1',1,'SimulationParameters']]],
+  ['setverbose',['SetVerbose',['../class_simulation_parameters.html#a3cbe284bbff27db41a0c2f4de2d25e99',1,'SimulationParameters']]],
+  ['setwaterpool',['SetWaterPool',['../class_simulation_parameters.html#abc27af7ae116706bf0138038ecd612fb',1,'SimulationParameters']]],
+  ['simulatemtpool',['simulateMTPool',['../class_simulation_parameters.html#a58ba3f52ad3d67d35f2ca0b79f042d8a',1,'SimulationParameters']]],
+  ['simulationparameters',['SimulationParameters',['../class_simulation_parameters.html',1,'SimulationParameters'],['../class_simulation_parameters.html#a683bc20c3aa7a0ac8217afa4d1c34c0f',1,'SimulationParameters::SimulationParameters()']]],
+  ['solveblochequation',['SolveBlochEquation',['../class_bloch_mc_connell_solver.html#ad3b43762c43e17f0aafc723033b2f157',1,'BlochMcConnellSolver']]]
+];
