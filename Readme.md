@@ -7,7 +7,7 @@ All .seq files can be loaded in Matlab for plotting and detailed inspection, but
 
 ## Quick start
 To view pulseq files in Matlab download the whole repository, add it to your Matlab path, and run the file **plot_seq_file.m**.
-You can simulate the .seq file by running [Run_pulseq_cest_Simulation.m](Run_pulseq_cest_Simulation.m). 
+You can simulate the .seq file by running [pulseq-cest-sim/Run_pulseq_cest_Simulation.m](pulseq-cest-sim/Run_pulseq_cest_Simulation.m). 
 
 | SAT identifier with .seq file   and .m file                                                                   |            scheme  (seq.plot)                         |  Description              |  Publication                                                                  | Approved by Authors|
 |------------------                                                                                             |:-------------------:                                  |-------------:             |--------------                                                                 |--------------------|
