@@ -1,4 +1,4 @@
-# pulseq SBB simulation package
+# pulseq-cest simulation package
 
 ## Introduction
 This simulation package runs Bloch-McConnell simulations for CEST experiments on [pulseq](http://pulseq.github.io/) sequence files. The MATLAB code can also be used to create .seq files for the pulseq sequence building block for SIEMENS idea sequences. More info about how to use the simulation can be found in the following documentation.
@@ -6,7 +6,7 @@ This simulation package runs Bloch-McConnell simulations for CEST experiments on
 This open source project is published under the [MIT License](LICENSE.md).
 
 ## Compile the .mex files
-This package includes precompiled mex files for 64-bit Windows (compiled with VS C++ 2017) and 64-bit Debian-based Linux (compiled with g++ 7.3.0). If you want or need to compile a version for yourself you can just run the [Run_pulseqSBB_Simulation.m](Run_pulseqSBB_Simulation.m) script in MATLAB and should get a similar output like this depending on your compiler: 
+This package includes precompiled mex files for 64-bit Windows (compiled with VS C++ 2017) and 64-bit Debian-based Linux (compiled with g++ 7.3.0). If you want or need to compile a version for yourself you can just run the [compile_pulseqSBB_Sim.m](compile_pulseqSBB_Sim.m) script in MATLAB and should get a similar output like this depending on your compiler: 
 
 ```Matlab
 >> compile_pulseqSBB_Sim
@@ -18,7 +18,7 @@ MEX completed successfully.
 ## Run example Z-spectrum simulation
 This package includes an example file to generate .seq files for a APTw Z-spectrum simulation. You can find that in the subfolder [example](example/WriteExamplePulseqSBBZSpectrum.m). Feel free to play around with various parameters to generate different saturation schemes. You can find more info in the subfolder [Readme](example/Readme.md).
 
-You can simulate the .seq file by running [Run_pulseqSBB_Simulation.m](Run_pulseqSBB_Simulation.m). The mex-function takes the pulseq .seq file and a struct with all relevant parameters as an input. All parameters are listed in the example MATLAB script as a member of the PMEX struct and shortly described here.
+You can simulate the .seq file by running [Run_pulseq_cest_Simulation.m](Run_pulseq_cest_Simulation.m). The mex-function takes the pulseq .seq file and a struct with all relevant parameters as an input. All parameters are listed in the example MATLAB script as a member of the PMEX struct and shortly described here.
 
 ### Water Pool (mandatory) 
 
