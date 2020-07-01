@@ -1,7 +1,7 @@
 function M_z = Standard_pulseq_cest_Simulation(seq_fn,B0)
 %% Run pulseq SBB simulation
 % example for a Z-spectrum for GM at 3T with
-% - 3 CEST pools
+% - 2 CEST pools
 % - a Lorentzian shaped MT pool
 %
 % All parameters are saved in a struct which is the input for the mex file
@@ -85,14 +85,11 @@ PMEX.Scanner.Gamma = 267.5153; % gyromagnetic ratio [rad/uT]
 % PMEX.Verbose         = false; % for verbose output, defalut false
 % PMEX.ResetInitMag    = true;  % true if magnetization should be set to
 % PMEX.M after each ADC, defaultrue
-% PMEX.MaxPulseSamples = 100;   % max samples for shaped pulses
+ PMEX.MaxPulseSamples = 500;   % max samples for shaped pulses
 
 %% run sim
 
 M_out = Sim_pulseqSBB(PMEX, seq_fn);
 M_z=M_out(nTotalPools*2+1,:);
-
-
-
 
 
