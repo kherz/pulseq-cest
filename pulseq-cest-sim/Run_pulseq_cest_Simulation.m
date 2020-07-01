@@ -71,7 +71,7 @@ PMEX.Scanner.Gamma = 267.5153; % gyromagnetic ratio [rad/uT]
 % PMEX.MaxPulseSamples = 100;   % max samples for shaped pulses
 
 %% run sim
-seq_fn = 'example/example_SLExp.seq';
+seq_fn = 'example/example_APTw.seq';
 M_out = Sim_pulseqSBB(PMEX, seq_fn);
 M_z=M_out(nTotalPools*2+1,:);
 %% plot zspec
