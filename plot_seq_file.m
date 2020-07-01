@@ -1,5 +1,5 @@
 % !! make this files folder your current folder !!
-cd(fileparts(which(mfilename)));
+cd(fileparts(matlab.desktop.editor.getActiveFilename));
 
 addpath(genpath(pwd));
 
@@ -14,7 +14,6 @@ for iB=1:length(seq.blockEvents)
     block = seq.getBlock(iB);
     t=t+mr.calcDuration(block);
     if ~isempty(block.adc)
-        c=c+1;
         tADC(end+1)=t; % save time of ADC events here
     end
 end
