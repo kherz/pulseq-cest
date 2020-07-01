@@ -48,7 +48,7 @@ PMEX.CESTPool(2).k  = 1000; % exchange rate [Hz]
 ```
 ### MT Pool (optional)
 
-A semi-solid MT pool with either a Lorentzian or a SuperLorentzian lineshape can be set as well. It shares the same properties as a CEST pool plus the additional lineshape. A cubic spline interpolation is included for the the SuperLorentzian lineshape to avoid the pole at  $`\omega`$RF = chemical shift of ssMT pool.   
+A semi-solid MT pool with either a Lorentzian or a SuperLorentzian lineshape can be set as well. It shares the same properties as a CEST pool plus the additional lineshape. A cubic spline interpolation is included for the the SuperLorentzian lineshape to avoid the pole at the chemical shift frequency of the of ssMT pool.   
 
 ```Matlab
 PMEX.MTPool.R1        = 1;
@@ -62,7 +62,7 @@ PMEX.MTPool.Lineshape = 'Lorentzian';
 
 When defining the pools as A (Water pool), B (1st CEST pool), C (ssMT pool), D (2nd CEST pool), E (3rd CEST pool) ..., the initial vector is defined as:
 
-$`\overrightarrow{M} = \begin{bmatrix} MxA, MxB, MxD, ... MxN, MyA, MyB, MyD, ... MyN, MzA, MzB, MzD, ... MzN, MzC \end{bmatrix}`$
+M =  [MxA, MxB, MxD, ... MxN, MyA, MyB, MyD, ... MyN, MzA, MzB, MzD, ... MzN, MzC ]
 
 Usually, you would need to know your approx. magnetization at the end of your readout sequence and set the magnetization vector accordingly. In the example file, a magnetization of Z<sub>i</sub> =  M<sub>i</sub> / M<sub>0</sub> = 0.5 for e.g. a FLASH sequence was assumed.     
 
@@ -82,7 +82,7 @@ PMEX.M = PMEX.M * 0.5;
 
 ### Field properties 
 * B0 (mandatory): field strength [T]
-* Gamma (optional): gyromagnetic ration [rad/µT], if not set, default value for H is used (42.577 * 2 $`\pi`$)
+* Gamma (optional): gyromagnetic ration [rad/µT], if not set, default value for H is used (42.577 * 2 * pi)
 * B0Inhomogeneity (optional): B0 field inhomogeneity [ppm], default is a homogeneous field (0.0)
 * relB1 (roptional): relative B1 field strength, e.g. 0.8 for 80% of B1, default is perfect B1 (1.0) 
 
