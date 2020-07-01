@@ -58,7 +58,8 @@ gzSpoil=mr.makeTrapezoid('z','Amplitude',spoilAmplitude,'Duration',spoilDuration
 pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
 
 %% loop through zspec offsets
-offsets_Hz = linspace(-offset_range,offset_range,num_offsets)*gyroRatio_hz*B0; % Z spec offsets [Hz]
+offsets_ppm = linspace(-offset_range,offset_range,num_offsets);
+offsets_Hz = offsets_ppm*gyroRatio_hz*B0; % Z spec offsets [Hz]
 % init sequence
 seq = mr.Sequence();
 % add m0 scan if wished
@@ -110,7 +111,8 @@ for currentOffset = offsets_Hz
 end
 
 %% write sequence
-seq.setDefinition('ppmvec', linspace(-offset_range,offset_range,num_offsets));
+seq.setDefinition('offsets_ppm', offsets_ppm);
+seq.setDefinition('run_m0_scan', run_m0_scan);
 seq.write(seq_filename);
 
 
