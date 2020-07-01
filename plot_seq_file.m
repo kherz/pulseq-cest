@@ -1,5 +1,9 @@
 % !! make this files folder your current folder !!
-cd(fileparts(matlab.desktop.editor.getActiveFilename));
+if strcmp(mfilename, 'LiveEditorEvaluationHelperESectionEval')
+    cd(fileparts(matlab.desktop.editor.getActiveFilename));
+else
+    cd(fileparts(which(mfilename)));
+end
 
 addpath(genpath(pwd));
 
