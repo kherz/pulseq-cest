@@ -854,6 +854,7 @@ classdef Sequence < handle
             %
             validPlotTypes = {'Gradient','Kspace'};
             validTimeUnits = {'s','ms','us'};
+            validRFUnits = {'Hz','uT'};
             persistent parser
             if isempty(parser)
                 parser = inputParser;
@@ -863,6 +864,9 @@ classdef Sequence < handle
                 parser.addParamValue('timeRange',[0 inf],@(x)(isnumeric(x) && length(x)==2));
                 parser.addParamValue('timeDisp',validTimeUnits{1},...
                     @(x) any(validatestring(x,validTimeUnits)));
+                parser.addParamValue('rfDisp',validRFUnits{1},...
+                    @(x) any(validatestring(x,validRFUnits)));
+               parser.addParamValue('gammaHz',NaN,@(x)(isnumeric(x) && length(x)==1));
             end
             parse(parser,varargin{:});
             opt = parser.Results;
@@ -878,11 +882,16 @@ classdef Sequence < handle
             ax=ax([1 3 5 2 4 6]);   % Re-order axes
             arrayfun(@(x)hold(x,'on'),ax);
             arrayfun(@(x)grid(x,'on'),ax);
-            labels={'ADC','RF mag (Hz)','RF ph (rad)','Gx (kHz/m)','Gy (kHz/m)','Gz (kHz/m)'};
+            labels={'ADC',sprintf('RF mag (%s)',opt.rfDisp),'RF ph (rad)','Gx (kHz/m)','Gy (kHz/m)','Gz (kHz/m)'};
             arrayfun(@(x)ylabel(ax(x),labels{x}),1:6);
             
             tFactorList = [1 1e3 1e6];
             tFactor = tFactorList(strcmp(opt.timeDisp,validTimeUnits));
+            rfFactorList = [1 1/opt.gammaHz];
+            rfFactor = rfFactorList(strcmp(opt.rfDisp,validRFUnits));
+            if isnan(rfFactor )
+                error('Error: to use the RF unit [µT] the parameter gammaHz must be provided, e.g. for 1H: seq.plot("rfDisp","uT","gammaHz",42.5764)')
+            end;
             xlabel(ax(3),['t (' opt.timeDisp ')']);
             xlabel(ax(6),['t (' opt.timeDisp ')']);
             
@@ -902,7 +911,7 @@ classdef Sequence < handle
                         [tc,ic]=mr.calcRfCenter(rf);
                         t=rf.t + rf.delay;
                         tc=tc + rf.delay;
-                        plot(tFactor*(t0+t),abs(rf.signal),'Parent',ax(2));
+                        plot(tFactor*(t0+t),rfFactor*abs(rf.signal),'Parent',ax(2));
                         plot(tFactor*(t0+t), angle(rf.signal    *exp(1i*rf.phaseOffset).*exp(1i*2*pi*rf.t    *rf.freqOffset)),...
                              tFactor*(t0+tc),angle(rf.signal(ic)*exp(1i*rf.phaseOffset).*exp(1i*2*pi*rf.t(ic)*rf.freqOffset)),'xb',...
                              'Parent',ax(3));
