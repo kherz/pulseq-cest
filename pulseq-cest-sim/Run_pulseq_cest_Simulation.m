@@ -71,7 +71,7 @@ PMEX.Scanner.Gamma = 267.5153; % gyromagnetic ratio [rad/uT]
 % PMEX.MaxPulseSamples = 100;   % max samples for shaped pulses
 
 %% run sim
-seq_fn = 'example/example_APTw.seq';
+seq_fn = 'example/example_SLExp.seq';
 M_out = Sim_pulseqSBB(PMEX, seq_fn);
 M_z=M_out(nTotalPools*2+1,:);
 %% plot zspec
@@ -94,9 +94,12 @@ ylabel('M');
 % if your data was acquired as in the seq file, the following code works for each pixel of such a 4D stack
 
 if seq.definitions('run_m0_scan')
-     M0=M_z(1);
-     Z=M_z(2:end)/M0;
-     MTRasym=Z(end:-1:1)-Z;
+    M0=M_z(1);
+    Z=M_z(2:end)/M0;
+    MTRasym=Z(end:-1:1)-Z;
+else
+    Z=M_z;
+    MTRasym=Z(end:-1:1)-Z;
 end
 
 figure,
@@ -105,8 +108,8 @@ plot(ppm_sort,MTRasym);
 xlabel('ADC index');
 
 % The single MTRAsym vlaue that would form the pixel intensity can be obtained like this:
-ppm_sort(27) % test to find the right index for the offset of interest
-MTRasym(27)
+ppm_sort(17) % test to find the right index for the offset of interest
+MTRasym(17)
 
 
 
