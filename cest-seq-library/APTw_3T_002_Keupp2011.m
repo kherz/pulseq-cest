@@ -23,8 +23,6 @@ B0           = 3;    % B0 [T]
 offset_range = 6;    % [ppm]
 offsets_ppm = [-1560 -offset_range:0.5:offset_range]; % Z spec offsets [Hz]
 
-offsets_ppm = offsets_ppm([1,7,21]); % reduced for faster plotting
-
 offsets_Hz = offsets_ppm*gyroRatio_hz*B0; % Z spec offsets [Hz]
 
 run_m0_scan  = false;  % if you want an M0 scan at the beginning

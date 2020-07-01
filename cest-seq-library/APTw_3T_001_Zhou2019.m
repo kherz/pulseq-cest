@@ -14,7 +14,6 @@
 %% Zspec info
 offset_range = 10;    % [ppm]
 num_offsets  = 7;    % number of measurements (not including M0)
-num_offsets  = 3;    % reduced for faster plotting
 run_m0_scan  = false;  % if you want an M0 scan at the beginning
 t_rec        = 0;   % recovery time between scans [s]
 m0_t_rec     = 12;    % recovery time before m0 scan [s]
