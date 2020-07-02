@@ -15,12 +15,15 @@ Building with 'Microsoft Visual C++ 2017'.
 MEX completed successfully.
 ```
 
+For more infos, have a look at the MATLAB [documentation](https://mathworks.com/help/matlab/call-mex-files-1.html) for mex files.
+
 ## Run example Z-spectrum simulation
 This package includes an example file to generate .seq files for a APTw Z-spectrum simulation. You can find that in the subfolder [example](example/WriteExamplePulseqSBBZSpectrum.m). Feel free to play around with various parameters to generate different saturation schemes. You can find more info in the subfolder [Readme](example/Readme.md).
 
 You can simulate the .seq file by running [Run_pulseq_cest_Simulation.m](Run_pulseq_cest_Simulation.m). The mex-function takes the pulseq .seq file and a struct with all relevant parameters as an input. All parameters are listed in the example MATLAB script as a member of the PMEX struct and shortly described here.
 
 ### Water Pool (mandatory) 
+Water relaxation rates R1 = 1/T1 and R2 = 1/R2 are set here.
 
 ```Matlab
 PMEX.WaterPool.R1 = 1/1.3;     % Hz
@@ -29,7 +32,7 @@ PMEX.WaterPool.f  = 1;         % proton fraction
 ```
 
 ### CEST pool(s) (optional)
-An arbitrary number of additional CEST pools can be simulated by just defining a multidimensional CESTPool struct. The number of pools is automatically detected in the mex-function. A CEST pool is defined by its relaxation parameters, fraction, chemical shift from water and exchange rate. Here is example for setting two CEST pools.
+An arbitrary number of additional CEST pools can be simulated by just defining a multidimensional CESTPool struct. The number of pools is automatically detected in the mex-function. A CEST pool is defined by its relaxation parameters, fraction, chemical shift from water and exchange rate. Here is example for setting two CEST pools:
 
 ```Matlab
 % pool 1 -> 50 mmol Amide pool

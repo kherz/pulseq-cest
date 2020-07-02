@@ -1,13 +1,13 @@
 # pulseq-cest
 
 Welcome to the **pulseq-cest** repository. Here, published and approved CEST saturation blocks are made available in the open pulseq standard (https://pulseq.github.io/).
-This allows exact comparison of CEST saturation blocks with newly developed or adapted saturation blocks. This enables reproducible CEST research.
+This allows exact comparison of CEST saturation blocks with newly developed or adapted saturation blocks for reproducible CEST research.
 Below you find a list of already defined CEST presaturation schemes as .seq files, together with the corresponding  Matlab generation file.
 All .seq files can be loaded in Matlab for plotting and detailed inspection, but also for simulation via the built-in Bloch-McConnell simulation in [pulseq-cest-sim](pulseq-cest-sim).
 
 ## Quick start
-To view pulseq files in Matlab, download the whole repository, add it to your Matlab path, and run the file **plot_seq_file.m**.
-You can simulate the .seq file by running [pulseq-cest-sim/Run_pulseq_cest_Simulation.m](pulseq-cest-sim/Run_pulseq_cest_Simulation.m). 
+To view pulseq files in Matlab, download the whole repository, add it to your Matlab path, and run the file **plot_seq_file.m**. You can view either the entire .seq file with all repetitions or have a detailled look at a single saturation phase.
+Every .seq file can be simulated by running [pulseq-cest-sim/Run_pulseq_cest_Simulation.m](pulseq-cest-sim/Run_pulseq_cest_Simulation.m). The simulation uses compiled code, which is so far available for 64-bit Windows and Linux (Debian-based) systems. However, the source code is included here, so that you can compile it for your specific OS (and hopefully share it again with us). For more infos about the simulation, have a look at the subfolder [Readme](pulseq-cest-sim/Readme.md).
 
 |identifier with .seq and .m file                                                                                                      |            scheme  (seq.plot)                                          |  Description              |  Publication                                                                  | Approved by Authors|
 |------------------                                                                                                                               |:-------------------:                                                   |-------------:             |--------------                                                                 |--------------------|
