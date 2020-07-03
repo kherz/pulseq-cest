@@ -70,8 +70,16 @@ PMEX.Scanner.Gamma = 267.5153; % gyromagnetic ratio [rad/uT]
 % PMEX.M after each ADC, defaultrue
 % PMEX.MaxPulseSamples = 100;   % max samples for shaped pulses
 
+%% get seq filename
+seq_fp = [];
+if strcmp(mfilename, 'LiveEditorEvaluationHelperESectionEval')
+    seq_fp = fileparts(matlab.desktop.editor.getActiveFilename);
+else
+    seq_fp = fileparts(which(mfilename));
+end
+seq_fn = [seq_fp '/example/example_APTw.seq'];
+
 %% run sim
-seq_fn = 'example/example_APTw.seq';
 M_out = Sim_pulseqSBB(PMEX, seq_fn);
 M_z=M_out(nTotalPools*2+1,:);
 %% plot zspec
