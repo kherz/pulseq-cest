@@ -61,7 +61,8 @@ gzSpoil=mr.makeTrapezoid('z','Amplitude',spoilAmplitude,'Duration',spoilDuration
 pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
 
 %% loop through zspec offsets
-
+disp('Creating sequence ... ');
+t_start = tic;
 % init sequence
 seq = mr.Sequence();
 % add m0 scan if wished
@@ -85,16 +86,27 @@ for currentOffset = offsets_Hz
     end
     seq.addBlock(pseudoADC); % readout trigger event
 end
-
+t_end = toc(t_start);
+disp(['Creating sequence took ' num2str(t_end) ' s']);
 %% write sequence
 seq.setDefinition('offsets_ppm', offsets_ppm);
 seq.setDefinition('run_m0_scan', run_m0_scan);
 seq.write(seq_filename);
 
+%% plot
+disp('Plotting .seq file ... ');
+t_start = tic;
 seq.plot();
+t_end = toc(t_start);
+disp(['Plotting .seq file took ' num2str(t_end) ' s']);
+
 
 %% call standard sim
+disp('Simulating .seq file ... ');
+t_start = tic;
 M_z=Standard_pulseq_cest_Simulation(seq_filename,B0);
+t_end = toc(t_start);
+disp(['Simulating .seq file took ' num2str(t_end) ' s']);
 
 %% Zspec and ASYM calculation
 seq = mr.Sequence;
@@ -116,8 +128,8 @@ plot(ppm_sort,MTRasym,'Displayname','MTR_{asym}');
 xlabel('\Delta\omega [ppm]'); legend show;
 
 % The single MTRAsym vlaue that would form the pixel intensity can be obtained like this:
-ppm_sort(1) % test to find the right index for the offset of interest
-MTRasym(1)
+% ppm_sort(1) % test to find the right index for the offset of interest
+% MTRasym(1)
 
 
 

@@ -55,6 +55,8 @@ gzSpoil=mr.makeTrapezoid('z','Amplitude',spoilAmplitude,'Duration',spoilDuration
 pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
 
 %% loop through zspec offsets
+disp('Creating sequence ... ');
+t_start = tic;
 offsets_Hz = linspace(-offset_range,offset_range,num_offsets)*gyroRatio_hz*B0; % Z spec offsets [Hz]
 % init sequence
 seq = mr.Sequence();
@@ -79,16 +81,27 @@ for currentOffset = offsets_Hz
     end
     seq.addBlock(pseudoADC); % readout trigger event
 end
-
+t_end = toc(t_start);
+disp(['Creating sequence took ' num2str(t_end) ' s']);
 %% write sequence
 seq.setDefinition('offsets_ppm', linspace(-offset_range,offset_range,num_offsets));
 seq.setDefinition('run_m0_scan', run_m0_scan);
 seq.write(seq_filename);
 
+%% plot
+disp('Plotting .seq file ... ');
+t_start = tic;
 seq.plot();
+t_end = toc(t_start);
+disp(['Plotting .seq file took ' num2str(t_end) ' s']);
+
 
 %% call standard sim
+disp('Simulating .seq file ... ');
+t_start = tic;
 M_z=Standard_pulseq_cest_Simulation(seq_filename,B0);
+t_end = toc(t_start);
+disp(['Simulating .seq file took ' num2str(t_end) ' s']);
 
 %% Zspec and ASYM calculation
 seq = mr.Sequence;
@@ -113,35 +126,7 @@ plot(ppm_sort,MTRasym,'Displayname','MTR_{asym}');
 xlabel('\Delta\omega [ppm]'); legend show;
 
 % The single MTRAsym vlaue that would form the pixel intensity can be obtained like this:
-ppm_sort(2) % test to find the right index for the offset of interest
-MTRasym(2)
-
-
-%% call standard sim
-M_z=Standard_pulseq_cest_Simulation(seq_filename,B0);
-
-%% Zspec and ASYM calculation
-seq = mr.Sequence;
-seq.read(seq_filename);
-[ppm_sort, idx] = sort(seq.definitions('offsets_ppm'));
-
-% MTRasym contrast map generation
-if seq.definitions('run_m0_scan')
-     M0=M_z(1);
-     Z=M_z(2:end)/M0;
-     MTRasym=Z(end:-1:1)-Z;
-else
-     Z=M_z;
-     MTRasym=Z(end:-1:1)-Z;
-end
-
-figure,
-plot(ppm_sort, Z,'Displayname','Z-spectrum'); set(gca,'xdir','reverse'); hold on;
-plot(ppm_sort,MTRasym,'Displayname','MTR_{asym}');
-xlabel('\Delta\omega [ppm]'); legend show;
-
-% The single MTRAsym vlaue that would form the pixel intensity can be obtained like this:
-ppm_sort(3) % test to find the right index for the offset of interest
-MTRasym(3)
+% ppm_sort(2) % test to find the right index for the offset of interest
+% MTRasym(2)
 
 
