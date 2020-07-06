@@ -17,3 +17,21 @@ Every .seq file can be simulated by running [pulseq-cest-sim/Run_pulseq_cest_Sim
 | [DGE_7T_001_Xu2019.seq](cest-seq-library/DGE_7T_001_Xu2019.seq),<br>[DGE_7T_001_Xu2019.m](cest-seq-library/DGE_7T_001_Xu2019.m)                 | <img src="cest-seq-library/DGE_7T_001_Xu2019.png" width="300"/>        | APTw, 2µT, 0.8s, DC50     | [Xu et al 2019](doi:...)| **not approved!** |
 | [Glut_7T_001_Cai2003.seq](cest-seq-library/Glut_7T_001_Cai2003.seq),<br>[Glut_7T_001_Cai2003.m](cest-seq-library/Glut_7T_001_Cai2003.m)         | <img src="cest-seq-library/Glut_7T_001_Cai2003.png" width="300"/>      | APTw, 2µT, 0.8s, DC50     | [Cai et al 2003](doi:...)| **not approved!** |
 | [DGErho_3T_001_Herz2019.seq](cest-seq-library/DGErho_3T_001_Herz2019.seq),<br>[DGErho_3T_001_Herz2019.m](cest-seq-library/DGErho_3T_001_Herz2019.m)         | <img src="cest-seq-library/DGErho_3T_001_Herz2019.png" width="300"/>      | SLExp, 4µT, 0.12s    | [Herz et al 2019](https://doi.org/10.1002/mrm.27857)| approved |
+
+
+## Sequence definition questions
+
+1. What is the saturation pulse duration tp
+
+2. What is the interpulse delay td and the duty-cycle DC= tp/(tp+td)
+
+3. What is the saturation pulse flipangle? What is the average amplitude of the pulse, the average amplitude of the pulse train (cwae) and the average power (cwpe) of the pulse train.
+
+4. what is the exact pulse shape? Can it be given as a textfile with sampling points
+
+5. what is the phase after the RF pulse, is it set to zero or is the accumulated phase kept as it is.
+
+6. what is the exact Trec used, meaning the time after the last readout pulse and before the next saturation starts.
+
+7. Is there an additional normalization scan acquired. e.g. an unsaturated M0 scan. How long is the relaxation delay before this scan. Is it also acquired after a far-offresonant saturation pulse train? what is the offset frequency then, and what was the power used. 
+
