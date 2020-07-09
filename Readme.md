@@ -7,7 +7,7 @@ All .seq files can be loaded in Matlab for plotting and detailed inspection, but
 
 ## Quick start
 To view pulseq files in Matlab, download the whole repository, add it to your Matlab path, and run the file **plot_seq_file.m**. You can view either the entire .seq file with all repetitions or have a detailled look at a single saturation phase.
-Every .seq file can be simulated by running [pulseq-cest-sim/Run_pulseq_cest_Simulation.m](pulseq-cest-sim/Run_pulseq_cest_Simulation.m). The simulation uses compiled code, which is so far available for 64-bit Windows and Linux (Debian-based) systems. However, the source code is included here, so that you can compile it for your specific OS (and hopefully share it again with us). For more infos about the simulation, have a look at the subfolder [Readme](pulseq-cest-sim/Readme.md).
+Every .seq file can be simulated by running [pulseq-cest-sim/Run_pulseq_cest_Simulation.m](pulseq-cest-sim/Run_pulseq_cest_Simulation.m). The simulation uses compiled code, which is so available for 64-bit Windows, Linux and Mac OS systems. The source code is included here, if you want to compile the source code for yourself. For more infos about the simulation, have a look at the subfolder [Readme](pulseq-cest-sim/Readme.md).
 
 |identifier with .seq and .m file                                                                                                      |            scheme  (seq.plot)                                          |  Description              |  Publication                                                                  | Approved by Authors|
 |------------------                                                                                                                               |:-------------------:                                                   |-------------:             |--------------                                                                 |--------------------|
@@ -21,17 +21,17 @@ Every .seq file can be simulated by running [pulseq-cest-sim/Run_pulseq_cest_Sim
 
 ## Sequence definition questions
 
-1. What is the saturation pulse duration tp
+1. What is the saturation pulse duration t<sub>p</sub>?
 
-2. What is the interpulse delay td and the duty-cycle DC= tp/(tp+td)
+2. What is the interpulse delay t<sub>d</sub> and the duty-cycle DC= t<sub>p</sub>/(t<sub>p</sub>+t<sub>d</sub>)?
 
-3. What is the saturation pulse flipangle? What is the average amplitude of the pulse, the average amplitude of the pulse train (cwae) and the average power (cwpe) of the pulse train.
+3. What is the saturation pulse flip angle? What is the average amplitude of the pulse, the average amplitude of the pulse train (cwae) and the average power (cwpe) of the pulse train?
 
-4. what is the exact pulse shape? Can it be given as a textfile with sampling points
+4. What is the exact pulse shape? Can it be given as a text file with sampling points?
 
-5. what is the phase after the RF pulse, is it set to zero or is the accumulated phase kept as it is.
+5. What is the phase after the RF pulse? Is it set to zero or is the accumulated phase kept as it is?
 
-6. what is the exact Trec used, meaning the time after the last readout pulse and before the next saturation starts.
+6. What is the exact t<sub>rec</sub> used, meaning the time between the last readout pulse and  the next saturation phase?
 
-7. Is there an additional normalization scan acquired. e.g. an unsaturated M0 scan. How long is the relaxation delay before this scan. Is it also acquired after a far-offresonant saturation pulse train? what is the offset frequency then, and what was the power used. 
+7. Is there an additional normalization scan acquired. e.g. an unsaturated M<sub>0</sub> scan. How long is the relaxation delay before this scan? Is it acquired after a far-offresonant saturation pulse train? If so, what is the offset frequency, and what was the power used?
 

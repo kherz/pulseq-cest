@@ -6,7 +6,7 @@ This simulation package runs Bloch-McConnell simulations for CEST experiments on
 This open source project is published under the [MIT License](LICENSE.md).
 
 ## Compile the .mex files
-This package includes precompiled mex files for 64-bit Windows (compiled with VS C++ 2017) and 64-bit Debian-based Linux (compiled with g++ 7.3.0). If you want or need to compile a version for yourself you can just run the [compile_pulseqSBB_Sim.m](compile_pulseqSBB_Sim.m) script in MATLAB and should get a similar output like this depending on your compiler: 
+This package includes precompiled mex files for 64-bit Windows (compiled with VS C++ 2017), Linux (compiled on Linux Mint with g++ 7.3.0) and Mac OS. If you want or need to compile a version for yourself you can just run the [compile_pulseqSBB_Sim.m](compile_pulseqSBB_Sim.m) script in MATLAB and should get a similar output like this depending on your compiler: 
 
 ```Matlab
 >> compile_pulseqSBB_Sim
