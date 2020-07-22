@@ -7,5 +7,5 @@
 | [Glut_7T_001_Cai2003.seq](Glut_7T_001_Cai2003.seq),<br>[Glut_7T_001_Cai2003.m](Glut_7T_001_Cai2003.m)         | <img src="Glut_7T_001_Cai2003.png" width="300"/>      | APTw, 2µT, 0.8s, DC50     | [Cai et al 2006](doi:...)| **not approved!** |
 | [DGErho_3T_001_Herz2019.seq](DGErho_3T_001_Herz2019.seq),<br>[DGErho_3T_001_Herz2019.m](DGErho_3T_001_Herz2019.m)         | <img src="DGErho_3T_001_Herz2019.png" width="300"/>      | SLExp, 4µT, 0.12s    | [Herz et al 2019](https://doi.org/10.1002/mrm.27857)| approved |
 | [APTw_3T_800ms.seq](APTw_3T_800ms.seq), <br>[APTw_3T_800ms.m](APTw_3T_800ms.m)  | <img src="APTw_3T_800ms.png" width="300"/>  | APTw, 2µT, 0.8s    | | |
-  [APTw_3T_DC50.seq] (APTw_3T_DC50.seq),  <br>[APTw_3T_DC50.m](APTw_3T_DC50.m)    | <img src="APTw_3T_DC50.png" width="300"/>   | APTw, 2µT, 2.0s    | | |
-  [APTw_3T_DC90.seq] (APTw_3T_DC90.seq),  <br>[APTw_3T_DC90.m](APTw_3T_DC90.m)    | <img src="APTw_3T_DC90.png" width="300"/>   | APTw, 2µT, 2.2s    | | |
+  [APTw_3T_DC50.seq](APTw_3T_DC50.seq),  <br>[APTw_3T_DC50.m](APTw_3T_DC50.m)    | <img src="APTw_3T_DC50.png" width="300"/>   | APTw, 2µT, 2.0s    | | |
+  [APTw_3T_DC90.seq](APTw_3T_DC90.seq),  <br>[APTw_3T_DC90.m](APTw_3T_DC90.m)    | <img src="APTw_3T_DC90.png" width="300"/>   | APTw, 2µT, 2.2s    | | |
