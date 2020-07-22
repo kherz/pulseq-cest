@@ -40,6 +40,9 @@ fa_sat        = sat_b1*gyroRatio_rad*t_p; % flip angle of sat pulse
 % create pulseq saturation pulse object 
 satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', t_p, 'system', lims);
 
+[B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,t_p,t_d,1,gyroRatio_hz);
+
+
 % spoilers
 spoilAmplitude = 0.8 .* lims.maxGrad; % [Hz/m]
 spoilDuration = 4500e-6; % [s]

@@ -81,6 +81,10 @@ for currentOffset = offsets_Hz
     seq.addBlock(pseudoADC); % readout trigger event
 end
 
+
+[B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,t_p,t_d,1,gyroRatio_hz);
+
+
 %% write sequence
 seq.setDefinition('offsets_ppm',offset_list);
 seq.setDefinition('run_m0_scan', run_m0_scan);
