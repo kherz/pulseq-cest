@@ -47,6 +47,8 @@ gzSpoil=mr.makeTrapezoid('z','Amplitude',spoilAmplitude,'Duration',spoilDuration
 pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
 
 %% loop through zspec offsets
+disp('Creating sequence ... ');
+t_start = tic;
 offsets_Hz = offsets_ppm*gyroRatio_hz*B0; % Z spec offsets [Hz]
 % init sequence
 seq = mr.Sequence();
@@ -94,16 +96,28 @@ for currentOffset = offsets_Hz
     seq.addBlock(pseudoADC); % readout trigger event
     accumPhase = 0;
 end
+t_end = toc(t_start);
+disp(['Creating sequence took ' num2str(t_end) ' s']);
 
 %% write sequence
 seq.setDefinition('offsets_ppm',offsets_ppm);
 seq.setDefinition('run_m0_scan', run_m0_scan);
 seq.write(seq_filename);
 
+%% plot
+disp('Plotting .seq file ... ');
+t_start = tic;
 seq.plot();
+t_end = toc(t_start);
+disp(['Plotting .seq file took ' num2str(t_end) ' s']);
+
 
 %% call standard sim
+disp('Simulating .seq file ... ');
+t_start = tic;
 M_z=Standard_pulseq_cest_Simulation(seq_filename,B0);
+t_end = toc(t_start);
+disp(['Simulating .seq file took ' num2str(t_end) ' s']);
 
 %% Zspec and ASYM calculation
 seq = mr.Sequence;
