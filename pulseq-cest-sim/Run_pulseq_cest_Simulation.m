@@ -72,6 +72,10 @@ PMEX.Scanner.Gamma = 267.5153; % gyromagnetic ratio [rad/uT]
 
 %% run sim
 seq_fn = 'example/example_APTw.seq';
+
+[seq_fn, path] = uigetfile({'*.seq','All .seq Files'},'mytitle','cest-seq-library');
+
+seq_fn=[path seq_fn];
 M_out = Sim_pulseqSBB(PMEX, seq_fn);
 M_z=M_out(nTotalPools*2+1,:);
 %% plot zspec
