@@ -19,14 +19,14 @@ num_offsets  = numel(offset_list);    % number of measurements (not including M0
 run_m0_scan  = true;  % if you want an M0 scan at the beginning
 t_rec        = 2.4;   % recovery time between scans [s]
 m0_t_rec     = 12;    % recovery time before m0 scan [s]
-sat_b1       = 1.7;  % mean sat pulse b1 [uT]
-t_p          = 50e-3; % sat pulse duration [s]
-t_d          = 5e-3; % delay between pulses [s]
-n_pulses     = 40;    % number of sat pulses per measurement
+sat_b1       = 2;  % mean sat pulse b1 [uT]
+t_p          = 100e-3; % sat pulse duration [s]
+t_d          = 1e-3; % delay between pulses [s]
+n_pulses     = 8;    % number of sat pulses per measurement
 B0           = 3;     % B0 [T]
 spoiling     = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
-seq_filename = 'APTw_3T_DC90.seq'; % filename
+seq_filename = 'APTw_3T_800ms.seq'; % filename
 
 %% scanner limits
 % see pulseq doc for more ino
@@ -40,10 +40,8 @@ gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 fa_sat        = sat_b1*gyroRatio_rad*t_p; % flip angle of sat pulse
 % create pulseq saturation pulse object
-
-satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 0.2,'apodization', 0.5);
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,t_p,t_d,1,gyroRatio_hz);
-
+satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', t_p, 'system', lims);
+adia_SL  = WriteSLExpPulseqPulses(sat_b1, lims);
 % spoilers
 spoilAmplitude = 0.8 .* lims.maxGrad; % [Hz/m]
 spoilDuration = 4500e-6; % [s]
@@ -73,7 +71,22 @@ for currentOffset = offsets_Hz
     end
     satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
     accumPhase=0;
+    
+    if currentOffset < 0
+        pre_sl = adia_SL{find(ismember(adia_SL(:,2), 'pre_neg')),1};
+        post_sl = adia_SL{find(ismember(adia_SL(:,2), 'post_neg')),1};
+    else
+        pre_sl = adia_SL{find(ismember(adia_SL(:,2), 'pre_pos')),1};
+        post_sl = adia_SL{find(ismember(adia_SL(:,2), 'post_pos')),1};
+    end
+    % set frequency
+    pre_sl.freqOffset = currentOffset;
+    accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(pre_sl.signal)>0))*1e-6),2*pi);
+    
+    seq.addBlock(pre_sl)
+    
     for np = 1:n_pulses
+        
         
         satPulse.phaseOffset = mod(accumPhase,2*pi); % set accumulated pahse from previous rf pulse
         
@@ -82,17 +95,29 @@ for currentOffset = offsets_Hz
         % calc phase for next rf pulse
         accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
         
-        seq.addBlock(satPulse) % add sat pulse
         if np < n_pulses % delay between pulses
             seq.addBlock(mr.makeDelay(t_d)); % add delay
+            if mod(np,2) == 0
+                seq.addBlock(mr.makeDelay(10e-3));
+            end
         end
     end
+    
+    
+    post_sl.phaseOffset = mod(accumPhase,2*pi);
+    post_sl.freqOffset = currentOffset;
+    
+    seq.addBlock(post_sl)
+    
+    
+    
     if spoiling % spoiling before readout
         seq.addBlock(gxSpoil,gySpoil,gzSpoil);
     end
     seq.addBlock(pseudoADC); % readout trigger event
 end
 
+[B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,t_p,t_d,1,gyroRatio_hz);
 
 
 %% write sequence
@@ -104,6 +129,7 @@ seq.write(seq_filename);
 disp('Simulating .seq file ... ');
 t_start = tic;
 M_z=Standard_pulseq_cest_Simulation(seq_filename,B0);
+
 t_end = toc(t_start);
 disp(['Simulating .seq file took ' num2str(t_end) ' s']);
 
@@ -132,8 +158,5 @@ title(seq_filename, 'Interpreter','none');
 % The single MTRAsym vlaue that would form the pixel intensity can be obtained like this:
 % ppm_sort(3) % test to find the right index for the offset of interest
 % MTRasym(3)
-
-
-
 
 

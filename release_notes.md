@@ -3,13 +3,16 @@
 
 DONE
 - calc_power equivalent calculation added 
+- i found pulse shape parameters that look very smilar to teh siemens standard gaussian pulse
+	satPulse = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 0.2,'apodization', 0.5);
+
+- corrected the RF pulse for phase accumulation as in teh scanner for some files 
+
 
 TODO
-- I added calc_power equivalent calculation, thsi should be added to teh seq file and the plot I think.
-- pulse shape most similar to the vendor serquences should be added. The standard ones are extremely narrow in their bandwidth which elads to short and strong saturation during the pulse.
-It can be done with the parameters of the pulse bt must be compared carefully 
+- I added calc_power equivalent calculation, this should be added to teh seq file and the plot I think.
+- experimnetal multi spin case must be better understood
 
-satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 2,'apodization', 0.33);
-
+- corrected the RF pulse for phase accumulation as in teh scanner for some files , must still be done for all of them!
 
 
