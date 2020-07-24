@@ -99,7 +99,7 @@ if 0
 
     tic;
     % t2star decay, see DOI 10.1002/mrm.22406 eq. 6
-    num_spins = 10000;
+    num_spins = 63;
     spin_dist = linspace(-.5, .5,num_spins);
     spin_dist = spin_dist.*0.95; % to avoid extremely large values for tan(.5*ppi)
     R2star = 30;
