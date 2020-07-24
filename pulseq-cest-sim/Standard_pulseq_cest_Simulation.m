@@ -89,7 +89,41 @@ PMEX.Scanner.Gamma = 267.5153; % gyromagnetic ratio [rad/uT]
 
 %% run sim
 
-M_out = Sim_pulseqSBB(PMEX, seq_fn);
+    M_out = Sim_pulseqSBB(PMEX, seq_fn);
+    
+if 0   
+    
+    seq = mr.Sequence;
+    seq.read(seq_fn);
+    [ppm_sort, idx] = sort(seq.definitions('offsets_ppm'));
+
+    tic;
+    % t2star decay, see DOI 10.1002/mrm.22406 eq. 6
+    num_spins = 10000;
+    spin_dist = linspace(-.5, .5,num_spins);
+    spin_dist = spin_dist.*0.95; % to avoid extremely large values for tan(.5*ppi)
+    R2star = 30;
+    dw_spins = R2star*tan(pi*spin_dist);
+    dw_spins = dw_spins./(PMEX.Scanner.B0*PMEX.Scanner.Gamma);
+    
+        
+     Z_sim = zeros(num_spins,size(M_out,1),size(M_out,2));
+    parfor ii = 1:num_spins
+        PMEX_local = PMEX; % local variable for parfor loop
+        PMEX_local.Scanner.B0Inhomogeneity = dw_spins(ii);
+        M_out = Sim_pulseqSBB(PMEX_local, seq_fn); % run sim  
+        Z_sim(ii,:,:)=M_out;
+    end
+    
+%     figure, plot( squeeze(Z_sim(:,nTotalPools*2+1,:))' );
+%     hold on,
+    
+    toc
+    M_out = squeeze(mean(Z_sim,1));
+%     plot(M_out(nTotalPools*2+1,:),'ok');
+end
+
+
 M_z=M_out(nTotalPools*2+1,:);
 
 
