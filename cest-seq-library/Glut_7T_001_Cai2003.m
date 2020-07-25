@@ -1,6 +1,6 @@
 %% Write .seq file
 % The gluCEST protocol is taken from:
-% Cai K, Haris M, Singh A, et al. Magnetic resonance imaging of glutamate. 
+% Cai K, Haris M, Singh A, et al. Magnetic resonance imaging of glutamate.
 % Nat Med. 2012;18(2):302-306. Published 2012 Jan 22. doi:10.1038/nm.2615
 %
 % Supp. Info if this paper:
@@ -32,7 +32,7 @@ spoiling     = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
 seq_filename = strcat(mfilename,'.seq'); % filename
 
-%% scanner limits 
+%% scanner limits
 % see pulseq doc for more ino
 lims = mr.opts('MaxGrad',40,'GradUnit','mT/m',...
     'MaxSlew',130,'SlewUnit','T/m/s', ...
@@ -43,13 +43,13 @@ lims = mr.opts('MaxGrad',40,'GradUnit','mT/m',...
 gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 fa_sat        = sat_b1*gyroRatio_rad*t_p; % flip angle of sat pulse
-% create pulseq saturation pulse object 
+% create pulseq saturation pulse object
 satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims);
 
 % spoilers
 spoilAmplitude = 0.8 .* lims.maxGrad; % [Hz/m]
 spoilDuration = 4500e-6; % [s]
-% create pulseq gradient object 
+% create pulseq gradient object
 gxSpoil=mr.makeTrapezoid('x','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
 gySpoil=mr.makeTrapezoid('y','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
 gzSpoil=mr.makeTrapezoid('z','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
@@ -64,23 +64,26 @@ offsets_Hz = linspace(-offset_range,offset_range,num_offsets)*gyroRatio_hz*B0; %
 % init sequence
 seq = mr.Sequence();
 % add m0 scan if wished
-if run_m0_scan 
+if run_m0_scan
     seq.addBlock(mr.makeDelay(m0_t_rec));
     seq.addBlock(pseudoADC);
 end
 
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
+    accumPhase = 0;
     seq.addBlock(mr.makeDelay(t_rec)); % recovery time
     satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
     for np = 1:n_pulses
+        satPulse.phaseOffset = accumPhase;
         seq.addBlock(satPulse) % add sat pulse
+        accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
         if np < n_pulses % delay between pulses
             seq.addBlock(mr.makeDelay(t_d)); % add delay
         end
     end
     if spoiling % spoiling before readout
-       seq.addBlock(gxSpoil,gySpoil,gzSpoil); 
+        seq.addBlock(gxSpoil,gySpoil,gzSpoil);
     end
     seq.addBlock(pseudoADC); % readout trigger event
 end
@@ -99,6 +102,7 @@ t_start = tic;
 seq.plot();
 t_end = toc(t_start);
 disp(['Plotting .seq file took ' num2str(t_end) ' s']);
+save_seq_plot(seq_filename);
 
 
 %% call standard sim
@@ -117,12 +121,12 @@ seq.read(seq_filename);
 % if your data was acquired as in the seq file, the following code works for each pixel of such a 4D stack
 
 if seq.definitions('run_m0_scan')
-     M0=M_z(1);
-     Z=M_z(2:end)/M0;
-     MTRasym=Z(end:-1:1)-Z;
+    M0=M_z(1);
+    Z=M_z(2:end)/M0;
+    MTRasym=Z(end:-1:1)-Z;
 else
-     Z=M_z;
-     MTRasym=Z(end:-1:1)-Z;
+    Z=M_z;
+    MTRasym=Z(end:-1:1)-Z;
 end
 
 figure,
