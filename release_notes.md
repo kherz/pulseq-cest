@@ -14,7 +14,9 @@ DONE
 TODO
 - I added calc_power equivalent calculation, this should be added to the seq file and the plot I think.
 
-- experimnetal multi spin case must be better understood
+- experimental multi spin case must be better understood
 
 - there is way too much recurring code between the different script files in the cest-seq-library, this should be cleaned up soon
+
+- for all simulations references must be added where the all quantitative parameters are taken from
 
