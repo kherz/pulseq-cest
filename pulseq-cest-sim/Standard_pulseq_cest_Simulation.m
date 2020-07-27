@@ -24,7 +24,7 @@ elseif round(B0)>= 9                % 9.4T and above
     PMEX.WaterPool.R2 = 1/(35e-3);  % Hz
 end
 
-%% CEST pools
+%% CEST pools according to https://doi.org/10.1016/j.neuroimage.2017.04.045, 
 % pool 1 Amide
 PMEX.CESTPool(1).R1 = PMEX.WaterPool.R1;
 PMEX.CESTPool(1).R2 = 1/100e-3;
@@ -39,12 +39,20 @@ PMEX.CESTPool(2).f  = 20e-3/111; % fraction
 PMEX.CESTPool(2).dw = 2; % chemical shift from water [ppm]
 PMEX.CESTPool(2).k  = 1100; % exchange rate [Hz]
 
-% pool 3 NOE 
+% pool 3 glutamate
 % PMEX.CESTPool(3).R1 = PMEX.WaterPool.R1;
-% PMEX.CESTPool(3).R2 = 1/5e-3;
-% PMEX.CESTPool(3).f  = 500e-3/111; % fraction
-% PMEX.CESTPool(3).dw = -3.5; % chemical shift from water [ppm]
-% PMEX.CESTPool(3).k  = 16; % exchange rate [Hz]
+% PMEX.CESTPool(3).R2 = 1/200e-3;
+% PMEX.CESTPool(3).f  = 20e-3/111; % fraction
+% PMEX.CESTPool(3).dw = 3; % chemical shift from water [ppm]
+% PMEX.CESTPool(3).k  = 5500; % exchange rate [Hz]
+
+
+% pool 4 NOE  (until now, all 4 pools of the paper combined in one at -3.5 ppm with 5 fold concentration, originally 5x 100 mM each at [-1.75 -2.25 -2.75 -3.25 -3.75] ppm
+% PMEX.CESTPool(4).R1 = PMEX.WaterPool.R1;
+% PMEX.CESTPool(4).R2 = 1/5e-3;
+% PMEX.CESTPool(4).f  = 500e-3/111; % fraction
+% PMEX.CESTPool(4).dw = -3.5; % chemical shift from water [ppm]
+% PMEX.CESTPool(4).k  = 16; % exchange rate [Hz]
 
 %% MT pool
 PMEX.MTPool.R1        = 1;
@@ -58,7 +66,11 @@ PMEX.MTPool.Lineshape = 'Lorentzian';
 % [MxA, MxB, MxD, MyA, MyB, MyD, MzA, MzB, MzD, MzC]
 % -> A: Water Pool, B: 1st CEST Pool, D: 2nd CEST Pool, C: MT Pool
 % Cest pools would continue in the same way with E, F, G ...
-nTotalPools = numel(PMEX.CESTPool)+1; % cest + water
+if isfield(PMEX,'CESTPool')
+    nTotalPools = numel(PMEX.CESTPool)+1; % cest + water
+else
+    nTotalPools=1;
+end
 PMEX.M = zeros(nTotalPools*3,1);
 PMEX.M(nTotalPools*2+1,1)= PMEX.WaterPool.f;
 for ii = 2:nTotalPools
