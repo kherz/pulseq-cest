@@ -66,10 +66,15 @@ end
 
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
+    %take care of phase accumulation during off-res pulse
+    accumPhase = 0;
     seq.addBlock(mr.makeDelay(t_rec)); % recovery time
     satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
     for np = 1:n_pulses
+        satPulse.phaseOffset = accumPhase;
         seq.addBlock(satPulse) % add sat pulse
+        % exact phase accumulation from pulse object
+        accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
         if np < n_pulses % delay between pulses
             seq.addBlock(mr.makeDelay(t_d)); % add delay
         end

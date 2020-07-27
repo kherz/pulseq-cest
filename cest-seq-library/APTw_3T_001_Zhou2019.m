@@ -68,10 +68,13 @@ end
 
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
+    accumPhase = 0;
     if t_rec>0 seq.addBlock(mr.makeDelay(t_rec)); end % recovery time
     satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
     for np = 1:n_pulses
+        satPulse.phaseOffset = accumPhase;
         seq.addBlock(satPulse) % add sat pulse
+        accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
         if np < n_pulses % delay between pulses
             seq.addBlock(mr.makeDelay(t_d)); % add delay
         end
@@ -95,6 +98,7 @@ t_start = tic;
 seq.plot();
 t_end = toc(t_start);
 disp(['Plotting .seq file took ' num2str(t_end) ' s']);
+save_seq_plot(seq_filename);
 
 %% call standard sim
 disp('Simulating .seq file ... ');
