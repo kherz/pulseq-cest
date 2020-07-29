@@ -22,9 +22,7 @@ seq_filename = strcat(mfilename,'.seq'); % filename
 
 %% scanner limits 
 % see pulseq doc for more ino
-lims = mr.opts('MaxGrad',40,'GradUnit','mT/m',...
-    'MaxSlew',130,'SlewUnit','T/m/s', ...
-    'rfRingdownTime', 30e-6, 'rfDeadTime', 100e-6, 'rfRasterTime',1e-6);
+lims = Get_scanner_limits();
 
 %% create scanner events
 % satpulse

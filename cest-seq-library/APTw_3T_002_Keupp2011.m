@@ -39,9 +39,7 @@ seq_filename = strcat(mfilename,'.seq'); % filename
 
 %% scanner limits 
 % see pulseq doc for more ino
-lims = mr.opts('MaxGrad',40,'GradUnit','mT/m',...
-    'MaxSlew',130,'SlewUnit','T/m/s', ...
-    'rfRingdownTime', 30e-6, 'rfDeadTime', 100e-6, 'rfRasterTime',1e-6);
+lims = Get_scanner_limits();
 
 %% create scanner events
 % satpulse
@@ -105,34 +103,5 @@ disp(['Plotting .seq file took ' num2str(t_end) ' s']);
 save_seq_plot(seq_filename);
 
 %% call standard sim
-disp('Simulating .seq file ... ');
-t_start = tic;
-M_z=Standard_pulseq_cest_Simulation(seq_filename,B0);
-t_end = toc(t_start);
-disp(['Simulating .seq file took ' num2str(t_end) ' s']);
-
-%% Zspec and ASYM calculation
-seq = mr.Sequence;
-seq.read(seq_filename);
-[ppm_sort, idx] = sort(seq.definitions('offsets_ppm'));
-
-% MTRasym contrast map generation
-% if your data was acquired as in the seq file, the following code works for each pixel of such a 4D stack
-
-M0=M_z(1); % first is normalization scan at -1560 ppm
-ppm_sort=ppm_sort(2:end);
-Z=M_z(2:end)/M0;
-MTRasym=Z(end:-1:1)-Z;
-
-
-figure,
-plot(ppm_sort, Z,'Displayname','Z-spectrum'); set(gca,'xdir','reverse'); hold on;
-plot(ppm_sort,MTRasym,'Displayname','MTR_{asym}');
-xlabel('\Delta\omega [ppm]'); legend show;
-
-% The single MTRAsym vlaue that would form the pixel intensity can be obtained like this:
-% ppm_sort(1) % test to find the right index for the offset of interest
-% MTRasym(1)
-
-
+Simulate_and_plot_seq_file(seq_filename,B0);
 
