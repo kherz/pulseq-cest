@@ -16,7 +16,7 @@ TODO
 
 - experimental multi spin case must be better understood
 
-- there is way too much recurring code between the different script files in the cest-seq-library, this should be cleaned up soon
+- there is too much recurring code between the different script files in the cest-seq-library, this should be cleaned up soon (i started with some generic funtions in the util subfolder)
 
 - for all simulations references must be added where the all quantitative parameters are taken from
 
