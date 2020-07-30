@@ -12,6 +12,10 @@ DONE
 
 
 TODO
+
+- pulse shapes in all sequences to 
+mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 0.2,'apodization', 0.5);
+
 - I added calc_power equivalent calculation, this should be added to the seq file and the plot I think.
 
 - experimental multi spin case must be better understood
