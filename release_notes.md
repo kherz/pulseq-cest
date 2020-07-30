@@ -10,11 +10,12 @@ DONE
 
 - added script for automatic png generation of the seq plot for files in cest-seq-library
 
+- pulse shapes in all sequences is 
+mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 0.2,'apodization', 0.5);
 
 TODO
 
-- pulse shapes in all sequences to 
-mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 0.2,'apodization', 0.5);
+- make release version
 
 - I added calc_power equivalent calculation, this should be added to the seq file and the plot I think.
 
