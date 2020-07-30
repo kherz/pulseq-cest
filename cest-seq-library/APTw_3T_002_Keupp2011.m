@@ -45,7 +45,7 @@ lims = Get_scanner_limits();
 % satpulse
 fa_sat        = sat_b1*gyroRatio_rad*t_p; % flip angle of sat pulse
 % create pulseq saturation pulse object 
-satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims);
+satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'timeBwProduct', 0.2,'apodization', 0.5, 'system', lims);
 
 % spoilers
 spoilAmplitude = 0.8 .* lims.maxGrad; % [Hz/m]

@@ -32,7 +32,7 @@ gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 fa_sat        = sat_b1*gyroRatio_rad*t_p; % flip angle of sat pulse
 % create pulseq saturation pulse object
-satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims);
+satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'timeBwProduct', 0.2,'apodization', 0.5, 'system', lims);
 
 % spoilers
 spoilAmplitude = 0.8 .* lims.maxGrad; % [Hz/m]
@@ -85,12 +85,12 @@ seq.setDefinition('run_m0_scan', run_m0_scan);
 seq.write(seq_filename);
 
 %% plot
-% disp('Plotting .seq file ... ');
-% t_start = tic;
-% seq.plot();
-% t_end = toc(t_start);
-% disp(['Plotting .seq file took ' num2str(t_end) ' s']);
-% save_seq_plot(seq_filename);
+disp('Plotting .seq file ... ');
+t_start = tic;
+seq.plot();
+t_end = toc(t_start);
+disp(['Plotting .seq file took ' num2str(t_end) ' s']);
+save_seq_plot(seq_filename);
 
 %% call standard sim
 Simulate_and_plot_seq_file(seq_filename, B0);
