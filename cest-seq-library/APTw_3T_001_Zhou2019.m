@@ -23,25 +23,22 @@ t_d          = 10*1e-3; % delay between pulses [s]
 n_pulses     = 4;    % number of sat pulses per measurement
 B0           = 3;     % B0 [T]
 spoiling     = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
+gyroRatio_hz  = 42.5764; % for H [Hz/uT]
 
 seq_filename = strcat(mfilename,'.seq'); % filename
 
 %% scanner limits 
 % see pulseq doc for more ino
-lims = mr.opts('MaxGrad',40,'GradUnit','mT/m',...
-    'MaxSlew',130,'SlewUnit','T/m/s', ...
-    'rfRingdownTime', 30e-6, 'rfDeadTime', 100e-6, 'rfRasterTime',1e-6);
+lims = Get_scanner_limits();
 
 %% create scanner events
 % satpulse
-gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 fa_sat        = sat_b1*gyroRatio_rad*t_p; % flip angle of sat pulse
 % create pulseq saturation pulse object 
 satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', t_p, 'system', lims);
 
 [B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,t_p,t_d,1,gyroRatio_hz);
-
 
 % spoilers
 spoilAmplitude = 0.8 .* lims.maxGrad; % [Hz/m]
@@ -100,37 +97,6 @@ t_end = toc(t_start);
 disp(['Plotting .seq file took ' num2str(t_end) ' s']);
 save_seq_plot(seq_filename);
 
-%% call standard sim
-disp('Simulating .seq file ... ');
-t_start = tic;
-M_z=Standard_pulseq_cest_Simulation(seq_filename,B0);
-t_end = toc(t_start);
-disp(['Simulating .seq file took ' num2str(t_end) ' s']);
-
-%% Zspec and ASYM calculation
-seq = mr.Sequence;
-seq.read(seq_filename);
-[ppm_sort, idx] = sort(seq.definitions('offsets_ppm'));
-
-% MTRasym contrast map generation
-% if your data was acquired as in the seq file, the following code works for each pixel of such a 4D stack
-
-if seq.definitions('run_m0_scan')
-     M0=M_z(1);
-     Z=M_z(2:end)/M0;
-     MTRasym=Z(end:-1:1)-Z;
-else
-     Z=M_z;
-     MTRasym=Z(end:-1:1)-Z;
-end
-
-figure,
-plot(ppm_sort, Z,'Displayname','Z-spectrum'); set(gca,'xdir','reverse'); hold on;
-plot(ppm_sort,MTRasym,'Displayname','MTR_{asym}');
-xlabel('\Delta\omega [ppm]'); legend show;
-
-% The single MTRAsym vlaue that would form the pixel intensity can be obtained like this:
-% ppm_sort(3) % test to find the right index for the offset of interest
-% MTRasym(3)
-
+%% call standard sim and plot results
+Simulate_and_plot_seq_file(seq_filename,B0);
 
