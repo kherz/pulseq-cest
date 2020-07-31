@@ -13,7 +13,9 @@ DONE
 - pulse shapes in all sequences is 
 mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 0.2,'apodization', 0.5);
 
-TODO
+TODO (sorted by priority)
+
+- (add png generation also for simulated Z-spectrum, and add it to website)? 
 
 - make release version
 
