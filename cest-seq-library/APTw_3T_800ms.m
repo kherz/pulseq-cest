@@ -14,7 +14,7 @@
 
 %% Zspec infos, adapt as you wish
 offset_list = [-4, -3.75, -3.75, -3.5, -3.5, -3.25, -3.25, -3, 3, 3.25, 3.25, 3.5, 3.5 3.75, 3.75, 4];    % [ppm]
-offset_list = [-4:0.1:4];   % [ppm]
+offset_list = [-4:0.25:4];   % [ppm]
 num_offsets  = numel(offset_list);    % number of measurements (not including M0)
 run_m0_scan  = true;  % if you want an M0 scan at the beginning
 t_rec        = 2.4;   % recovery time between scans [s]
