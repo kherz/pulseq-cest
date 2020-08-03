@@ -19,10 +19,11 @@ num_offsets  = numel(offset_list);    % number of measurements (not including M0
 run_m0_scan  = true;  % if you want an M0 scan at the beginning
 t_rec        = 2.4;   % recovery time between scans [s]
 m0_t_rec     = 12;    % recovery time before m0 scan [s]
-sat_b1       = 2.31;  % mean sat pulse b1 [uT]
+sat_b1       = 2.31;  % mean sat pulse b1 [uT]  % 2.41 for philips pulse
 t_p          = 50e-3; % sat pulse duration [s]
 t_d          = 50e-3; % delay between pulses [s]
 n_pulses     = 20;    % number of sat pulses per measurement
+tsat= n_pulses*t_p+(n_pulses-1)*t_d
 B0           = 3;     % B0 [T]
 spoiling     = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
@@ -39,6 +40,8 @@ gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 fa_sat        = sat_b1*gyroRatio_rad*t_p; % flip angle of sat pulse
 % create pulseq saturation pulse object
 satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 0.2,'apodization', 0.5);
+%satPulse      = mr.makeSincPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 2,'apodization', 0.15);
+
 [B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,t_p,t_d,1,gyroRatio_hz);
 
 % spoilers
