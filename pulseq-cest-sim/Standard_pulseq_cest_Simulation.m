@@ -59,8 +59,8 @@ PMEX.MTPool.R1        = 1;
 PMEX.MTPool.R2        = 1e5;
 PMEX.MTPool.k         = 23;
 PMEX.MTPool.f         = 0.0500;
-PMEX.MTPool.dw        = -2;
-PMEX.MTPool.Lineshape = 'Lorentzian';
+PMEX.MTPool.dw        = 0;
+PMEX.MTPool.Lineshape = 'SuperLorentzian';
 
 %% Put together an initial Magnetization vector (fully relaxed)
 % [MxA, MxB, MxD, MyA, MyB, MyD, MzA, MzB, MzD, MzC]
