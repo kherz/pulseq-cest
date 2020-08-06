@@ -14,11 +14,11 @@
 
 %% Zspec infos, adapt as you wish
 offset_list = [-4, -3.75, -3.75, -3.5, -3.5, -3.25, -3.25, -3, 3, 3.25, 3.25, 3.5, 3.5 3.75, 3.75, 4];    % [ppm]
-offset_list = [-4:0.25:4];   % [ppm]
+offset_list = [-1560 -4:0.25:4];   % [ppm]
 num_offsets  = numel(offset_list);    % number of measurements (not including M0)
-run_m0_scan  = true;  % if you want an M0 scan at the beginning
-t_rec        = 2.4;   % recovery time between scans [s]
-m0_t_rec     = 12;    % recovery time before m0 scan [s]
+run_m0_scan  = false;  % if you want an M0 scan with different recovertime and no sat at the beginning
+t_rec        = 3.5;   % recovery time between scans [s]
+m0_t_rec     = 3.5;    % recovery time before m0 scan [s]
 sat_b1       = 1.7;  % mean sat pulse b1 [uT]
 t_p          = 50e-3; % sat pulse duration [s]
 t_d          = 5e-3; % delay between pulses [s]
