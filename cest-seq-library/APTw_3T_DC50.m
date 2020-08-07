@@ -2,12 +2,13 @@
 % An APTw protocol with a 50% DC and tsat of 2s:
 %
 %     pulse shape = Gaussian
-%     B1 = 2 uT
-%     n = 20
+%     B1cwpe = 2 uT
+%     n_pulses = 20
 %     t_p = 50 ms
 %     t_d = 50 ms
-%     DC = 0.5 and t_sat = n*(t_p+t_d) = 2 s
-%     T_rec = 2.4/12 s (saturated/M0)
+%     t_sat = n*(t_p+t_d) = 2 s (1.95 s as last td is missing)
+%     DC = 0.5 and 
+%     t_rec = 3.5/3.5 s (saturated/M0)   (time after the last readout event and before the next saturation)
 %
 % Kai Herz 2020
 % kai.herz@tuebingen.mpg.de
@@ -22,7 +23,7 @@ m0_t_rec     = 3.5;    % recovery time before m0 scan [s]
 sat_b1       = 2.31;  % mean sat pulse b1 [uT]  % 2.41 for philips pulse
 t_p          = 50e-3; % sat pulse duration [s]
 t_d          = 50e-3; % delay between pulses [s]
-n_pulses     = 20;    % number of sat pulses per measurement
+n_pulses     = 20;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
 tsat= n_pulses*t_p+(n_pulses-1)*t_d
 B0           = 3;     % B0 [T]
 spoiling     = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
@@ -76,7 +77,7 @@ for currentOffset = offsets_Hz
     for np = 1:n_pulses
         seq.addBlock(satPulse) % add sat pulse
         % calc phase for next rf pulse
-        accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
+         accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
         
         if np < n_pulses % delay between pulses
             seq.addBlock(mr.makeDelay(t_d)); % add delay

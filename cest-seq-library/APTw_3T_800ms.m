@@ -1,13 +1,14 @@
-%% APTw_3T_DC50
-% An APTw protocol with a ~90% DC and tsat of 2.2s:
+%% APTw_3T_800ms
+% An APTw protocol with a ~90% DC and tsat of 833 ms:
 %
 %     pulse shape = Gaussian
-%     B1 = 2 uT
-%     n = 40
-%     t_p = 50 ms
-%     t_d = 5 ms
-%     DC = 0.5 and t_sat = n*(t_p+t_d) = 2 s
-%     T_rec = 2.4/12 s (saturated/M0)
+%     B1cwpe = 2 uT
+%     n_pulses = 8
+%     t_p = 100 ms
+%     t_d = 1 ms and 10 ms for odd and even resp. (to have shortest possible delay at Siemens)
+%     t_sat = n*t_p + (n/2-1)*10 + (n/2-1)*1 = 833 ms
+%     DC = n*t_p/t_sat = 96.04% 
+%     t_rec = 3.5/3.5 s (saturated/M0)  (time after the last readout event and before the next saturation)
 %
 % Kai Herz 2020
 % kai.herz@tuebingen.mpg.de

@@ -1,13 +1,14 @@
-%% APTw_3T_DC50
-% An APTw protocol with a ~90% DC and tsat of 2.2s:
+%% APTw_3T_DC90
+% An APTw protocol with above 90% DC and tsat of 2 s:
 %
 %     pulse shape = Gaussian
-%     B1 = 2 uT
-%     n = 40
+%     B1cwpe = 2 uT
+%     n_pulses = 36
 %     t_p = 50 ms
 %     t_d = 5 ms
-%     DC = 0.5 and t_sat = n*(t_p+t_d) = 2 s
-%     T_rec = 2.4/12 s (saturated/M0)
+%     t_sat = n*(t_p+t_d) = 2 s (1.975 s as last td is missing)
+%     DC = 0.5 and 
+%     t_rec = 2.4/12 s (saturated/M0)
 %
 % Kai Herz 2020
 % kai.herz@tuebingen.mpg.de
@@ -22,8 +23,8 @@ m0_t_rec     = 3.5;    % recovery time before m0 scan [s]
 sat_b1       = 1.7;  % mean sat pulse b1 [uT]
 t_p          = 50e-3; % sat pulse duration [s]
 t_d          = 5e-3; % delay between pulses [s]
-n_pulses     = 36;    % number of sat pulses per measurement
-tsat= n_pulses*t_p+(n_pulses-1)*t_d
+n_pulses     = 36;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
+t_sat= n_pulses*t_p+(n_pulses-1)*t_d;
 B0           = 3;     % B0 [T]
 spoiling     = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
