@@ -42,12 +42,10 @@ fa_sat        = sat_b1*gyroRatio_rad*t_p; % flip angle of sat pulse
 satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'timeBwProduct', 0.2,'apodization', 0.5, 'system', lims);
 
 % spoilers
-spoilAmplitude = 0.8 .* lims.maxGrad; % [Hz/m]
-spoilDuration = 4500e-6; % [s]
+spoilRiseTime = 1e-3;
+spoilDuration = 4500e-6+ spoilRiseTime; % [s]
 % create pulseq gradient object
-gxSpoil=mr.makeTrapezoid('x','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
-gySpoil=mr.makeTrapezoid('y','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
-gzSpoil=mr.makeTrapezoid('z','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
+[gxSpoil, gySpoil, gzSpoil] = Create_spoiler_gradients(lims, spoilDuration, spoilRiseTime);
 
 % pseudo adc, not played out
 pseudoADC = mr.makeAdc(1,'Duration', 1e-3);

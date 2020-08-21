@@ -47,12 +47,10 @@ satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeB
 [B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,t_p,t_d,1,gyroRatio_hz);
 
 % spoilers
-spoilAmplitude = 0.8 .* lims.maxGrad; % [Hz/m]
-spoilDuration = 4500e-6; % [s]
+spoilRiseTime = 1e-3;
+spoilDuration = 4500e-6+ spoilRiseTime; % [s]
 % create pulseq gradient object
-gxSpoil=mr.makeTrapezoid('x','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
-gySpoil=mr.makeTrapezoid('y','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
-gzSpoil=mr.makeTrapezoid('z','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
+[gxSpoil, gySpoil, gzSpoil] = Create_spoiler_gradients(lims, spoilDuration, spoilRiseTime);
 
 % pseudo adc, not played out
 pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
@@ -101,6 +99,9 @@ end
 seq.setDefinition('offsets_ppm',offset_list);
 seq.setDefinition('run_m0_scan', run_m0_scan);
 seq.write(seq_filename);
+
+%% plot
+save_seq_plot(seq_filename);
 
 %% call standard sim
 Simulate_and_plot_seq_file(seq_filename, B0);
