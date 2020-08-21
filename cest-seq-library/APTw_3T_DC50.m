@@ -73,9 +73,10 @@ for currentOffset = offsets_Hz
     satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
     accumPhase=0;
     for np = 1:n_pulses
+        satPulse.phaseOffset = mod(accumPhase,2*pi); % set accumulated pahse from previous rf pulse
         seq.addBlock(satPulse) % add sat pulse
         % calc phase for next rf pulse
-         accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
+        accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
         
         if np < n_pulses % delay between pulses
             seq.addBlock(mr.makeDelay(t_d)); % add delay
