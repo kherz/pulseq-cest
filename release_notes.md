@@ -21,6 +21,13 @@ TODO (sorted by priority)
   it needs to be tested what the lowest TDs here can be at the scanner.
 	- ultimatley, the B1cwpe mus be defined properly ( over pulse train, or over one tp - td element) as one td in the end is missing, small errror, but...
 
+- put standard parameters as definition to .seq file
+  I think best would be some standard struct with tp, DC, B1 ... which has to be filled completely otherwise the .seq is invalid, sth. like: 
+  if any( structfun(@isempty, PARAMS))
+      error
+  else
+      seq.write
+
 - (add png generation also for simulated Z-spectrum, and add it to website)? 
 
 - make release version

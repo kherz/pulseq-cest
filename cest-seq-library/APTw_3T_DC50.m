@@ -24,7 +24,7 @@ sat_b1       = 2.31;  % mean sat pulse b1 [uT]  % 2.41 for philips pulse
 t_p          = 50e-3; % sat pulse duration [s]
 t_d          = 50e-3; % delay between pulses [s]
 n_pulses     = 20;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
-tsat= n_pulses*t_p+(n_pulses-1)*t_d
+%tsat= n_pulses*t_p+(n_pulses-1)*t_d
 B0           = 3;     % B0 [T]
 spoiling     = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
@@ -46,12 +46,10 @@ satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeB
 [B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,t_p,t_d,1,gyroRatio_hz);
 
 % spoilers
-spoilAmplitude = 0.8 .* lims.maxGrad; % [Hz/m]
-spoilDuration = 4500e-6; % [s]
+spoilRiseTime = 1e-3;
+spoilDuration = 4500e-6+ spoilRiseTime; % [s]
 % create pulseq gradient object
-gxSpoil=mr.makeTrapezoid('x','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
-gySpoil=mr.makeTrapezoid('y','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
-gzSpoil=mr.makeTrapezoid('z','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
+[gxSpoil, gySpoil, gzSpoil] = Create_spoiler_gradients(lims, spoilDuration, spoilRiseTime);
 
 % pseudo adc, not played out
 pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
@@ -75,9 +73,10 @@ for currentOffset = offsets_Hz
     satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
     accumPhase=0;
     for np = 1:n_pulses
+        satPulse.phaseOffset = mod(accumPhase,2*pi); % set accumulated pahse from previous rf pulse
         seq.addBlock(satPulse) % add sat pulse
         % calc phase for next rf pulse
-         accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
+        accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
         
         if np < n_pulses % delay between pulses
             seq.addBlock(mr.makeDelay(t_d)); % add delay
@@ -94,6 +93,9 @@ end
 seq.setDefinition('offsets_ppm',offset_list);
 seq.setDefinition('run_m0_scan', run_m0_scan);
 seq.write(seq_filename);
+
+%% plot
+save_seq_plot(seq_filename);
 
 %% call standard sim
 Simulate_and_plot_seq_file(seq_filename, B0);

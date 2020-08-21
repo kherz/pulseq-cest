@@ -34,12 +34,10 @@ satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', t_p, 'system', lims);
 adia_SL  = WriteSLExpPulseqPulses(sat_b1, lims);
 
 % spoilers
-spoilAmplitude = 0.8 .* lims.maxGrad; % [Hz/m]
-spoilDuration = 4500e-6; % [s]
-% create pulseq gradient object 
-gxSpoil=mr.makeTrapezoid('x','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
-gySpoil=mr.makeTrapezoid('y','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
-gzSpoil=mr.makeTrapezoid('z','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
+spoilRiseTime = 1e-3;
+spoilDuration = 4500e-6+ spoilRiseTime; % [s]
+% create pulseq gradient object
+[gxSpoil, gySpoil, gzSpoil] = Create_spoiler_gradients(lims, spoilDuration, spoilRiseTime);
 
 % pseudo adc, not played out
 pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
@@ -108,7 +106,7 @@ t_start = tic;
 seq.plot();
 t_end = toc(t_start);
 disp(['Plotting .seq file took ' num2str(t_end) ' s']);
-
+save_seq_plot(seq_filename);
 
 %% call standard sim
 disp('Simulating .seq file ... ');

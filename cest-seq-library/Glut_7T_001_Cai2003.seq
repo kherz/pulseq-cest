@@ -1623,7 +1623,7 @@ run_m0_scan 0
 # id amplitude rise flat fall delay
 # ..      Hz/m   us   us   us    us
 [TRAP]
- 1  1.36243e+06 250 4000 250   0
+ 1  1.36243e+06 1000 4500 1000   0
 
 # Format of ADC events:
 # id num dwell delay freq phase
