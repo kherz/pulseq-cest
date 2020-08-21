@@ -11,7 +11,7 @@ seq = mr.Sequence();
 
 seq.read(uigetfile({'*.seq','All .seq Files'},'mytitle','cest-seq-library'));
 
-%% plot only from first to second ADC,
+% plot only from first to second ADC,
 % with time unit ms and RF unit µT
 t=0; tADC=[];
 for iB=1:length(seq.blockEvents)
@@ -21,11 +21,11 @@ for iB=1:length(seq.blockEvents)
         tADC(end+1)=t; % save time of ADC events here
     end
 end
-
-seq.plot('TimeRange',[tADC(1)-0.02 tADC(2)],'timeDisp','ms','rfDisp','uT','gammaHz',42.5764)
+%% plot only from first to second ADC,
+seq.plot('TimeRange',[tADC(1)-0.02 tADC(2)],'timeDisp','s','rfDisp','uT','gammaHz',42.5764)
 
 %% plot from start to second ADC to see M0 recovery delays
-seq.plot('TimeRange',[0 tADC(2)],'timeDisp','ms','rfDisp','uT','gammaHz',42.5764);
+seq.plot('TimeRange',[0 tADC(1)],'timeDisp','s','rfDisp','uT','gammaHz',42.5764);
 
 %% plot full sequence
 % with time unit s and RF unit Hz
