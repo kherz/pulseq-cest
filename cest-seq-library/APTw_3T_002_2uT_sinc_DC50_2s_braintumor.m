@@ -1,14 +1,14 @@
-%% APTw_3T_DC50
+%% APTw_3T_002_2uT_sinc_DC50_2s_braintumor
 % An APTw protocol with a 50% DC and tsat of 2s:
 %
 %     pulse shape = Gaussian
 %     B1cwpe = 2 uT
 %     n_pulses = 20
-%     t_p = 50 ms
-%     t_d = 50 ms
-%     t_sat = n*(t_p+t_d) = 2 s (1.95 s as last td is missing)
-%     DC = 0.5 and 
-%     t_rec = 3.5/3.5 s (saturated/M0)   (time after the last readout event and before the next saturation)
+%     tp = 50 ms
+%     td = 50 ms
+%     Tsat = n*(tp+td) = 2 s (1.95 s as last td is missing)
+%     DCsat = 0.5 and 
+%     Trec = 3.5/3.5 s (saturated/M0)   (time after the last readout event and before the next saturation)
 %
 % Kai Herz 2020
 % kai.herz@tuebingen.mpg.de
@@ -28,7 +28,7 @@ n_pulses     = 20;    % number of sat pulses per measurement. if DC changes use:
 B0           = 3;     % B0 [T]
 spoiling     = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
-seq_filename = 'APTw_3T_DC50.seq'; % filename
+seq_filename = 'APTw_3T_002_2uT_sinc_DC50_2s_braintumor.seq'; % filename
 
 %% scanner limits
 % see pulseq doc for more ino
@@ -40,8 +40,8 @@ gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 fa_sat        = sat_b1*gyroRatio_rad*t_p; % flip angle of sat pulse
 % create pulseq saturation pulse object
-satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 0.2,'apodization', 0.5);
-%satPulse      = mr.makeSincPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 2,'apodization', 0.15);
+%satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p,'system',lims,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
+satPulse      = mr.makeSincPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 2,'apodization', 0.15); % philips-like sinc
 
 [B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,t_p,t_d,1,gyroRatio_hz);
 

@@ -1,14 +1,14 @@
-%% APTw_3T_800ms
-% An APTw protocol with a ~90% DC and tsat of 833 ms:
+%% APTw_3T_003_2uT_block_DC95_0.83s_braintumor.seq           
+% An APTw protocol with B1cwpe = 2 uT, a DC ~96% and t_sat of 833 ms:
 %
-%     pulse shape = Gaussian
+%     pulse shape = block
 %     B1cwpe = 2 uT
-%     n_pulses = 8
-%     t_p = 100 ms
-%     t_d = 1 ms and 10 ms for odd and even resp. (to have shortest possible delay at Siemens)
-%     t_sat = n*t_p + (n/2-1)*10 + (n/2-1)*1 = 833 ms
-%     DC = n*t_p/t_sat = 96.04% 
-%     t_rec = 3.5/3.5 s (saturated/M0)  (time after the last readout event and before the next saturation)
+%     n = 8
+%     tp = 0.1 s
+%     td = 1 ms and 10 ms for odd and even resp. (to have shortest possible delay at Siemens)
+%     Tsat = n*tp + (n/2-1)*10 + (n/2)*1 = 834 ms
+%     DCsat = n*tp/Tsat = 96.04% 
+%     Trec = 3.5/3.5 s (saturated/M0)  (time after the last readout event and before the next saturation)
 %
 % Kai Herz 2020
 % kai.herz@tuebingen.mpg.de
@@ -27,7 +27,7 @@ n_pulses     = 8;    % number of sat pulses per measurement
 B0           = 3;     % B0 [T]
 spoiling     = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
-seq_filename = 'APTw_3T_800ms.seq'; % filename
+seq_filename = 'APTw_3T_003_2uT_block_DC95_0.83s_braintumor.seq'; % filename
 
 %% scanner limits
 % see pulseq doc for more ino
