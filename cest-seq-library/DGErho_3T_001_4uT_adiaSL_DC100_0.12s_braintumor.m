@@ -1,8 +1,7 @@
-%% Write exmpe pulseqSBB .seq file
-% The DGE protocol is taken from:
-% Xu X, Yadav NN, Knutsson L, et al. Dynamic Glucose-Enhanced (DGE) MRI: 
-% Translation to Human Scanning and First Results in Glioma Patients. 
-% Tomography. 2015;1(2):105-114. doi:10.18383/j.tom.2015.00175
+%% DGErho_3T_001_4uT_adiaSL_DC100_0.12s_braintumor
+% The DGErho protocol is taken from:
+%Herz et al..
+
 % 
 % Kai Herz 2020
 % kai.herz@tuebingen.mpg.de
