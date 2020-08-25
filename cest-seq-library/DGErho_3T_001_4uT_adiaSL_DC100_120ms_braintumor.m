@@ -9,10 +9,10 @@
 %% Zspec infos, adapt as you wish
 offsets_ppm = [-300 0.6 0.9 1.2 1.5 -300 0.6 0.9 1.2 1.5]; % Z spec offsets [ppm]
 run_m0_scan  = false;  % if you want an M0 scan at the beginning
-t_rec        = 4;   % recovery time between scans [s]
-m0_t_rec     = 12;    % recovery time before m0 scan [s]
-sat_b1       = 4;  % mean sat pulse b1 [uT]
-t_p          = 120e-3; % sat pulse duration [s]
+Trec        = 4;   % recovery time between scans [s]
+Trec_M0     = 12;    % recovery time before m0 scan [s]
+B1pa       = 4;  % mean sat pulse b1 [uT]
+tp          = 120e-3; % sat pulse duration [s]
 n_pulses     = 1;    % number of sat pulses per measurement
 B0           = 3;     % B0 [T]
 spoiling     = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
@@ -27,10 +27,10 @@ lims = Get_scanner_limits();
 % satpulse
 gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
-fa_sat        = sat_b1*gyroRatio_rad*t_p; % flip angle of sat pulse
+fa_sat        = B1pa*gyroRatio_rad*tp; % flip angle of sat pulse
 % create pulseq saturation pulse object 
-satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', t_p, 'system', lims);
-adia_SL  = WriteSLExpPulseqPulses(sat_b1, lims);
+satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', lims);
+adia_SL  = WriteSLExpPulseqPulses(B1pa, lims);
 
 % spoilers
 spoilRiseTime = 1e-3;
@@ -49,7 +49,7 @@ offsets_Hz = offsets_ppm*gyroRatio_hz*B0; % Z spec offsets [Hz]
 seq = mr.Sequence();
 % add m0 scan if wished
 if run_m0_scan 
-    seq.addBlock(mr.makeDelay(m0_t_rec));
+    seq.addBlock(mr.makeDelay(Trec_M0));
     seq.addBlock(pseudoADC);
 end
 
@@ -59,7 +59,7 @@ post_sl = [];
 accumPhase = 0;
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
-    seq.addBlock(mr.makeDelay(t_rec)); % recovery time
+    seq.addBlock(mr.makeDelay(Trec)); % recovery time
     if currentOffset < 0
         pre_sl = adia_SL{find(ismember(adia_SL(:,2), 'pre_neg')),1};
         post_sl = adia_SL{find(ismember(adia_SL(:,2), 'post_neg')),1};
