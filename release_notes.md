@@ -2,6 +2,7 @@
 
 
 DONE
+- renamed APTw protocols for publication
 - calc_power equivalent calculation added 
 - i found pulse shape parameters that look very smilar to the siemens standard gaussian pulse
 	satPulse = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 0.2,'apodization', 0.5);
@@ -14,12 +15,7 @@ DONE
 mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 0.2,'apodization', 0.5);
 
 TODO (sorted by priority)
-- missing for APTw protocols: 
-	- proper name
-	- exact offset lists
-	- the 800ms protocol does not yet have a cwpe adjusted B1 level, due to the funny inter-pulse delays and the DCs the B1 must be a little higher than 2 µT (2µT/DCeff)  but right now 2 µT is used.
-  it needs to be tested what the lowest TDs here can be at the scanner.
-	- ultimatley, the B1cwpe mus be defined properly ( over pulse train, or over one tp - td element) as one td in the end is missing, small errror, but...
+
 
 - put standard parameters as definition to .seq file
   I think best would be some standard struct with tp, DC, B1 ... which has to be filled completely otherwise the .seq is invalid, sth. like: 
@@ -27,10 +23,12 @@ TODO (sorted by priority)
       error
   else
       seq.write
+      
+- make release version
+
+- possibility to set B1cwpe over pulse train to scale RF pulses
 
 - (add png generation also for simulated Z-spectrum, and add it to website)? 
-
-- make release version
 
 - I added calc_power equivalent calculation, this should be added to the seq file and the plot I think.
 
