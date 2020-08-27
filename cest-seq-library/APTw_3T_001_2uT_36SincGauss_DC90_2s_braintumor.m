@@ -1,29 +1,29 @@
-%% APTw_3T_002_2uT_sinc_DC50_2s_braintumor
-% An APTw protocol with a 50% DC and tsat of 2s:
+%% APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor
+% An APTw protocol with above 90% DC and tsat of 2 s:
 %
 %     pulse shape = Sinc
 %     B1cwpe = 2 uT
-%     n_pulses = 20
+%     n_pulses = 36
 %     tp = 50 ms
-%     td = 50 ms
-%     Tsat = n*(tp+td) = 2 s (1.95 s as last td is missing)
+%     td = 5 ms
+%     Tsat = n*(tp+td) = 2 s (1.975 s as last td is missing)
 %     DCsat = 0.5 and 
-%     Trec = 3.5/3.5 s (saturated/M0)   (time after the last readout event and before the next saturation)
+%     Trec = 2.4/12 s (saturated/M0)
 %
 % Kai Herz 2020
 % kai.herz@tuebingen.mpg.de
 
 %% Zspec infos, adapt as you wish
-offset_list = [-1560-4, -3.75, -3.75, -3.5, -3.5, -3.25, -3.25, -3, 3, 3.25, 3.25, 3.5, 3.5 3.75, 3.75, 4];    % [ppm]
+offset_list = [-4, -3.75, -3.75, -3.5, -3.5, -3.25, -3.25, -3, 3, 3.25, 3.25, 3.5, 3.5 3.75, 3.75, 4];    % [ppm]
 offset_list = [-1560 -4:0.25:4];   % [ppm]
 num_offsets = numel(offset_list);    % number of measurements (not including M0)
 run_m0_scan = false;  % if you want an M0 scan with different recovertime and no sat at the beginning
 Trec        = 3.5;   % recovery time between scans [s]
 Trec_M0     = 3.5;    % recovery time before m0 scan [s]
-B1pa        = 2.4;  % mean sat pulse b1 [uT]  % 2.41 for philips pulse
+B1pa        = 1.78;  % mean sat pulse b1 [uT]
 tp          = 50e-3; % sat pulse duration [s]
-td          = 50e-3; % delay between pulses [s]
-n_pulses    = 20;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
+td          = 5e-3; % delay between pulses [s]
+n_pulses    = 36;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
 B0          = 3;     % B0 [T]
 spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
@@ -39,6 +39,7 @@ gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 fa_sat        = B1pa*gyroRatio_rad*tp; % flip angle of sat pulse
 % create pulseq saturation pulse object
+
 %satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p,'system',lims,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
 satPulse      = mr.makeSincPulse(fa_sat, 'Duration', tp, 'system', lims,'timeBwProduct', 2,'apodization', 0.15); % philips-like sinc
 
@@ -71,12 +72,11 @@ for currentOffset = offsets_Hz
     end
     satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
     accumPhase=0;
-    for np = 1:n_pulses
+    for np = 1:n_pulses     
         satPulse.phaseOffset = mod(accumPhase,2*pi); % set accumulated pahse from previous rf pulse
         seq.addBlock(satPulse) % add sat pulse
         % calc phase for next rf pulse
         accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
-        
         if np < n_pulses % delay between pulses
             seq.addBlock(mr.makeDelay(td)); % add delay
         end
@@ -86,6 +86,7 @@ for currentOffset = offsets_Hz
     end
     seq.addBlock(pseudoADC); % readout trigger event
 end
+
 
 
 %% write sequence
@@ -98,4 +99,7 @@ save_seq_plot(seq_filename);
 
 %% call standard sim
 Simulate_and_plot_seq_file(seq_filename, B0);
+
+
+
 
