@@ -78,9 +78,10 @@ for currentOffset = offsets_Hz
         accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
         
         if np < n_pulses % delay between pulses
-            seq.addBlock(mr.makeDelay(td)); % add delay
             if mod(np,2) == 0
                 seq.addBlock(mr.makeDelay(10e-3));
+            else
+                seq.addBlock(mr.makeDelay(td)); % add delay
             end
         end
     end
