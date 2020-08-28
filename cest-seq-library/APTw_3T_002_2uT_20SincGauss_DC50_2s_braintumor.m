@@ -1,7 +1,7 @@
 %% APTw_3T_002_2uT_20SincGauss_DC50_2s_braintumor
 % An APTw protocol with a 50% DC and tsat of 2s:
 %
-%     pulse shape = Sinc
+%     pulse shape = Sinc-Gaussian
 %     B1cwpe = 2 uT
 %     n_pulses = 20
 %     tp = 50 ms
@@ -14,7 +14,6 @@
 % kai.herz@tuebingen.mpg.de
 
 %% Zspec infos, adapt as you wish
-offset_list = [-1560-4, -3.75, -3.75, -3.5, -3.5, -3.25, -3.25, -3, 3, 3.25, 3.25, 3.5, 3.5 3.75, 3.75, 4];    % [ppm]
 offset_list = [-1560 -4:0.25:4];   % [ppm]
 num_offsets = numel(offset_list);    % number of measurements (not including M0)
 run_m0_scan = false;  % if you want an M0 scan with different recovertime and no sat at the beginning

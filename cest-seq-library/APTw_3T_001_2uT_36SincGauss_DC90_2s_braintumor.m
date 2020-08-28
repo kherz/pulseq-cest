@@ -1,20 +1,19 @@
 %% APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor
 % An APTw protocol with above 90% DC and tsat of 2 s:
 %
-%     pulse shape = Sinc
+%     pulse shape = Sinc-Gaussian
 %     B1cwpe = 2 uT
 %     n_pulses = 36
 %     tp = 50 ms
 %     td = 5 ms
 %     Tsat = n*(tp+td) = 2 s (1.975 s as last td is missing)
 %     DCsat = 0.5 and 
-%     Trec = 2.4/12 s (saturated/M0)
+%     Trec = 3.5/3.5 s (saturated/M0)
 %
 % Kai Herz 2020
 % kai.herz@tuebingen.mpg.de
 
 %% Zspec infos, adapt as you wish
-offset_list = [-4, -3.75, -3.75, -3.5, -3.5, -3.25, -3.25, -3, 3, 3.25, 3.25, 3.5, 3.5 3.75, 3.75, 4];    % [ppm]
 offset_list = [-1560 -4:0.25:4];   % [ppm]
 num_offsets = numel(offset_list);    % number of measurements (not including M0)
 run_m0_scan = false;  % if you want an M0 scan with different recovertime and no sat at the beginning

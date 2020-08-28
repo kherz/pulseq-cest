@@ -1,4 +1,4 @@
-%% APTw_3T_003_2uT_block_DC95_0.83s_braintumor.seq           
+%% APTw_3T_003_2uT_8block_DC95_834ms_braintumor.seq           
 % An APTw protocol with B1cwpe = 2 uT, a DC ~96% and t_sat of 833 ms:
 %
 %     pulse shape = block
@@ -68,12 +68,9 @@ for currentOffset = offsets_Hz
     end
     satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
     accumPhase=0;
-    for np = 1:n_pulses
-        
+    for np = 1:n_pulses  
         satPulse.phaseOffset = mod(accumPhase,2*pi); % set accumulated pahse from previous rf pulse
-        
         seq.addBlock(satPulse) % add sat pulse
-        
         % calc phase for next rf pulse
         accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
         
