@@ -227,14 +227,11 @@ template<int size> void BlochMcConnellSolver<size>::SolveBlochEquation(VectorNd 
 	// run the approximation
 	for (int k = 2; k <= q; k++)
 	{
-		c = c * (q - k + 1) / (k*(2 * q - k + 1));
+		c *= (q - k + 1) / (k*(2 * q - k + 1));
 		X = At * X;
 		cX = c * X;
-		N = N + cX;
-		if (p)
-			D = D + cX;
-		else
-			D = D - cX;
+		N += cX;
+		p ? D += cX : D -= cX;
 		p = !p;
 	}
 	MatrixNd F = D.inverse()*N; // solve D*F = N for F

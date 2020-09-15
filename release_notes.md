@@ -16,6 +16,7 @@ mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims,'timeBwProduct', 0.2,'
 
 TODO (sorted by priority)
 
+- make release version: compiled mex-files should not be in repo but distributed with the release package
 
 - put standard parameters as definition to .seq file
   I think best would be some standard struct with tp, DC, B1 ... which has to be filled completely otherwise the .seq is invalid, sth. like: 
@@ -24,8 +25,6 @@ TODO (sorted by priority)
   else
       seq.write
       
-- make release version
-
 - possibility to set B1cwpe over pulse train to scale RF pulses
 
 - (add png generation also for simulated Z-spectrum, and add it to website)? 
