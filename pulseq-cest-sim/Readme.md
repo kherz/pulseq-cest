@@ -4,6 +4,7 @@
 This simulation package runs Bloch-McConnell simulations for CEST experiments on [pulseq](http://pulseq.github.io/) sequence files. The MATLAB code can also be used to create .seq files for the pulseq sequence building block for SIEMENS idea sequences. More info about how to use the simulation can be found in the following documentation.
 
 This open source project is published under the [MIT License](LICENSE.md).
+Different license terms may apply for included source code in the [3rdParty folder](src/3rdParty). 
 
 ## Compile the .mex files
 This package includes precompiled mex files for 64-bit Windows (compiled with MinGW C++ 5.3.0), Linux (compiled on Linux Mint with g++ 7.3.0) and Mac OS.
