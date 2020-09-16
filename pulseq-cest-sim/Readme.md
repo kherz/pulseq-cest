@@ -6,7 +6,10 @@ This simulation package runs Bloch-McConnell simulations for CEST experiments on
 This open source project is published under the [MIT License](LICENSE.md).
 
 ## Compile the .mex files
-This package includes precompiled mex files for 64-bit Windows (compiled with VS C++ 2017), Linux (compiled on Linux Mint with g++ 7.3.0) and Mac OS. If you want or need to compile a version for yourself you can just run the [compile_pulseqSBB_Sim.m](compile_pulseqSBB_Sim.m) script in MATLAB and should get a similar output like this depending on your compiler: 
+This package includes precompiled mex files for 64-bit Windows (compiled with MinGW C++ 5.3.0), Linux (compiled on Linux Mint with g++ 7.3.0) and Mac OS.
+If you want or need to compile a version for yourself in two different ways:
+### 1. MATLAB (simpler approach)
+  you can just run the [compile_pulseqSBB_Sim.m](compile_pulseqSBB_Sim.m) script in MATLAB and should get a similar output like this depending on your compiler: 
 
 ```Matlab
 >> compile_pulseqSBB_Sim
@@ -16,6 +19,9 @@ MEX completed successfully.
 ```
 
 For more infos, have a look at the MATLAB [documentation](https://mathworks.com/help/matlab/call-mex-files-1.html) for mex files.
+
+### 2. CMAKE (advanced approach)
+A [CMakeLists.txt](src/CMakeLists.txt) file is included in the package (tested with MSVC and GCC on Windows). If you choose CMAKE for compilation over the Matlab function, I assume no further CMAKE instructions are needed here.
 
 ## Run example Z-spectrum simulation
 This package includes an example file to generate .seq files for a APTw Z-spectrum simulation. You can find that in the subfolder [example](example/WriteExamplePulseqSBBZSpectrum.m). Feel free to play around with various parameters to generate different saturation schemes. You can find more info in the subfolder [Readme](example/Readme.md).
