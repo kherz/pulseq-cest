@@ -80,48 +80,53 @@ end
 seq_fn = [seq_fp '/example/example_APTw.seq'];
 
 %% run sim
-
-%[seq_fn, path] = uigetfile({'*.seq','All .seq Files'},'mytitle','cest-seq-library');
-
-%seq_fn=[path seq_fn];
 M_out = Sim_pulseqSBB(PMEX, seq_fn);
 M_z=M_out(nTotalPools*2+1,:);
 %% plot zspec
-figure(99), hold on;
-try % try to get the ppm values from the seq file
-    seq = mr.Sequence;
-    seq.read(seq_fn);
-    [ppm_sort, idx] = sort(seq.definitions('offsets_ppm'));
-    plot(ppm_sort, M_z(idx));
-    set ( gca, 'xdir', 'reverse' )
-    xlabel('offset [ppm]');
-catch % plot just as ADC index
+seq = mr.Sequence;
+seq.read(seq_fn);
+if isKey(seq.definitions, 'run_m0_scan')
+    if seq.definitions('run_m0_scan')
+        M_z = M_z(2:end)./M_z(1); % normalize by first scan
+    end
+end
+
+if isKey(seq.definitions, 'offsets_ppm')  % try to get the ppm values from the seq file
+    offsets_ppm = seq.definitions('offsets_ppm');
+    if any(abs(offsets_ppm)>295) % everything above 295 ppm is m0
+        M0_idx = find(abs(offsets_ppm)>295);
+        M0 = mean(M_z(M0_idx));
+        M_z(M0_idx) = [];
+        offsets_ppm(M0_idx) = [];
+        M_z = M_z./M0;
+    end
+    
+    [ppm_sort, idx] = sort(offsets_ppm);
+    Z = M_z(idx);
+    % MTRasym -> eqaul values of both sides of the z-spectrum expected
+    MTRasym=Z(end:-1:1)-Z;
+    MTRasym(1:ceil(end/2)) = 0; % set duplictes to 0 
+    
+    % plot z-spec and asym
+    figure;
+    yyaxis left;
+    plot(ppm_sort, Z);
+    axis([ppm_sort(1) ppm_sort(end) 0 1])
+    set(gca,'xdir','reverse');
+    ylabel('M/(M_0)');
+    yyaxis right;
+    plot(ppm_sort,MTRasym);
+    axis([ppm_sort(1) ppm_sort(end) min(MTRasym)*4 max(MTRasym)*4])
+    set(gca, 'xdir', 'reverse' )
+    ylabel('MTR_{asym}');
+    xlabel('\Delta\omega [ppm]');
+    
+else % plot just as ADC index
     plot(M_z);
     xlabel('ADC index');
 end
 title('Z-spec');
-ylabel('M');
 
-%% exemplary MTRasym contrast map generation
-% if your data was acquired as in the seq file, the following code works for each pixel of such a 4D stack
-
-if seq.definitions('run_m0_scan')
-    M0=M_z(1);
-    Z=M_z(2:end)/M0;
-    MTRasym=Z(end:-1:1)-Z;
-else
-    Z=M_z;
-    MTRasym=Z(end:-1:1)-Z;
-end
-
-figure,
-plot(ppm_sort, Z); set(gca,'xdir','reverse'); hold on;
-plot(ppm_sort,MTRasym);
-xlabel('ADC index');
-
-% The single MTRAsym vlaue that would form the pixel intensity can be obtained like this:
-ppm_sort(17) % test to find the right index for the offset of interest
-MTRasym(17)
 
 
 
