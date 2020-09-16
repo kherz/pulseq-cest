@@ -25,8 +25,6 @@ TODO (sorted by priority)
   else
       seq.write
       
-- possibility to set B1cwpe over pulse train to scale RF pulses
-
 - (add png generation also for simulated Z-spectrum, and add it to website)? 
 
 - I added calc_power equivalent calculation, this should be added to the seq file and the plot I think.
