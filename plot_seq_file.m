@@ -8,8 +8,8 @@ end
 addpath(genpath(pwd));
 
 seq = mr.Sequence();
-
-seq.read(uigetfile({'*.seq','All .seq Files'},'mytitle','cest-seq-library'));
+[seqfn, path] = uigetfile({'*.seq','All .seq Files'},'mytitle','cest-seq-library') 
+seq.read([path seqfn]);
 
 % plot only from first to second ADC,
 % with time unit ms and RF unit µT
