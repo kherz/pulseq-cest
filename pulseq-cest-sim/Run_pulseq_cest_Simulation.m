@@ -46,7 +46,6 @@ PMEX.M = zeros(nTotalPools*3,1);
 PMEX.M(nTotalPools*2+1,1)= PMEX.WaterPool.f;
 for ii = 2:nTotalPools
     PMEX.M(nTotalPools*2+ii,1)= PMEX.CESTPool(ii-1).f;
-    PMEX.M(nTotalPools*2+1,1) = PMEX.M(nTotalPools*2+1,1) - PMEX.CESTPool(ii-1).f;
 end
 if isfield(PMEX, 'MTPool') && size(PMEX.M,1) == nTotalPools*3 % add MT pool
     PMEX.M = [PMEX.M; PMEX.MTPool.f];
