@@ -8,6 +8,7 @@
 % Kai Herz, 2020
 % kai.herz@tuebingen.mpg.de
 
+
 %% filenames for .seq-file and simulation parameters
 script_fp = []; % get correct path
 if strcmp(mfilename, 'LiveEditorEvaluationHelperESectionEval')
@@ -22,14 +23,17 @@ param_fn = [script_fp '/example/standard_cest_sim_params.yaml']; % yaml-file
 %% read params
 PMEX = Read_simulation_params(param_fn);
 
+
 %% run sim
 M_out = Sim_pulseqSBB(PMEX, seq_fn);
+
 
 %% get z signal
 nTotalPools = 1;
 if isfield(PMEX, 'CESTPool')
     nTotalPools = nTotalPools + numel(PMEX.CESTPool);
 end
+
 M_z=M_out(nTotalPools*2+1,:);
 %% plot zspec
 seq = mr.Sequence;
