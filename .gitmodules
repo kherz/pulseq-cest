@@ -1,0 +1,3 @@
+[submodule "cest-seq-library\\library"]
+	path = cest-seq-library\\library
+	url = https://github.com/kherz/pulseq-cest-library
