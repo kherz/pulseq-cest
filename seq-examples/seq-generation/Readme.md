@@ -1,4 +1,4 @@
-# How ro write a .seq file for the pulseqSBB
+# How to write a .seq file for the pulseqSBB
 
 This documentation explains the generation of a suitable .seq file for the pulseqSBB simulation and sequence. It uses the the [MATLAB code](https://github.com/pulseq/pulseq/tree/master/matlab/%2Bmr) from the pulseq project. 
 
@@ -86,10 +86,28 @@ pulseq also supports a plot function, here we can see the Gaussian pulses in the
 seq.plot('TimeRange', [2.4 4.2])
 ```
 
-![sequence diagram](seq_plot_example.png)
+![sequence diagram](./../example-library/seq_plot_example.png)
 
 Now, we can save the .seq file and simulate it or run it at the scanner.
 
 ```Matlab
 seq.write(seq_filename);
 ```
+
+## Sequence definition questions
+
+When writing your own sequence as a .seq-file, please consider the following points:
+
+1. What is the saturation pulse duration t<sub>p</sub>?
+
+2. What is the interpulse delay t<sub>d</sub> and the duty-cycle DC<sub>sat</sub>= t<sub>p</sub>/(t<sub>p</sub>+t<sub>d</sub>)?
+
+3. What is the saturation pulse flip angle? What is the average amplitude of the pulse, the average amplitude of the pulse train (cwae) and the average power (cwpe) of the pulse train?
+
+4. What is the exact pulse shape? Can it be given as a text file with sampling points?
+
+5. What is the phase after the RF pulse? Is it set to zero or is the accumulated phase kept as it is?
+
+6. What is the exact T<sub>rec</sub> used, meaning the time between the last readout pulse and  the next saturation phase?
+
+7. Is there an additional normalization scan acquired. e.g. an unsaturated M<sub>0</sub> scan. How long is the relaxation delay before this scan? Is it acquired after a far-offresonant saturation pulse train? If so, what is the offset frequency, and what was the power used?
