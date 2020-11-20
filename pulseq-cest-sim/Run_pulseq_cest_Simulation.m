@@ -1,86 +1,74 @@
-%% Run pulseq SBB simulation
-% example for a Z-spectrum for GM at 3T with
-% - 2 CEST pools
-% - a Lorentzian shaped MT pool
+% This function runs the standard simulation for a specific .seq and .yaml pair and plots the results 
 %
-% All parameters are saved in a struct which is the input for the mex file
-%
-% Kai Herz, 2020
 % kai.herz@tuebingen.mpg.de
-
-
-%% filenames for .seq-file and simulation parameters
-script_fp = []; % get correct path
-if strcmp(mfilename, 'LiveEditorEvaluationHelperESectionEval')
-    script_fp = fileparts(matlab.desktop.editor.getActiveFilename);
-else
-    script_fp = fileparts(which(mfilename));
+% Input:  seq_fn:   filename of the .seq-file
+%         param_fn: filename of the .yaml parameter file
+%         fig_no:   (optional) figure number in which the result should be
+%         plotted
+%
+% Output: Mz: Water z-magnetization at each ADC event
+function Mz = Run_pulseq_cest_Simulation(seq_fn, param_fn, fig_no)
+%% check for files
+if ~exist(seq_fn, 'file')
+    error('.seq file does not exist!')
 end
 
-seq_fn   = [script_fp '/example/example_APTw.seq'];              % seq-file
-param_fn = [script_fp '/example/standard_cest_sim_params.yaml']; % yaml-file
-
-%% read params
+%% read .yaml file
 PMEX = Read_simulation_params(param_fn);
 
-
-%% run sim
+%% run the simulation 
+disp('Simulating .seq file ... ');
+t_start = tic;
 M_out = Sim_pulseqSBB(PMEX, seq_fn);
+t_end = toc(t_start);
+disp(['Simulating .seq file took ' num2str(t_end) ' s']);
 
-
-%% get z signal
+%% get Z signal of water
 nTotalPools = 1;
 if isfield(PMEX, 'CESTPool')
     nTotalPools = nTotalPools + numel(PMEX.CESTPool);
 end
-
 M_z=M_out(nTotalPools*2+1,:);
-%% plot zspec
+
+%% read sequence info for m0
+% there are two M0 cases:
+% 1: if run_m0_scan is true, the first scan is treated as an M0 scan
+% 2: if this is false all offsets are searched for values > abs(295) ppm.
+% These are treated as M0 scans then. If multiple scans are found, the mean
+% value is used as M0
+%
+% If none of the cases are true, no normalization is performed
 seq = mr.Sequence;
 seq.read(seq_fn);
-if isKey(seq.definitions, 'run_m0_scan')
-    if seq.definitions('run_m0_scan')
-        M_z = M_z(2:end)./M_z(1); % normalize by first scan
-    end
+offsets_ppm = seq.definitions('offsets_ppm');
+if seq.definitions('run_m0_scan')
+    M_z=M_z(2:end)./M_z(1);
+elseif any(abs(offsets_ppm)>295)
+    M0_idx = find(abs(offsets_ppm)>295);
+    M0 = mean(M_z(M0_idx));
+    M_z(M0_idx) = [];
+    offsets_ppm(M0_idx) = [];
+    M_z = M_z./M0;
 end
+% sort the measured values
+[ppm_sort, idx] = sort(offsets_ppm);
+Z = M_z(idx);
+% MTRasym -> eqaul values of both sides of the z-spectrum expected
+MTRasym=Z(end:-1:1)-Z;
+MTRasym(1:ceil(end/2)) = 0;
 
-if isKey(seq.definitions, 'offsets_ppm')  % try to get the ppm values from the seq file
-    offsets_ppm = seq.definitions('offsets_ppm');
-    if any(abs(offsets_ppm)>295) % everything above 295 ppm is m0
-        M0_idx = find(abs(offsets_ppm)>295);
-        M0 = mean(M_z(M0_idx));
-        M_z(M0_idx) = [];
-        offsets_ppm(M0_idx) = [];
-        M_z = M_z./M0;
-    end
-    
-    [ppm_sort, idx] = sort(offsets_ppm);
-    Z = M_z(idx);
-    % MTRasym -> eqaul values of both sides of the z-spectrum expected
-    MTRasym=Z(end:-1:1)-Z;
-    MTRasym(1:ceil(end/2)) = 0; % set duplictes to 0 
-    
-    % plot z-spec and asym
-    figure;
-    yyaxis left;
-    plot(ppm_sort, Z);
-    axis([ppm_sort(1) ppm_sort(end) 0 1])
-    set(gca,'xdir','reverse');
-    ylabel('M/(M_0)');
-    yyaxis right;
-    plot(ppm_sort,MTRasym);
-    axis([ppm_sort(1) ppm_sort(end) min(MTRasym)*4 max(MTRasym)*4])
-    set(gca, 'xdir', 'reverse' )
-    ylabel('MTR_{asym}');
-    xlabel('\Delta\omega [ppm]');
-    
-else % plot just as ADC index
-    plot(M_z);
-    xlabel('ADC index');
+
+%% plot results
+if nargin < 3
+    figure; hold on;
+else
+    figure(fig_no); hold on;
 end
-title('Z-spec');
-
-
-
+yyaxis left;
+plot(ppm_sort, Z,'Displayname','Z-spectrum'); set(gca,'xdir','reverse');
+yyaxis right;
+plot(ppm_sort,MTRasym,'Displayname','MTR_{asym}');
+axis([ppm_sort(1) ppm_sort(end) 4*min(MTRasym) 4*max(MTRasym)])
+xlabel('\Delta\omega [ppm]'); legend show;
 
 

@@ -1,5 +1,5 @@
 %% write pulseq rf objects for slexp pulse
-function adia_SL = WriteSLExpPulseqPulses(B1,lims)
+function adia_SL = Generate_SLExp_pulseq_pulses(B1,lims)
 
 % if nargin <2
 %     lims = 0;

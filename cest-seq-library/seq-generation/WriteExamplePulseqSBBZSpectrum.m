@@ -31,10 +31,7 @@ seq_filename = 'example_APTw.seq'; % filename
 
 %% scanner limits 
 % see pulseq doc for more ino
-lims = mr.opts('MaxGrad',40,'GradUnit','mT/m',...
-    'MaxSlew',130,'SlewUnit','T/m/s', ...
-    'rfRingdownTime', 30e-6, 'rfDeadTime', 100e-6, 'rfRasterTime',1e-6);
-
+lims = Get_scanner_limits();
 %% create scanner events
 % satpulse
 gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
@@ -44,12 +41,10 @@ fa_sat        = sat_b1*gyroRatio_rad*t_p; % flip angle of sat pulse
 satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims);
 
 % spoilers
-spoilAmplitude = 0.8 .* lims.maxGrad; % [Hz/m]
-spoilDuration = 4500e-6; % [s]
-% create pulseq gradient object 
-gxSpoil=mr.makeTrapezoid('x','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
-gySpoil=mr.makeTrapezoid('y','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
-gzSpoil=mr.makeTrapezoid('z','Amplitude',spoilAmplitude,'Duration',spoilDuration,'system',lims);
+spoilRiseTime = 1e-3;
+spoilDuration = 4500e-6+ spoilRiseTime; % [s]
+% create pulseq gradient object
+[gxSpoil, gySpoil, gzSpoil] = Create_spoiler_gradients(lims, spoilDuration, spoilRiseTime);
 
 % pseudo adc, not played out
 pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
