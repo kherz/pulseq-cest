@@ -18,9 +18,9 @@ The library with all published .seq-files is used as a submodule. You need to ru
 Afterwards, add the entire repository to your your Matlab path.
 
 ## Getting started
-To get an overwie about the project and how the .seq-files and simulations work, got to the folder [seq-examples/example-library](seq-examples/example-library).
+To get an overwiew about the project and how the .seq-files and simulations work, got to the folder [seq-examples/example-library](seq-examples/example-library).
 There you will find an example .seq-file which you can simulate and plot.
-For plotting, simpy run the function 
+For plotting, simply run the function 
 ```Matlab
 >> plot_seq_file
 ```
