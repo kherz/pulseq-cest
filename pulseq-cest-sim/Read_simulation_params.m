@@ -93,22 +93,18 @@ if isfield(params, 'scale')
 end
 
 %% scanner parameters
-if ~isfield(params, 'scanner')
-    error('Scanner variables must be defined in "scanner"');
+if ~isfield(params, 'b0') || ~isfield(params, 'gamma')
+    error('Parameter file must contain "b0" and "gamma"');
 end
-sc = params.scanner;
-if ~isfield(sc, 'b0') || ~isfield(sc, 'gamma')
-    error('"scanner" must contain "b0" and "gamma"');
-end
-PMEX.Scanner.B0    = str2param(sc.b0);    % field strength [T]
-PMEX.Scanner.Gamma = str2param(sc.gamma); % gyromagnetic ratio [rad/uT]
+PMEX.Scanner.B0    = str2param(params.b0);    % field strength [T]
+PMEX.Scanner.Gamma = str2param(params.gamma); % gyromagnetic ratio [rad/uT]
 
-if isfield(sc, 'b0_inhom')
-    PMEX.Scanner.B0Inhomogeneity = str2param(sc.b0_inhom);
+if isfield(params, 'b0_inhom')
+    PMEX.Scanner.B0Inhomogeneity = str2param(params.b0_inhom);
 end
 
-if isfield(sc, 'rel_b1')
-    PMEX.Scanner.relB1 = str2param(sc.rel_b1);
+if isfield(params, 'rel_b1')
+    PMEX.Scanner.relB1 = str2param(params.rel_b1);
 end
 
 
