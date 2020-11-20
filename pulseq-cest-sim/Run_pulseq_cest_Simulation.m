@@ -68,7 +68,7 @@ yyaxis left;
 plot(ppm_sort, Z,'Displayname','Z-spectrum'); set(gca,'xdir','reverse');
 yyaxis right;
 plot(ppm_sort,MTRasym,'Displayname','MTR_{asym}');
-axis([ppm_sort(1) ppm_sort(end) 4*min(MTRasym) 4*max(MTRasym)])
+axis([ppm_sort(1) ppm_sort(end) -(2*max(abs(MTRasym))) (2*max(abs(MTRasym)))])
 xlabel('\Delta\omega [ppm]'); legend show;
 
 

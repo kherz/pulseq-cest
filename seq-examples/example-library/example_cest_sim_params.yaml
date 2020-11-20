@@ -1,27 +1,28 @@
-## Parameter settings for standard CEST parameters for the simulation:
-#    Example for a Z-spectrum for gray matter at 3T with
-#        - 2 CEST pools
-#        - a Lorentzian shaped MT pool
-# CEST pools according to https://doi.org/10.1016/j.neuroimage.2017.04.045
-#
-# Parameters:
-# f: proton fraction (relative) (float)
-# r1: inverse relaxation time R1 = 1/T1 [Hz] (float)
-# r2 inverse relaxation time R2 = 1/T2 [Hz] (float)
-# dw: chemical shift from water [ppm] (float)
-# k: exchange rate [Hz] (float)
-# lineshape: lineshape of the MT Pool as 'Lorentzian', 'SuperLorentzian' or 'None' (str)
+####################################################################################
+# ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
+# ------------------------ https://pulseq-cest.github.io/ ------------------------ #
+####################################################################################
 
-# water properties
+# sources/references for settings in this file:
+# https://onlinelibrary.wiley.com/doi/10.1002/mrm.20605 (just an example)
+# https://iopscience.iop.org/article/10.1088/0031-9155/58/22/R221 (just an example)
+
+###### Pool settings 
+#  f: relative pool size fraction (float)
+# r1: inverse longitudinal relaxation time R1 = 1/T1 [Hz] (float)
+# r2: inverse transversal relaxation time R2 = 1/T2 [Hz] (float)
+#  k: exchange rate [Hz] to water pool (MT and CEST pools only) (float)
+# dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
+
+### water pool
 water_pool: {
   f: 1,
   r1: 1 / 1.3,
   r2: 1 / 75e-3
 }
 
-# MT pool
-# To set r1 equal to water pool r1, omit
-# to exclude MT pool set mt_pool: None or omit
+### MT pool
+# lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
 mt_pool: {
   f: 0.05,
   r1: 1 / 1.3,
@@ -31,10 +32,7 @@ mt_pool: {
   lineshape: 'SuperLorentzian'
 }
 
-# CEST pool parameters
-# dictionary with entries sorted by a pool name
-# to simulate without CEST pools set cest_pool: None or omit
-# To set r1 equal to water pool r1, set to r1: 'auto' or omit
+### CEST pool(s)
 cest_pool: {
   'Amide': {
     f: 72e-3/111,
@@ -52,25 +50,23 @@ cest_pool: {
   }
 }
 
-# Scanner
-# b0: field strength [T] (float)
-# gamma: gyromagnetic ratio [rad / uT], default is 267.5153 (float)
+###### Scanner settings 
+#       b0: field strength [T] (float)
+#    gamma: gyromagnetic ratio [rad / uT], default is 267.5153 (float)
 # b0_inhom: field inhomogeneity [ppm], default is 0.0 (float)
-# rel_b1: relative b1 inhomogeneity, default is 1.0 (float)
+#   rel_b1: relative b1 inhomogeneity, default is 1.0 (float)
 b0: 3
 gamma: 267.5153
 b0_inhom: 0.0
 rel_b1: 1
 
 
-# Scale
-# scale: relative Magnetization after recovery, default is 1 (float)
+##### Additional simulation settings
+#           verbose: verbose output, default is False (bool)
+#    reset_init_mag: True to reset magnetization after each readout, default is True (bool)
+#             scale: relative magnetization after reset of magnetization, default is 1 (float)
+# max_pulse_samples: maximum number of samples for each shaped rf pulse, default is 500 (int)
+verbose: False
+reset_init_mag: True
 scale: 0.5
-
-## Additional simulation settings
-# reset_init_mag: True if magnetization should be reset after each ADC, default is True (bool)
-# max_pulse_samples: sets the number of samples for the shaped pulses, default is 500 (int)
-# verbose: verbose output in C++ simulation, default is False (bool)
-
-## python specific parameters
-# par_calc: toggles parallel calculations in python simulation, default True (bool)
+max_pulse_samples: 300

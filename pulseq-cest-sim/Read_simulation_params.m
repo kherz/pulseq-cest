@@ -121,7 +121,7 @@ end
 
     function value = str2param(str)
         value = nan;
-        if isnumeric(str)
+        if isnumeric(str) || islogical(str)
             value = str;
         elseif  isstr(str)
             slash_pos = strfind(str, '/'); % check if fraction
