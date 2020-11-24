@@ -7,7 +7,15 @@
 %         plotted
 %
 % Output: Mz: Water z-magnetization at each ADC event
-function Mz = Run_pulseq_cest_Simulation(seq_fn, param_fn, fig_no)
+function Z = Run_pulseq_cest_Simulation(seq_fn, param_fn, fig_no)
+if nargin < 2
+    [seq_fn, seq_fp] = uigetfile({'*.seq','All .seq Files'},'Choose .seq-file for simulation');
+    seq_fn = fullfile(seq_fp, seq_fn);
+    [param_fn, param_fp] = uigetfile({'*.sim','All .sim Files'},'Choose .sim-file for simulation');
+    param_fn = fullfile(param_fp, param_fn);
+end
+
+
 %% check for files
 if ~exist(seq_fn, 'file')
     error('.seq file does not exist!')
