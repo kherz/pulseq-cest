@@ -11,11 +11,23 @@ More information about both parts can be found in the corresponding subfolders.
 
 ## Installation
 
-The library with all published .seq-files is used as a submodule. You need to run the following command to clone all the files:
+There are 3 ways to install pulseq-cest, listed here in the recommended order:
 
-`git clone -b external-lib --recurse-submodules https://github.com/kherz/pulseq-cest.git`
+**1. If you have git installed**
+* Clone the repository 
+* Run  [Install_pulseq_cest.m](Install_pulseq_cest)
 
-Afterwards, add the entire repository to your your Matlab path.
+**2. If you do not have git installed**
+* Install git
+* Go back to 1.
+
+**3. If you do not have git installed and can't install it**
+* Download pulseq-cest as .zip 
+* Unpack it
+* Download [pulseq-cest-library](https://github.com/kherz/pulseq-cest-library) as .zip 
+* Unpack it in the parent directory of pulseq-cest
+* Download [yamlmatlab](https://github.com/ewiger/yamlmatlab) as .zip
+* Unpack it in [pulseq-cest/pulseq-cest-sim]('pulseq-cest/pulseq-cest-sim')
 
 ## Getting started
 To get an overwiew about the project and how the .seq-files and simulations work, got to the folder [seq-examples/example-library](seq-examples/example-library).
