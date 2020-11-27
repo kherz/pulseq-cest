@@ -1,13 +1,12 @@
-%% install pulseq-cest-library
-
+%% download pulseq-cest dependencies 
 
 % check if git is there
-
 [st, rs] = system('git --version');
 if st
     error('Installation failed! Please install git');
 end
 
+% get filepath of the install script
 script_fp = [];
 if strcmp(mfilename, 'LiveEditorEvaluationHelperESectionEval')
     script_fp = fileparts(matlab.desktop.editor.getActiveFilename);
@@ -17,8 +16,8 @@ end
 disp(['Running git in ' script_fp]);
 
 
-
-lib_path = [script_fp '/../pulseq-cest-library'];
+% download the pulseq-cest-library repo
+lib_path = fullfile(script_fp, '..', 'pulseq-cest-library');
 if exist(lib_path, 'dir')
     disp('pulseq-cest-library already installed, skip...')
 else
@@ -32,8 +31,8 @@ else
     disp('...done!');
 end
 
-
-yaml_path = [script_fp '/pulseq-cest-sim/yamlmatlab'];
+% download the yamlmatlab package
+yaml_path = fullfile(script_fp, 'pulseq-cest-sim', 'yamlmatlab');
 if exist(yaml_path, 'dir')
     disp('yamlmatlab already installed, skip...')
 else
@@ -47,8 +46,11 @@ else
     disp('...done!');
 end
 
+% add everything to the path
 disp('Adding files to path.')
 addpath(genpath(script_fp));
+
+% done
 disp('Installation finished!');
 
 
