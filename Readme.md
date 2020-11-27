@@ -30,7 +30,7 @@ There are 3 ways to install pulseq-cest, listed here in the recommended order:
 * Download [pulseq-cest-library](https://github.com/kherz/pulseq-cest-library) as .zip 
 * Unpack it in the parent directory of pulseq-cest
 * Download [yamlmatlab](https://github.com/ewiger/yamlmatlab) as .zip
-* Unpack it in [pulseq-cest/pulseq-cest-sim](pulseq-cest/pulseq-cest-sim)
+* Unpack it in [pulseq-cest/pulseq-cest-sim](pulseq-cest-sim)
 
 ## Getting started
 To get an overwiew about the project and how the .seq-files and simulations work, got to the folder [examples](examples).
