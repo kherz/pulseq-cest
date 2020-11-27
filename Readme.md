@@ -1,13 +1,15 @@
 # pulseq-cest
 
 Welcome to the **pulseq-cest** repository, a project to faciliate reproducibility in CEST MRI research using the open [pulseq](https://pulseq.github.io/) standard. The repository consists of two parts:
-1. [pulseq-cest-library](pulseq-cest-library): 
+1. [pulseq-cest-library](https://github.com/kherz/pulseq-cest-library): 
 Here, published and approved CEST saturation blocks are made available.
-This allows exact comparison of CEST saturation blocks with newly developed or adapted saturation blocks for reproducible CEST research. All .seq files can be loaded in Matlab for plotting and detailed inspection. This library is maintained in a [separate repository](https://github.com/kherz/pulseq-cest-library) and used as a submodule herein.
+This allows exact comparison of CEST saturation blocks with newly developed or adapted saturation blocks for reproducible CEST research. All .seq files can be loaded in Matlab for plotting and detailed inspection. This library is maintained in a [separate repository](https://github.com/kherz/pulseq-cest-library) but is included in the pulseq-cest installation.
 
 2. [pulseq-cest-sim](pulseq-cest-sim): In this folder you can find the  Bloch-McConnell simulation that can be used to simulate and compare different .seq-files for different settings.
 
 More information about both parts can be found in the corresponding subfolders. 
+
+If you prefer **python** over MATLAB, have a look at the python version of the project [here](https://github.com/KerstinHut/pypulseq-cest).
 
 ## Installation
 
@@ -15,10 +17,11 @@ There are 3 ways to install pulseq-cest, listed here in the recommended order:
 
 **1. If you have git installed**
 * Clone the repository 
+* Open MATLAB
 * Run  [Install_pulseq_cest.m](Install_pulseq_cest.m)
 
 **2. If you do not have git installed**
-* Install git
+* Install [git](https://git-scm.com/downloads)
 * Go back to 1.
 
 **3. If you do not have git installed and can't install it**
@@ -27,7 +30,7 @@ There are 3 ways to install pulseq-cest, listed here in the recommended order:
 * Download [pulseq-cest-library](https://github.com/kherz/pulseq-cest-library) as .zip 
 * Unpack it in the parent directory of pulseq-cest
 * Download [yamlmatlab](https://github.com/ewiger/yamlmatlab) as .zip
-* Unpack it in [pulseq-cest/pulseq-cest-sim]('pulseq-cest/pulseq-cest-sim')
+* Unpack it in [pulseq-cest/pulseq-cest-sim]('pulseq-cest/pulseq-cest-sim)
 
 ## Getting started
 To get an overwiew about the project and how the .seq-files and simulations work, got to the folder [examples](examples).
