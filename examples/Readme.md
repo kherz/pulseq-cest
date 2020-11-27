@@ -15,7 +15,7 @@ If you want to run the Bloch-McConnell simulation for that Z-spectrum experiment
 
 The simulation runs the BlochMcConnell simulation of the [.seq-file](example_APTw.seq) for the simulation setting defined in the [.sim-file](example_cest_sim_params.sim). You should see a plot of the Z-spectrum and the MTR<sub>asym</sub> curve.
 
-## .yaml parameter files
+## .sim parameter files (yaml-format)
 Simulation parameter definitions in yaml files allows to share settings without the need to adapt any code. The files can be viewed and edited with a simple text editor. All parameters for the simulation are quickly described here:
 
 ### Water Pool (mandatory)  

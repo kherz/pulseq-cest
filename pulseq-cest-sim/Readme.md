@@ -4,7 +4,7 @@
 This simulation package runs Bloch-McConnell simulations for CEST experiments on [pulseq](http://pulseq.github.io/) sequence files. The MATLAB code can also be used to create .seq files for the pulseq sequence building block for SIEMENS idea sequences. More info about how to use the simulation can be found in the following documentation.
 
 This open source project is published under the [MIT License](LICENSE.md).
-Different license terms may apply for included source code in the [3rdParty folder](src/3rdParty) and the included [yamlmatlab](yamlmatlab) package.
+Different license terms may apply for included source code in the [3rdParty folder](src/3rdParty).
 
 ## Compile the .mex files
 This package includes precompiled mex files for 64-bit Windows (compiled with MinGW C++ 5.3.0), Linux (compiled on Linux Mint with g++ 7.3.0) and Mac OS.
@@ -25,7 +25,7 @@ For more infos, have a look at the MATLAB [documentation](https://mathworks.com/
 A [CMakeLists.txt](src/CMakeLists.txt) file is included in the package (tested with MSVC and GCC on Windows). If you choose CMake for compilation over the Matlab function, I assume no further instructions are needed here.
 
 ## Run example Z-spectrum simulation
-This package includes an example [file](../seq-examples/seq-generation/WriteExamplePulseqSBBZSpectrum.m) to generate .seq files for a APTw Z-spectrum simulation. You can find that in the subfolder [seq-examples/seq-generation](../seq-examples/seq-generation). Feel free to play around with various parameters to generate different saturation schemes. You can find more info in the subfolder [Readme](../seq-examples/seq-generation/Readme.md).
+This package includes an example [file](../seq-generation/WriteExamplePulseqSBBZSpectrum.m) to generate .seq files for a APTw Z-spectrum simulation. You can find that in the subfolder [../seq-generation](../seq-generation). Feel free to play around with various parameters to generate different saturation schemes. You can find more info in the subfolder [Readme](../seq-generation/Readme.md).
 
 You can simulate  .seq-files by running [Run_pulseq_cest_Simulation.m](Run_pulseq_cest_Simulation.m). The unction takes the pulseq .seq file and a .yaml parameter file with the simulation setting as an input. The parameters from the yaml-file are [read](Read_simulation_params.m) and used to generate a struct wich is used as input for the mex-function. All members PMEX (**P**arameters for **MEX** ) struct and shortly described here.
 

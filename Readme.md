@@ -15,7 +15,7 @@ There are 3 ways to install pulseq-cest, listed here in the recommended order:
 
 **1. If you have git installed**
 * Clone the repository 
-* Run  [Install_pulseq_cest.m](Install_pulseq_cest)
+* Run  [Install_pulseq_cest.m](Install_pulseq_cest.m)
 
 **2. If you do not have git installed**
 * Install git
@@ -30,7 +30,7 @@ There are 3 ways to install pulseq-cest, listed here in the recommended order:
 * Unpack it in [pulseq-cest/pulseq-cest-sim]('pulseq-cest/pulseq-cest-sim')
 
 ## Getting started
-To get an overwiew about the project and how the .seq-files and simulations work, got to the folder [seq-examples/example-library](seq-examples/example-library).
+To get an overwiew about the project and how the .seq-files and simulations work, got to the folder [examples](examples).
 There you will find an example .seq-file which you can simulate and plot.
 For plotting, simply run the function 
 ```Matlab
