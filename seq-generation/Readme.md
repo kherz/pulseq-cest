@@ -86,7 +86,7 @@ pulseq also supports a plot function, here we can see the Gaussian pulses in the
 seq.plot('TimeRange', [2.4 4.2])
 ```
 
-![sequence diagram](./../example-library/seq_plot_example.png)
+![sequence diagram](./../examples/seq_plot_example.png)
 
 Now, we can save the .seq file and simulate it or run it at the scanner.
 

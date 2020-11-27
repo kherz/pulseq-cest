@@ -3,7 +3,7 @@ Have a look at the saturation events by running:
 ```Matlab
 >> plot_seq_file
 ```
-and choose the [example_APTw.seq](seq-examples/example-library/example_APTw.seq) file. 
+and choose the [example_APTw.seq](example_APTw.seq) file. 
 You should see something similar as this:
 
 ![seq_plot](seq_plot_example.png)
@@ -13,7 +13,7 @@ If you want to run the Bloch-McConnell simulation for that Z-spectrum experiment
 >> Simulate_example
 ```
 
-The simulation runs the BlochMcConnell simulation of the [.seq-file](example_APTw.seq) for the simulation setting defined in the [.yaml-file](example_cest_sim_params.yaml). You should see a plot of the Z-spectrum and the MTR<sub>asym</sub> curve.
+The simulation runs the BlochMcConnell simulation of the [.seq-file](example_APTw.seq) for the simulation setting defined in the [.sim-file](example_cest_sim_params.sim). You should see a plot of the Z-spectrum and the MTR<sub>asym</sub> curve.
 
 ## .yaml parameter files
 Simulation parameter definitions in yaml files allows to share settings without the need to adapt any code. The files can be viewed and edited with a simple text editor. All parameters for the simulation are quickly described here:
