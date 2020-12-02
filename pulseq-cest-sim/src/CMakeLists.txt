@@ -22,16 +22,23 @@ endif()
 # we need matlab
 find_package(Matlab REQUIRED)
 
-include_directories(3rdParty/eigen-eigen-5a0156e40feb)
+# and eigen
+set(EIGEN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/eigen3 CACHE PATH "eigen sorce directory")
+if(EXISTS ${EIGEN_SRC_DIR})
+   include_directories(${EIGEN_SRC_DIR})
+else()
+   message(FATAL_ERROR "eigen not found in expected folder, please specify path to eigen src directory" ...)
+endif()
+
 include_directories(3rdParty/pulseq-master/src)
 include_directories(Matlab_INCLUDE_DIRS)
 
 set(SOURCE_FILES Sim_pulseqSBB.cpp
                  BlochMcConnellSolver.h
                  Sim_pulseqSBB_T.h
-				 SimulationParameters.h
-				 SimulationParameters.cpp
-				 3rdParty/pulseq-master/src/ExternalSequence.cpp)
+                 SimulationParameters.h
+                 SimulationParameters.cpp
+                 3rdParty/pulseq-master/src/ExternalSequence.cpp)
 			 		
 matlab_add_mex(NAME Sim_pulseqSBB SRC ${SOURCE_FILES})
 
