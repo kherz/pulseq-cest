@@ -6,15 +6,22 @@ This simulation package runs Bloch-McConnell simulations for CEST experiments on
 This open source project is published under the [MIT License](LICENSE.md).
 Different license terms may apply for included source code in the [3rdParty folder](src/3rdParty).
 
-## Compile the .mex files
+## Compile the .mex files (skip, if you want to use the included .mex-files)
 This package includes precompiled mex files for 64-bit Windows (compiled with MinGW C++ 5.3.0), Linux (compiled on Linux Mint with g++ 7.3.0) and Mac OS.
+[eigen](https://gitlab.com/libeigen/eigen/) is used as an external dependency.
 If you want or need to compile a version for yourself in two different ways:
 ### 1. MATLAB (simpler approach)
-  you can just run the [compile_pulseqSBB_Sim.m](compile_pulseqSBB_Sim.m) script in MATLAB and should get a similar output like this depending on your compiler: 
+
+If you do not have git installed, you need to download the [eigen](https://gitlab.com/libeigen/eigen/) package manually and make sure to put the code here */src/3rdParty/eigen3*
+
+
+ If you have git installed, eigen is cloned during the compilation and you can just run the [compile_pulseqSBB_Sim.m](compile_pulseqSBB_Sim.m) script in MATLAB and should get a similar output like this depending on your compiler: 
 
 ```Matlab
 >> compile_pulseqSBB_Sim
-Start compilation...
+eigen not found, trying to clone...
+...done!
+Checking compilers...
 Building with 'Microsoft Visual C++ 2017'.
 MEX completed successfully.
 ```
@@ -22,7 +29,7 @@ MEX completed successfully.
 For more infos, have a look at the MATLAB [documentation](https://mathworks.com/help/matlab/call-mex-files-1.html) for mex files.
 
 ### 2. CMake (advanced approach)
-A [CMakeLists.txt](src/CMakeLists.txt) file is included in the package (tested with MSVC and GCC on Windows). If you choose CMake for compilation over the Matlab function, I assume no further instructions are needed here.
+A [CMakeLists.txt](src/CMakeLists.txt) file is included in the package (tested with MSVC and GCC on Windows). *eigen* is expected to be in */src/3rdParty/eigen3*, but you can change the path manually by changing *EIGEN_SRC_DIR*. If you choose CMake for compilation over the Matlab function, I assume no further instructions are needed here.
 
 ## Run example Z-spectrum simulation
 This package includes an example [file](../seq-generation/WriteExamplePulseqSBBZSpectrum.m) to generate .seq files for a APTw Z-spectrum simulation. You can find that in the subfolder [../seq-generation](../seq-generation). Feel free to play around with various parameters to generate different saturation schemes. You can find more info in the subfolder [Readme](../seq-generation/Readme.md).
