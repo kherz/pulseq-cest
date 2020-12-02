@@ -22,7 +22,7 @@ if exist(lib_path, 'dir')
     disp('pulseq-cest-library already installed, skip...')
 else
     disp('Installing pulseq-cest-library...');
-    sys_cmd = ['git clone https://github.com/kherz/pulseq-cest-library.git ' lib_path];
+    sys_cmd = ['git clone --depth 1 https://github.com/kherz/pulseq-cest-library.git ' lib_path];
     [st, rs] = system(sys_cmd);
     if st
         disp(rs);
@@ -37,7 +37,7 @@ if exist(yaml_path, 'dir')
     disp('yamlmatlab already installed, skip...')
 else
     disp('Installing yamlmatlab...');
-    sys_cmd = ['git clone https://github.com/ewiger/yamlmatlab.git ' yaml_path];
+    sys_cmd = ['git clone --depth 1 https://github.com/ewiger/yamlmatlab.git ' yaml_path];
     [st, rs] = system(sys_cmd);
     if st
         disp(rs);
