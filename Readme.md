@@ -1,13 +1,13 @@
 # pulseq-cest
 
-Welcome to the **pulseq-cest** repository, a project to faciliate reproducibility in CEST MRI research using the open [pulseq](https://pulseq.github.io/) standard. The repository consists of two parts:
+Welcome to the **pulseq-cest** repository, a project to faciliate reproducibility in CEST MRI research using the open [*Pulseq*](https://pulseq.github.io/) standard. The repository consists of two parts:
 1. [pulseq-cest-library](https://github.com/kherz/pulseq-cest-library): 
-Here, published and approved CEST saturation blocks are made available.
-This allows exact comparison of CEST saturation blocks with newly developed or adapted saturation blocks for reproducible CEST research. All .seq files can be loaded in Matlab for plotting and detailed inspection. This library is maintained in a [separate repository](https://github.com/kherz/pulseq-cest-library) but is included in the pulseq-cest installation.
+Here, published and approved CEST preparation periods are made available.
+This allows exact comparison of CEST preparation periods with newly developed or adapted blocks for reproducible CEST research. All .seq-files can be loaded in MATLAB for plotting and detailed inspection. This library is maintained in a [separate repository](https://github.com/kherz/pulseq-cest-library) but is included in the pulseq-cest installation.
 
 2. [pulseq-cest-sim](pulseq-cest-sim): In this folder you can find the  Bloch-McConnell simulation that can be used to simulate and compare different .seq-files for different settings.
 
-More information about both parts can be found in the corresponding subfolders. 
+More information about both parts can be found in the corresponding repository or subfolder. 
 
 If you prefer **python** over MATLAB, have a look at the python version of the project [here](https://github.com/KerstinHut/pypulseq-cest).
 
@@ -34,15 +34,16 @@ There are 3 ways to install pulseq-cest, listed here in the recommended order:
 * Add the pulseq-cest folder and the subfolders to your MATLAB search path
 
 ## Getting started
-To get an overwiew about the project and how the .seq-files and simulations work, got to the folder [examples](examples).
-There you will find an example .seq-file which you can simulate and plot.
-For plotting, simply run the function 
+To get an overview about the project and how the .seq-files and simulations work, go to the [examples](examples) folder.
+There you will find an example .seq-file for which you can display the different sequence events and run the simulation.
+
+For plotting, just run the function:
 ```Matlab
 >> plot_seq_file
 ```
 and choose the [example_APTw.seq](examples/example_APTw.seq) file. You can have a look at the RF amplitude and phase, as well as the gradient events.
 
-If you want to run the Bloch-McConnell simulation for that Z-spectrum experiment with a standard setting for 3 T, just run
+If you want to run the Bloch-McConnell simulation for that Z-spectrum experiment with a standard setting for 3 T, just run:
 ```Matlab
 >> Simulate_example
 ```
