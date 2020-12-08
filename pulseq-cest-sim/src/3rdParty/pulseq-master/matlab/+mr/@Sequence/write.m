@@ -1,4 +1,4 @@
-function write(obj,filename)
+function write(obj,filename, author)
 %WRITE Write sequence to file.
 %   WRITE(seqObj, filename) Write the sequence data to the given
 %   filename using the open file format for MR sequences.
@@ -10,10 +10,23 @@ function write(obj,filename)
 %
 % See also  read
 
+% add author string
+if nargin < 3
+    author = 'unknown';
+end
+if ~ischar(author)
+    author = 'unknown';
+end
+
 fid=fopen(filename, 'w');
 assert(fid ~= -1, 'Cannot open file: %s', filename);
 fprintf(fid, '# Pulseq sequence file\n');
 fprintf(fid, '# Created by MATLAB mr toolbox\n\n');
+
+fprintf(fid, '# Created for Pulseq-CEST\n');
+fprintf(fid, '# https://pulseq-cest.github.io/\n');
+fprintf(fid, ['# Created by: ' author '\n']);
+fprintf(fid, ['# Created at: ' datestr(now) '\n\n']);
 
 fprintf(fid, '[VERSION]\n');
 fprintf(fid, 'major %s\n', num2str(obj.version_major));

@@ -83,7 +83,7 @@ classdef Sequence < handle
         read(obj,filename,varargin)
         
         % See write.m
-        write(obj,filename)
+        write(obj,filename,author)
         
         % See readBinary.m
         readBinary(obj,filename);
