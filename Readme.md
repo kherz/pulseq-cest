@@ -45,7 +45,7 @@ For plotting, just run the function:
 ```Matlab
 >> plot_seq_file
 ```
-and choose the [example_APTw.seq](examples/example_APTw.seq) file. You can have a look at the RF amplitude and phase, as well as the gradient events.
+and choose the [APTw_3T_example.seq](examples/APTw_3T_example.seq) file. You can have a look at the RF amplitude and phase, as well as the gradient events.
 
 If you want to run the Bloch-McConnell simulation for that Z-spectrum experiment with a standard setting for 3 T, just run:
 ```Matlab

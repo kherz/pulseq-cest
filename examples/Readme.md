@@ -3,7 +3,7 @@ Have a look at the saturation events by running:
 ```Matlab
 >> plot_seq_file
 ```
-and choose the [example_APTw.seq](example_APTw.seq) file. 
+and choose the [APTw_3T_example.seq](APTw_3T_example.seq) file. 
 You should see something similar as this:
 
 ![seq_plot](seq_plot_example.png)
@@ -13,9 +13,9 @@ If you want to run the Bloch-McConnell simulation for that Z-spectrum experiment
 >> Simulate_example
 ```
 
-The simulation runs the BlochMcConnell simulation of the [.seq-file](example_APTw.seq) for the simulation setting defined in the [.sim-file](example_cest_sim_params.sim). You should see a plot of the Z-spectrum and the MTR<sub>asym</sub> curve.
+The simulation runs the Bloch-McConnell simulation of the [.seq-file](APTw_3T_example.seq) for the simulation setting defined in the [.yaml-file](GM_3T_example_bmsim.yaml). You should see a plot of the Z-spectrum and the MTR<sub>asym</sub> curve.
 
-## .sim parameter files (yaml-format)
+## .yaml parameter files
 Simulation parameter definitions in yaml files allows to share settings without the need to adapt any code. The files can be viewed and edited with a simple text editor. All parameters for the simulation are quickly described here:
 
 ### Water Pool (mandatory)  
@@ -63,7 +63,7 @@ mt_pool: {
   r1: 1 / 1.3,
   r2: 1e5,
   k: 23,
-  dw: -2,
+  dw: 0,
   lineshape: 'SuperLorentzian'
 }
 ```
