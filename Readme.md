@@ -18,13 +18,16 @@ There are 3 ways to install pulseq-cest, listed here in the recommended order:
 **1. If you have git installed**
 * Clone the repository 
 * Open MATLAB
-* Run  [Install_pulseq_cest.m](Install_pulseq_cest.m)
+* Run [Install_pulseq_cest.m](Install_pulseq_cest.m)
+* External packages will be cloned 
 
 **2. If you do not have git installed**
-* Install [git](https://git-scm.com/downloads)
-* Go back to 1.
+* Download pulseq-cest as .zip 
+* Unpack it
+* Run [Install_pulseq_cest.m](Install_pulseq_cest.m)
+* External packages will be downloaded as .zip and unpacked
 
-**3. If you do not have git installed and can't install it**
+**3. If you want to do everything manually, or 1. and 2. don't work for you**
 * Download pulseq-cest as .zip 
 * Unpack it
 * Download [pulseq-cest-library](https://github.com/kherz/pulseq-cest-library) as .zip 
