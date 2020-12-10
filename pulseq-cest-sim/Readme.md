@@ -9,7 +9,7 @@ Different license terms may apply for included source code in the [3rdParty fold
 ## Compile the .mex files (skip, if you want to use the included .mex-files)
 This package includes precompiled mex files for 64-bit Windows (compiled with MinGW C++ 5.3.0), Linux (compiled on Linux Mint with g++ 7.3.0) and Mac OS.
 [eigen](https://gitlab.com/libeigen/eigen/) is used as an external dependency.
-If you want or need to compile a version for yourself in two different ways:
+If you want or need to compile a version for yourself, there are two different ways:
 ### 1. MATLAB (simpler approach)
 
 If you do not have git installed, you need to download the [eigen](https://gitlab.com/libeigen/eigen/) package manually and make sure to put the code here */src/3rdParty/eigen3*
@@ -29,15 +29,15 @@ MEX completed successfully.
 For more infos, have a look at the MATLAB [documentation](https://mathworks.com/help/matlab/call-mex-files-1.html) for mex files.
 
 ### 2. CMake (advanced approach)
-A [CMakeLists.txt](src/CMakeLists.txt) file is included in the package (tested with MSVC and GCC on Windows). *eigen* is expected to be in */src/3rdParty/eigen3*, but you can change the path manually by changing *EIGEN_SRC_DIR*. If you choose CMake for compilation over the Matlab function, I assume no further instructions are needed here.
+A [CMakeLists.txt](src/CMakeLists.txt) file is included in the package (tested with MSVC and GCC on Windows). *eigen* is expected to be in */src/3rdParty/eigen3*, but you can change the path manually by changing *EIGEN_SRC_DIR*. If you choose CMake over the MATLAB function, I assume no further instructions are needed here.
 
 ## Run example Z-spectrum simulation
-This package includes an example [file](../seq-generation/WriteExamplePulseqSBBZSpectrum.m) to generate .seq files for a APTw Z-spectrum simulation. You can find that in the subfolder [../seq-generation](../seq-generation). Feel free to play around with various parameters to generate different saturation schemes. You can find more info in the subfolder [Readme](../seq-generation/Readme.md).
+This package includes an example [file](../seq-generation/WriteExamplePulseqSBBZSpectrum.m) to generate .seq-files for a APTw Z-spectrum simulation. You can find that in the subfolder [../seq-generation](../seq-generation). Feel free to play around with various parameters to generate different preparation periods. You can find more info in the subfolder [Readme](../seq-generation/Readme.md).
 
-You can simulate  .seq-files by running [Run_pulseq_cest_Simulation.m](Run_pulseq_cest_Simulation.m). The unction takes the pulseq .seq file and a .yaml parameter file with the simulation setting as an input. The parameters from the yaml-file are [read](Read_simulation_params.m) and used to generate a struct wich is used as input for the mex-function. All members PMEX (**P**arameters for **MEX** ) struct and shortly described here.
+You can simulate  .seq-files by running [Run_pulseq_cest_Simulation.m](Run_pulseq_cest_Simulation.m). The function takes the pulseq .seq-file and a .yaml parameter file with the simulation setting as an input. The parameters from the .yaml-file are [read](Read_simulation_params.m) and used to generate a struct wich is used as input for the mex-function. All members PMEX (**P**arameters for **MEX** ) struct and shortly described here.
 
 ### Water Pool (mandatory) 
-Water relaxation rates R1 = 1/T1 and R2 = 1/R2 are set here.
+Water relaxation rates R1 = 1/T1 and R2 = 1/T2 are set here.
 
 ```Matlab
 PMEX.WaterPool.R1 = 1/1.3;     % Hz
@@ -79,7 +79,7 @@ PMEX.MTPool.Lineshape = 'Lorentzian';
 
 When defining the pools as A (Water pool), B (1st CEST pool), C (ssMT pool), D (2nd CEST pool), E (3rd CEST pool) ..., the initial vector is defined as:
 
-M =  [MxA, MxB, MxD, ... MxN, MyA, MyB, MyD, ... MyN, MzA, MzB, MzD, ... MzN, MzC ]
+M =  [ MxA, MxB, MxD, ... MxN, MyA, MyB, MyD, ... MyN, MzA, MzB, MzD, ... MzN, MzC ]
 
 Usually, you would need to know your approx. magnetization at the end of your readout sequence and set the magnetization vector accordingly. In the example file, a magnetization of Z<sub>i</sub> =  M<sub>i</sub> / M<sub>0</sub> = 0.5 for e.g. a FLASH sequence was assumed.     
 
@@ -93,7 +93,7 @@ for ii = 2:nTotalPools
 end
 if isfield(PMEX, 'MTPool') && size(PMEX.M,1) == nTotalPools*3 % add MT pool
     PMEX.M = [PMEX.M; PMEX.MTPool.f];
-end```
+end
 PMEX.M = PMEX.M * 0.5;
 ```
 
@@ -112,7 +112,7 @@ PMEX.Scanner.B0Inhomogeneity = 0.0;
 PMEX.Scanner.relB1           = 1.0; 
 ```
 
-### additional optional parameters
+### Additional optional parameters
 * Verbose: true, you want some output info from the mex-funtion. Default is false.
 * ResetInitMag: true if magnetization should be set to PMEX.M after each ADC. This can be set to false if you are simulating the readout as well and are interested in the transient magnetization. If false, the current magnetization after the ADC event is not overwritten by the initial magnetization vector. Default is true.
 * MaxPulseSamples: max samples for shaped pulses. The simulation detects the shape of the saturation pulse and chooses the minimum required samples automatically. For instance, a block pulse can be simulated with just a single sample, which saves a lot of time. Shaped pulses with more samples than MaxPulseSamples are resampled to that number. Default is 100.
