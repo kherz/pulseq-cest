@@ -1,33 +1,41 @@
-%% Write exmpe pulseqSBB .seq file
-% The APTw protocol is taken from:
+%% APTw_3T_example
+% Creates a sequence file for an APTw protocol according to:
 % https://cest-sources.org/doku.php?id=standard_cest_protocols
-% APTw_1 : APT-weighted, low DC, t_sat=1.8s (//GLINT//)
-% 
-%     pulse shape = Gaussian
-%     B1 = 2.22 uT
-%     n = 20
-%     t_p = 50 ms
-%     t_d = 40 ms
-%     DC = 0.55 and t_sat = n*(t_p+t_d) = 1.8 s
-%     T_rec = 2.4/12 s (saturated/M0)
-% 
+
 % Kai Herz 2020
 % kai.herz@tuebingen.mpg.de
 
-%% Zspec infos, adapt as you wish
-offset_range = 10;    % [ppm]
-num_offsets  = 40;    % number of measurements (not including M0)
-run_m0_scan  = true;  % if you want an M0 scan at the beginning
-t_rec        = 2.4;   % recovery time between scans [s]
-m0_t_rec     = 12;    % recovery time before m0 scan [s]
-sat_b1       = 2.22;  % mean sat pulse b1 [uT]
-t_p          = 50e-3; % sat pulse duration [s]
-t_d          = 40e-3; % delay between pulses [s]
-n_pulses     = 20;    % number of sat pulses per measurement
-B0           = 3;     % B0 [T]
+% author name for sequence file
+author = 'Kai Herz';
+
+%% sequence definitions
+% everything in seq_defs gets written as definition in .seq-file
+seq_defs.n_pulses      = 20              ; % number of pulses
+seq_defs.tp            = 50e-3           ; % pulse duration [s]
+seq_defs.td            = 40e-3            ; % interpulse delay [s]
+seq_defs.Trec          = 2.4             ; % recovery time [s]
+seq_defs.Trec_M0       = 12             ; % recovery time before M0 [s]
+seq_defs.M0_offset     = -300           ; % m0 offset [ppm]
+seq_defs.DCsat         = (seq_defs.tp)/(seq_defs.tp+seq_defs.td); % duty cycle
+seq_defs.offsets_ppm   = [seq_defs.M0_offset linspace(-8,8,40)]; % offset vector [ppm]
+seq_defs.num_meas      = numel(seq_defs.offsets_ppm)   ; % number of repetition
+seq_defs.Tsat          = seq_defs.n_pulses*(seq_defs.tp+seq_defs.td) - ...
+                         seq_defs.td ;  % saturation time [s]
+seq_defs.B0            = 3                ; % B0 [T]
+seq_defs.seq_id_string = 'APTw_3T_example'; % unique seq id
+
+%% get info from struct
+offsets_ppm = seq_defs.offsets_ppm; % [ppm]
+Trec        = seq_defs.Trec;        % recovery time between scans [s]
+Trec_M0     = seq_defs.Trec_M0;     % recovery time before m0 scan [s]
+tp          = seq_defs.tp;          % sat pulse duration [s]
+td          = seq_defs.td;          % delay between pulses [s]
+n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
+B0          = seq_defs.B0;          % B0 [T]
+B1pa        = 2.22;  % mean sat pulse b1 [uT]
 spoiling     = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
-seq_filename = 'example_APTw.seq'; % filename
+seq_filename = fullfile('../examples', strcat(seq_defs.seq_id_string,'.seq')); % filename
 
 %% scanner limits 
 % see pulseq doc for more ino
@@ -36,9 +44,12 @@ lims = Get_scanner_limits();
 % satpulse
 gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
-fa_sat        = sat_b1*gyroRatio_rad*t_p; % flip angle of sat pulse
-% create pulseq saturation pulse object 
-satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p, 'system', lims);
+fa_sat        = B1pa*gyroRatio_rad*tp; % flip angle of sat pulse
+% create pulseq saturation pulse object
+satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',lims,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
+
+[B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,tp,td,0,gyroRatio_hz);
+seq_defs.B1cwpe = B1cwpe;
 
 % spoilers
 spoilRiseTime = 1e-3;
@@ -50,39 +61,45 @@ spoilDuration = 4500e-6+ spoilRiseTime; % [s]
 pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
 
 %% loop through zspec offsets
-offsets_Hz = linspace(-offset_range,offset_range,num_offsets)*gyroRatio_hz*B0; % Z spec offsets [Hz]
+offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
+
 % init sequence
 seq = mr.Sequence();
-% add m0 scan if wished
-if run_m0_scan 
-    seq.addBlock(mr.makeDelay(m0_t_rec));
-    seq.addBlock(pseudoADC);
-end
-
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
-    %take care of phase accumulation during off-res pulse
-    accumPhase = 0;
-    seq.addBlock(mr.makeDelay(t_rec)); % recovery time
+    if currentOffset == seq_defs.M0_offset*gyroRatio_hz*B0
+        if Trec_M0 > 0
+            seq.addBlock(mr.makeDelay(Trec_M0));
+        end
+    else
+        if Trec > 0
+            seq.addBlock(mr.makeDelay(Trec)); % recovery time
+        end
+    end
     satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
+    accumPhase=0;
     for np = 1:n_pulses
-        satPulse.phaseOffset = accumPhase;
+        satPulse.phaseOffset = mod(accumPhase,2*pi); % set accumulated pahse from previous rf pulse
         seq.addBlock(satPulse) % add sat pulse
-        % exact phase accumulation from pulse object
+        % calc phase for next rf pulse
         accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
         if np < n_pulses % delay between pulses
-            seq.addBlock(mr.makeDelay(t_d)); % add delay
+            seq.addBlock(mr.makeDelay(td)); % add delay
         end
     end
     if spoiling % spoiling before readout
-       seq.addBlock(gxSpoil,gySpoil,gzSpoil); 
+        seq.addBlock(gxSpoil,gySpoil,gzSpoil);
     end
     seq.addBlock(pseudoADC); % readout trigger event
 end
 
-%% write sequence
-seq.setDefinition('offsets_ppm', linspace(-offset_range,offset_range,num_offsets));
-seq.setDefinition('run_m0_scan', run_m0_scan);
-seq.write(seq_filename);
+
+
+%% write definitions
+def_fields = fieldnames(seq_defs);
+for n_id = 1:numel(def_fields)
+    seq.setDefinition(def_fields{n_id}, seq_defs.(def_fields{n_id}));
+end
+seq.write(seq_filename, author);
 
 

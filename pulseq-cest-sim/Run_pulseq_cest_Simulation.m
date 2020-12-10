@@ -1,4 +1,4 @@
-% This function runs the standard simulation for a specific .seq and .yaml pair and plots the results 
+% This function runs the standard simulation for a specific .seq and .yaml pair and plots the results
 %
 % kai.herz@tuebingen.mpg.de
 % Input:  seq_fn:   filename of the .seq-file
@@ -24,7 +24,7 @@ end
 %% read .yaml file
 PMEX = Read_simulation_params(param_fn);
 
-%% run the simulation 
+%% run the simulation
 disp('Simulating .seq file ... ');
 t_start = tic;
 M_out = Sim_pulseqSBB(PMEX, seq_fn);
@@ -49,10 +49,25 @@ M_z=M_out(nTotalPools*2+1,:);
 seq = mr.Sequence;
 seq.read(seq_fn);
 offsets_ppm = seq.definitions('offsets_ppm');
-if seq.definitions('run_m0_scan')
-    M_z=M_z(2:end)./M_z(1);
-elseif any(abs(offsets_ppm)>295)
-    M0_idx = find(abs(offsets_ppm)>295);
+M0_idx = [];
+if isKey(seq.definitions, 'run_m0_scan') % support for older seq files
+    if seq.definitions('run_m0_scan')
+        M0_idx = [M0_idx 1];
+    end
+end
+
+if isKey(seq.definitions, 'M0_offset') % get m0 offset
+    m0_offset = seq.definitions('M0_offset');
+else % support for older seq files
+    if any(abs(offsets_ppm)>295)
+        [~, id] = max(abs(offsets_ppm));
+        m0_offset = offsets_ppm(id(1));
+    else
+        m0_offset = 1e12;
+    end
+end
+if any(offsets_ppm == m0_offset)
+    M0_idx = [M0_idx find(offsets_ppm == m0_offset)];
     M0 = mean(M_z(M0_idx));
     M_z(M0_idx) = [];
     offsets_ppm(M0_idx) = [];
