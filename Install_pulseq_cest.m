@@ -26,7 +26,7 @@ if has_git %good, we can just clone everything
         disp('pulseq-cest-library already installed, skip...')
     else
         disp('Installing pulseq-cest-library...');
-        sys_cmd = ['git clone --depth 1 https://github.com/kherz/pulseq-cest-library.git ' lib_path];
+        sys_cmd = ['git clone https://github.com/kherz/pulseq-cest-library.git ' lib_path];
         [st, rs] = system(sys_cmd);
         if st
             disp(rs);
