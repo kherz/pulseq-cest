@@ -7,7 +7,7 @@
 %         plotted
 %
 % Output: Mz: Water z-magnetization at each ADC event
-function Z = Run_pulseq_cest_Simulation(seq_fn, param_fn, fig_no)
+function Z = Run_pulseq_cest_Simulation(seq_fn, param_fn, fig_no, dynamic)
 if nargin < 2
     [seq_fn, seq_fp] = uigetfile({'*.seq','All .seq Files'},'Choose .seq-file for simulation');
     seq_fn = fullfile(seq_fp, seq_fn);
@@ -15,6 +15,9 @@ if nargin < 2
     param_fn = fullfile(param_fp, param_fn);
 end
 
+if nargin < 4
+    dynamic=0;
+end;
 
 %% check for files
 if ~exist(seq_fn, 'file')
@@ -73,13 +76,18 @@ if any(offsets_ppm == m0_offset)
     offsets_ppm(M0_idx) = [];
     M_z = M_z./M0;
 end
-% sort the measured values
-[ppm_sort, idx] = sort(offsets_ppm);
-Z = M_z(idx);
-% MTRasym -> eqaul values of both sides of the z-spectrum expected
-MTRasym=Z(end:-1:1)-Z;
-MTRasym(1:ceil(end/2)) = 0;
 
+if dynamic
+    ppm_sort=1:numel(offsets_ppm); % just use index as axis
+    Z = M_z;
+else
+    % sort the measured values
+    [ppm_sort, idx] = sort(offsets_ppm);
+    Z = M_z(idx);
+    % MTRasym -> eqaul values of both sides of the z-spectrum expected
+    MTRasym=Z(end:-1:1)-Z;
+    MTRasym(1:ceil(end/2)) = 0;
+end
 
 %% plot results
 if nargin < 3
@@ -89,9 +97,12 @@ else
 end
 yyaxis left;
 plot(ppm_sort, Z,'Displayname','Z-spectrum'); set(gca,'xdir','reverse');
+xlabel('\Delta\omega [ppm]'); legend show;
+
+if ~dynamic
 yyaxis right;
 plot(ppm_sort,MTRasym,'Displayname','MTR_{asym}');
 axis([ppm_sort(1) ppm_sort(end) -(2*max(abs(MTRasym))) (2*max(abs(MTRasym)))])
-xlabel('\Delta\omega [ppm]'); legend show;
+end
 
 
