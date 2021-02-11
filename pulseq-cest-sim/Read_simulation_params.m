@@ -52,7 +52,7 @@ else
 end
 
 %% MT pool
-if isfield(params, 'cest_pool')
+if isfield(params, 'mt_pool')
     mt = params.mt_pool;
     if ~isfield(mt, 'f') || ~isfield(mt, 'r1') || ~isfield(mt, 'r2') || ...
             ~isfield(mt, 'k') || ~isfield(mt, 'dw') || ~isfield(mt, 'lineshape')
