@@ -1,5 +1,5 @@
 
-function Plot_pulseq_cest_Simulation(M_z,offsets_ppm,m0_offset)
+function [Z,ppm_sort]=Plot_pulseq_cest_Simulation(M_z,offsets_ppm,m0_offset)
 %% normalization
 % The normalization depends on the M0 offset an their positions in the .seq-file
 % In this example, the M0 offset is set as a definition in the APTw_3T_example.seq
@@ -28,10 +28,11 @@ MTRasym=Z(end:-1:1)-Z;
 MTRasym(1:ceil(end/2)) = NaN;
 
 % finally, plot the Z-spectrum and the MTRasym curve
-hold on;
-yyaxis left;
+
+subplot(2,1,1), hold on; grid on;
 plot(ppm_sort, Z,'Displayname','Z-spectrum'); set(gca,'xdir','reverse');
 xlabel('\Delta\omega [ppm]'); legend show;
-yyaxis right;
-plot(ppm_sort,MTRasym,'Displayname','MTR_{asym}');
+subplot(2,1,2), hold on; grid on;
+plot(ppm_sort,MTRasym,'Displayname','MTR_{asym}'); set(gca,'xdir','reverse');
+xlabel('\Delta\omega [ppm]'); legend show;
 axis([ppm_sort(1) ppm_sort(end) -(2*max(abs(MTRasym))) (2*max(abs(MTRasym)))])
