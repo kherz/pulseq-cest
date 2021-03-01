@@ -113,10 +113,10 @@ if isfield(params, 'verbose')
     PMEX.Verbose = logical(str2param(params.verbose));
 end
 if isfield(params, 'reset_init_mag')
-    PMEX.Verbose = logical(str2param(params.reset_init_mag));
+    PMEX.ResetInitMag = logical(str2param(params.reset_init_mag));
 end
 if isfield(params, 'max_pulse_samples')
-    PMEX.Verbose = str2param(params.max_pulse_samples);
+    PMEX.MaxPulseSamples = str2param(params.max_pulse_samples);
 end
 
     function value = str2param(str)
