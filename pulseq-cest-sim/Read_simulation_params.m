@@ -21,11 +21,21 @@ if ~isfield(params, 'water_pool')
     error('Water pool must be defined in "water_pool"');
 end
 wp = params.water_pool;
-if ~isfield(wp, 'f') || ~isfield(wp, 'r1') || ~isfield(wp, 'r2')
-    error('"water_pool" must contain "f", "r1" and "r2"');
+if ~isfield(wp, 'f') || ...
+        (~isfield(wp, 'r1') && ~isfield(wp, 't1')) || ...
+        (~isfield(wp, 'r2') && ~isfield(wp, 't2'))
+    error('"water_pool" must contain "f", "r1/t1" and "r2/t2"');
 end
-PMEX.WaterPool.R1 = str2param(wp.r1); % Hz
-PMEX.WaterPool.R2 = str2param(wp.r2); % Hz
+if isfield(wp, 'r1')
+    PMEX.WaterPool.R1 = str2param(wp.r1); % Hz
+else
+    PMEX.WaterPool.R1 = 1.0 / str2param(wp.t1);
+end
+if isfield(wp, 'r2')
+    PMEX.WaterPool.R2 = str2param(wp.r2); % Hz
+else
+    PMEX.WaterPool.R2 = 1.0 / str2param(wp.t2);
+end
 PMEX.WaterPool.f  = str2param(wp.f);  % proton fraction
 
 
@@ -37,12 +47,22 @@ if isfield(params, 'cest_pool')
     num_pools = numel(pool_names);
     for p = 1:num_pools
         cpool = cp.(pool_names{p});
-        if ~isfield(cpool, 'f') || ~isfield(cpool, 'r1') || ~isfield(cpool, 'r2') || ...
+        if ~isfield(cpool, 'f') || ...
+                (~isfield(cpool, 'r1') && ~isfield(cpool, 't1')) ||...
+                (~isfield(cpool, 'r2') && ~isfield(cpool, 't2')) || ...
                 ~isfield(cpool, 'k') || ~isfield(cpool, 'dw')
-            error([pool_names{p} ' must contain "f", "r1" , "r2", "k" and "dw"']);
+            error([pool_names{p} ' must contain "f", "r1/t1" , "r2/t2", "k" and "dw"']);
         end
-        PMEX.CESTPool(p).R1 = str2param(cpool.r1);
-        PMEX.CESTPool(p).R2 = str2param(cpool.r2);
+        if isfield(cpool, 'r1')
+            PMEX.CESTPool(p).R1 = str2param(cpool.r1); % Hz
+        else
+            PMEX.CESTPool(p).R1 = 1.0 / str2param(cpool.t1);
+        end
+        if isfield(cpool, 'r2')
+            PMEX.CESTPool(p).R2 = str2param(cpool.r2); % Hz
+        else
+            PMEX.CESTPool(p).R2 = 1.0 / str2param(cpool.t2);
+        end
         PMEX.CESTPool(p).f  = str2param(cpool.f);
         PMEX.CESTPool(p).dw = str2param(cpool.dw);
         PMEX.CESTPool(p).k  = str2param(cpool.k);
@@ -54,7 +74,9 @@ end
 %% MT pool
 if isfield(params, 'mt_pool')
     mt = params.mt_pool;
-    if ~isfield(mt, 'f') || ~isfield(mt, 'r1') || ~isfield(mt, 'r2') || ...
+    if ~isfield(mt, 'f') || ...
+            (~isfield(mt, 'r1') && ~isfield(mt, 't1')) ||...
+            (~isfield(mt, 'r2') && ~isfield(mt, 't2')) || ...
             ~isfield(mt, 'k') || ~isfield(mt, 'dw') || ~isfield(mt, 'lineshape')
         error('"mt_pool" must contain "f", "r1" , "r2", "k", "dw" and "lineshape"');
     end
@@ -62,8 +84,16 @@ if isfield(params, 'mt_pool')
             ~strcmp(mt.lineshape, 'None')
         error([mt.lineshape ' is invalid. Please use "None", "Lorentzian" or "SuperLorentzian"']);
     end
-    PMEX.MTPool.R1        = str2param(mt.r1);
-    PMEX.MTPool.R2        = str2param(mt.r2);
+    if isfield(mt, 'r1')
+        PMEX.MTPool.R1 = str2param(mt.r1); % Hz
+    else
+        PMEX.MTPool.R1 = 1.0 / str2param(mt.t1);
+    end
+    if isfield(mt, 'r2')
+        PMEX.MTPool.R2 = str2param(mt.r2); % Hz
+    else
+        PMEX.MTPool.R2 = 1.0 / str2param(mt.t2);
+    end
     PMEX.MTPool.k         = str2param(mt.k);
     PMEX.MTPool.f         = str2param(mt.f);
     PMEX.MTPool.dw        = str2param(mt.dw);
