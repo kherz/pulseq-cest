@@ -9,7 +9,7 @@ function M_z = Run_pulseq_cest_Simulation(seq_fn, param_fn)
 if nargin < 2
     [seq_fn, seq_fp] = uigetfile({'*.seq','All .seq Files'},'Choose .seq-file for simulation');
     seq_fn = fullfile(seq_fp, seq_fn);
-    [param_fn, param_fp] = uigetfile({'*.yaml','All .yaml Files'},'Choose .yaml-file for simulation');
+    [param_fn, param_fp] = uigetfile({'*.yaml; *.yml','All .yaml Files'},'Choose .yaml-file for simulation');
     param_fn = fullfile(param_fp, param_fn);
 end
 
