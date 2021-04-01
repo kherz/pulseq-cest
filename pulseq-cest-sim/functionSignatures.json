@@ -1,0 +1,10 @@
+{
+"Run_pulseq_cest_Simulation":
+{
+  "inputs":
+  [
+    {"name":"seq_fn", "kind":"optional", "type":"filepath=*.seq", "purpose":"Filename of the pulseq-file" },
+    {"name":"param_fn", "kind":"optional", "type":"filepath=*.yml,*.yaml", "purpose":"Filename of the simulation configuration file" }
+  ]
+}
+}
