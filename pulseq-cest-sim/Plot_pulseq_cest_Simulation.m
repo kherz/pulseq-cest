@@ -25,8 +25,9 @@ if nargin > 2
         M_z(M0_idx) = [];
         offsets_ppm(M0_idx) = [];
         Z = M_z./M0; % calculate the Z-value
+    else
+        warning('M0 offset not found in offsets_ppm');
     end
-    warning('M0 offset not found in offsets_ppm');
 end
 
 %% plot Z-spectrum and MTRasym
