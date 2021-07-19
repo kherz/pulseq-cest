@@ -231,6 +231,12 @@ public: // TODO: write get and set methods for member variables and make them pr
 	//! Get Scanner Gamma
 	double GetScannerGamma();
 
+	//! Get Scanner relative B1
+	void SetScannerRelB1(double rb1);
+
+	//! Get Scanner B0 inhomogeneity
+	void SetScannerB0Inhom(double db0);
+
 	//! Get bool if MT should be simulated
 	bool IsMTActive();
 

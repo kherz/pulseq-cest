@@ -380,11 +380,25 @@ double SimulationParameters::GetScannerRelB1()
 	return scanner.relB1;
 }
 
+//! Set Scanner B1 inhomogeneity
+/*!	\param b1 new B1 inhomogeneity */
+void  SimulationParameters::SetScannerRelB1(double b1)
+{
+	scanner.relB1 = b1;
+}
+
 //! Get Scanner B0 inhomogeneity
 /*!	\return field inhomogeneity [ppm] of scanner */
 double SimulationParameters::GetScannerB0Inhom()
 {
 	return scanner.B0Inhomogeneity;
+}
+
+//! Set Scanner B0 inhomogeneity
+/*!	\param db0 new B0 inhomogeneity */
+void  SimulationParameters::SetScannerB0Inhom(double db0)
+{
+	scanner.B0Inhomogeneity = db0;
 }
 
 //! Get Scanner Gamma

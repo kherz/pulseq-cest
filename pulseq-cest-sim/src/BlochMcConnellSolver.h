@@ -20,8 +20,25 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 #pragma once
 #include "SimulationParameters.h"
 
+// Abstract class that can be used for generic pointers to the solver class
+class BlochMcConnellSolverBase
+{
+public:
 
-template <int size> class BlochMcConnellSolver
+	BlochMcConnellSolverBase() {}
+	~BlochMcConnellSolverBase() {}
+
+	// Vitual Update function that can be called from base class pointer
+	virtual void UpdateSimulationParameters(SimulationParameters &sp) {};
+
+	// Virtual run function that can be calles from base class pointer
+	virtual void RunSimulation(SimulationParameters &sp) {};
+
+};
+
+
+
+template <int size> class BlochMcConnellSolver : public BlochMcConnellSolverBase
 {
 public:
 	typedef Matrix<double, size, 1> VectorNd; // typedef for Magnetization Vector
@@ -33,6 +50,9 @@ public:
 	//! Destructor
 	~BlochMcConnellSolver();
 
+	//! Update Matrix with tissue and scanner infos
+	void UpdateSimulationParameters(SimulationParameters &sp);
+
 	//! Update Matrix with pulse info 
 	void UpdateBlochMatrix(SimulationParameters &sp, double rfAmplitude, double rfFrequency, double rfPhase);
 
@@ -42,8 +62,10 @@ public:
 	//! Set number of steps for pade approximation 
 	void SetNumStepsForPadeApprox(unsigned int nApprox);
 
-private:
+	//! Run the simulation on a simulation parameters set
+	void RunSimulation(SimulationParameters &sp);
 
+private:
 	Matrix<double, size, size> A;               /*!< Matrix containing pool and pulse paramters   */
 	Matrix<double, size, 1> C;               /*!< Vector containing pool relaxation parameters */
 	unsigned int N;           /*!< Number of CEST pools */
@@ -68,10 +90,26 @@ template<int size> BlochMcConnellSolver<size>::BlochMcConnellSolver(SimulationPa
 	{
 		A.resize(sp.GetMagnetizationVectors()->rows(), sp.GetMagnetizationVectors()->rows()); // allocate space for dynamic matrices
 	}
-	A.setConstant(0.0); // init A
 
 	// Get number of CEST pools for matrix size
 	N = sp.GetNumberOfCESTPools();
+
+	// set steps for pade approximation
+	numApprox = 6;
+
+	this->UpdateSimulationParameters(sp);
+}
+
+//! Desctuctor
+template<int size> BlochMcConnellSolver<size>::~BlochMcConnellSolver() {} 
+
+//! Update Matrix with tissue and scanner info 
+/*!
+	\param sp SimulationParamter object containing pool informations
+*/
+template<int size> void BlochMcConnellSolver<size>::UpdateSimulationParameters(SimulationParameters &sp)
+{
+	A.setConstant(0.0); // init A
 
 	// MT
 	double k_ac = 0.0; // init with 0 for late
@@ -85,7 +123,7 @@ template<int size> BlochMcConnellSolver<size>::BlochMcConnellSolver(SimulationPa
 
 	//WATER
 	double k1a = sp.GetWaterPool()->GetR1() + k_ac;
-	double k2a = sp.GetWaterPool()->GetR2();  
+	double k2a = sp.GetWaterPool()->GetR2();
 	for (int i = 0; i < N; i++)
 	{
 		double k_ai = sp.GetCESTPool(i)->GetFraction() * sp.GetCESTPool(i)->GetExchangeRateInHz();
@@ -138,14 +176,8 @@ template<int size> BlochMcConnellSolver<size>::BlochMcConnellSolver(SimulationPa
 
 	// set inhomogeneity
 	w0 = sp.GetScannerB0()*sp.GetScannerGamma();
-	dw0 = w0 *sp.GetScannerB0Inhom();
-
-	// set steps for pade approximation
-	numApprox = 6;
+	dw0 = w0 * sp.GetScannerB0Inhom();
 }
-
-//! Desctuctor
-template<int size> BlochMcConnellSolver<size>::~BlochMcConnellSolver() {}
 
 //! Update Matrix with pulse info 
 /*!
@@ -241,6 +273,127 @@ template<int size> void BlochMcConnellSolver<size>::SolveBlochEquation(VectorNd 
 	}
 	M = F * (M + AInvT) - AInvT;
 }
+
+//! Runs the simulation
+/*!
+   \param sp SimulationParameters object containing pool and pulse info
+*/
+template<int size> void BlochMcConnellSolver<size>::RunSimulation(SimulationParameters &sp)
+{
+	unsigned int currentADC = 0;
+	float accummPhase = 0; // since we simulate in reference frame, we need to take care of the accummulated phase
+	// loop through event blocks
+	Matrix<double, size, 1> M = sp.GetMagnetizationVectors()->col(currentADC);
+	for (unsigned int nSample = 0; nSample < sp.GetExternalSequence()->GetNumberOfBlocks(); nSample++)
+	{
+		// get current event block
+		SeqBlock* seqBlock = sp.GetExternalSequence()->GetBlock(nSample);
+		if (seqBlock->isADC()) {
+			sp.GetMagnetizationVectors()->col(currentADC) = M;
+			if (sp.GetMagnetizationVectors()->cols() <= ++currentADC) {
+				break;
+			}
+			if (sp.GetUseInitMagnetization()) {
+				M = sp.GetMagnetizationVectors()->col(currentADC);
+			}
+		}
+		else if (seqBlock->isTrapGradient(0) && seqBlock->isTrapGradient(1) && seqBlock->isTrapGradient(2)) {
+			for (int i = 0; i < (sp.GetNumberOfCESTPools() + 1) * 2; i++)
+				M[i] = 0.0;
+		}
+		else if (seqBlock->isRF())
+		{
+			// get rf and check its length
+			sp.GetExternalSequence()->decodeBlock(seqBlock);
+			unsigned int rfLength = seqBlock->GetRFLength();
+			// check arrays of uncompresed shape
+			std::vector<float> amplitudeArray(seqBlock->GetRFAmplitudePtr(), seqBlock->GetRFAmplitudePtr() + rfLength);
+			std::vector<float> phaseArray(seqBlock->GetRFPhasePtr(), seqBlock->GetRFPhasePtr() + rfLength);
+			// rfDeadTime is usually zeros at the end of the pulse, we search for them here
+			int nEnd;
+			int delayAfterPulse = 0;
+			for (nEnd = rfLength; nEnd > 0; --nEnd) {
+				if (fabs(amplitudeArray[nEnd - 1]) > 1e-6)// because of the round-up errors in the ascii and derivative/integral reconstructuion
+					break;
+			}
+			delayAfterPulse = rfLength - nEnd;
+			rfLength = nEnd;
+
+			amplitudeArray.erase(amplitudeArray.end() - delayAfterPulse, amplitudeArray.end());
+			phaseArray.erase(phaseArray.end() - delayAfterPulse, phaseArray.end());
+			// search for unique samples in amplitude and phase
+			std::vector<float> amplitudeArrayUnique(rfLength);
+			std::vector<float>::iterator it_amplitude = std::unique_copy(amplitudeArray.begin(), amplitudeArray.end(), amplitudeArrayUnique.begin());
+			amplitudeArrayUnique.resize(std::distance(amplitudeArrayUnique.begin(), it_amplitude));
+			std::vector<float> phaseArrayUnique(rfLength);
+			std::vector<float>::iterator it_phase = std::unique_copy(phaseArray.begin(), phaseArray.end(), phaseArrayUnique.begin());
+			phaseArrayUnique.resize(std::distance(phaseArrayUnique.begin(), it_phase));
+			//
+			float rfAmplitude = 0.0;
+			float rfPhase = 0.0;
+			float rfFrequency = seqBlock->GetRFEvent().freqOffset;
+			float timestep;
+			// need to resample pulse
+			unsigned int max_samples = std::max(amplitudeArrayUnique.size(), phaseArrayUnique.size());
+			if (max_samples > sp.GetMaxNumberOfPulseSamples()) {
+				int sampleFactor = ceil(float(rfLength) / sp.GetMaxNumberOfPulseSamples());
+				float pulseSamples = rfLength / sampleFactor;
+				timestep = float(sampleFactor) * 1e-6;
+				// resmaple the original pulse with max ssamples and run the simulation
+				for (int i = 0; i < pulseSamples; i++) {
+					rfAmplitude = seqBlock->GetRFAmplitudePtr()[i*sampleFactor] * seqBlock->GetRFEvent().amplitude;
+					rfPhase = seqBlock->GetRFPhasePtr()[i*sampleFactor] + seqBlock->GetRFEvent().phaseOffset;
+					this->UpdateBlochMatrix(sp, rfAmplitude, rfFrequency, rfPhase - accummPhase);
+					this->SolveBlochEquation(M, timestep);
+				}
+			}
+			else {
+				std::vector<unsigned int>samplePositions(max_samples + 1);
+				unsigned int sample_idx = 0;
+				if (amplitudeArrayUnique.size() >= phaseArrayUnique.size()) {
+					std::vector<float>::iterator it = amplitudeArray.begin();
+					for (it_amplitude = amplitudeArrayUnique.begin(); it_amplitude != amplitudeArrayUnique.end(); ++it_amplitude) {
+						it = std::find(it, amplitudeArray.end(), *it_amplitude);
+						samplePositions[sample_idx++] = std::distance(amplitudeArray.begin(), it);
+					}
+				}
+				else {
+					std::vector<float>::iterator it = phaseArray.begin();
+					for (it_phase = phaseArrayUnique.begin(); it_phase != phaseArrayUnique.end(); ++it_phase) {
+						it = std::find(it, phaseArray.end(), *it_phase);
+						samplePositions[sample_idx++] = std::distance(phaseArray.begin(), it);
+					}
+				}
+				samplePositions[max_samples] = rfLength;
+				// now we have the duration of the single samples -> simulate it
+				for (int i = 0; i < max_samples; i++) {
+					rfAmplitude = seqBlock->GetRFAmplitudePtr()[samplePositions[i]] * seqBlock->GetRFEvent().amplitude;
+					rfPhase = seqBlock->GetRFPhasePtr()[samplePositions[i]] + seqBlock->GetRFEvent().phaseOffset;
+					timestep = (samplePositions[i + 1] - samplePositions[i])*1e-6;
+					this->UpdateBlochMatrix(sp, rfAmplitude, rfFrequency, rfPhase - accummPhase);
+					this->SolveBlochEquation(M, timestep);
+				}
+			}
+			// delay at end of the pulse
+			if (delayAfterPulse > 0) {
+				timestep = float(delayAfterPulse)*1e-6;
+				this->UpdateBlochMatrix(sp, 0, 0, 0);
+				this->SolveBlochEquation(M, timestep);
+			}
+			int phaseDegree = rfLength * 1e-6 * 360 * seqBlock->GetRFEvent().freqOffset;
+			phaseDegree %= 360;
+			accummPhase += float(phaseDegree) / 180 * PI;
+		}
+		else { // delay or single gradient -> simulated as delay
+			float timestep = float(seqBlock->GetDuration())*1e-6;
+			this->UpdateBlochMatrix(sp, 0, 0, 0);
+			this->SolveBlochEquation(M, timestep);
+		}
+		delete seqBlock; // pointer gets allocated with new in the GetBlock() function
+	}
+}
+
+
 
 //! Set number of steps for pade approximation 
 /*!

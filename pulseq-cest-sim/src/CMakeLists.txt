@@ -35,7 +35,6 @@ include_directories(Matlab_INCLUDE_DIRS)
 
 set(SOURCE_FILES Sim_pulseqSBB.cpp
                  BlochMcConnellSolver.h
-                 Sim_pulseqSBB_T.h
                  SimulationParameters.h
                  SimulationParameters.cpp
                  3rdParty/pulseq-master/src/ExternalSequence.cpp)

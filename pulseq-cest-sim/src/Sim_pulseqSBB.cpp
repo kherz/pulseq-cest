@@ -270,24 +270,43 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	   This speed advantade vanishes for more pools and can even result in a stack overflow for very large matrices
 	   In this case more than 3 pools are simulated with dynamic matrices, but this could be expanded eventually
 	*/
+	BlochMcConnellSolverBase* solver;
 	switch (sp.GetNumberOfCESTPools())
 	{
-	case 0:
-		sp.IsMTActive() ? Sim_pulseqSBB_T<4>(sp) : Sim_pulseqSBB_T<3>(sp); // only water
+	case 0: // only water
+		if (sp.IsMTActive())
+			solver = new  BlochMcConnellSolver<4>(sp);
+		else
+			solver = new BlochMcConnellSolver<3>(sp);
 		break;
-	case 1:
-		sp.IsMTActive() ? Sim_pulseqSBB_T<7>(sp) : Sim_pulseqSBB_T<6>(sp); // one cest pool
+	case 1: // one cest pool
+		if (sp.IsMTActive())
+			solver = new  BlochMcConnellSolver<7>(sp);
+		else
+			solver = new BlochMcConnellSolver<6>(sp);
 		break;
-	case 2:
-		sp.IsMTActive() ? Sim_pulseqSBB_T<10>(sp) : Sim_pulseqSBB_T<9>(sp); // two cest pools
+	case 2: // two cest pools
+		if (sp.IsMTActive())
+			solver = new  BlochMcConnellSolver<10>(sp);
+		else
+			solver = new BlochMcConnellSolver<9>(sp);
 		break;
-	case 3:
-		sp.IsMTActive() ? Sim_pulseqSBB_T<13>(sp) : Sim_pulseqSBB_T<12>(sp); // three cest pools
+	case 3: // three cest pools
+		if (sp.IsMTActive())
+			solver = new  BlochMcConnellSolver<13>(sp);
+		else
+			solver = new BlochMcConnellSolver<2>(sp);
 		break;
 	default:
-		Sim_pulseqSBB_T<Dynamic>(sp); // > three pools
+		solver = new BlochMcConnellSolver<Dynamic>(sp); // > three pools
 		break;
 	}
 
+	// it is possible to change parameters now and update the function like this:
+	// sp.SetScannerB0Inhom(1.0);
+	// solver->UpdateSimulationParameters(sp);
+	solver->RunSimulation(sp);
+
 	ReturnResultToMATLAB(plhs, sp.GetMagnetizationVectors()); // return results after simulation
+	delete solver;
 }
