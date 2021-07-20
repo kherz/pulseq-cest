@@ -254,10 +254,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	//Init sim parameters
 	SimulationParameters sp;
-	sp.SetExternalSequence(seq);
-
 	//init the simulation interface and read the input
     ParseInputStruct(nrhs, prhs, sp, numberOfADCBlocks);
+	// set sequence
+	sp.SetExternalSequence(seq);
 
 	// disp info about input
 	if (sp.IsVerbose()) {

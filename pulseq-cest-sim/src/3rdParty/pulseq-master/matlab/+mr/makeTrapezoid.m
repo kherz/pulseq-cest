@@ -68,6 +68,9 @@ if ~isempty(opt.flatTime) % MZ was: opt.flatTime>0
     if isempty(riseTime)
         riseTime = abs(amplitude)/maxSlew;
         riseTime = ceil(riseTime/opt.system.gradRasterTime)*opt.system.gradRasterTime;
+        if riseTime==0
+            riseTime=opt.system.gradRasterTime;
+        end
     end
     fallTime = riseTime;
     flatTime = opt.flatTime;
@@ -78,16 +81,19 @@ elseif opt.duration>0
         if isempty(riseTime)
             dC = 1/abs(2*maxSlew) + 1/abs(2*maxSlew);
             possible = opt.duration^2 > 4*abs(opt.area)*dC;
+            assert(possible,['Requested area is too large for this gradient. Minimum required duration is ' num2str(round(sqrt(4*abs(opt.area)*dC)*1e6)) 'us']);    
             amplitude = ( opt.duration - sqrt(opt.duration^2 - 4*abs(opt.area)*dC) )/(2*dC);
         else
             amplitude = opt.area/(opt.duration-riseTime);
             possible = opt.duration>2*riseTime & abs(amplitude)<maxGrad;
+            assert(possible,['Requested area is too large for this gradient. Probably amplitude is violated (' num2str(round(abs(amplitude)/maxGrad*100)) '%)']);    
         end    
-        assert(possible,'Requested area is too large for this gradient.');
-            
     end
     if isempty(riseTime)
         riseTime = ceil(abs(amplitude)/maxSlew/opt.system.gradRasterTime)*opt.system.gradRasterTime;
+        if(riseTime==0)
+            riseTime=opt.system.gradRasterTime;
+        end
     end
     fallTime = riseTime;
     flatTime = opt.duration-riseTime-fallTime;
@@ -110,12 +116,15 @@ else
             tEff=ceil(abs(opt.area)/maxGrad/opt.system.gradRasterTime)*opt.system.gradRasterTime;
             amplitude=opt.area/tEff;
             riseTime=ceil(abs(amplitude)/maxSlew/opt.system.gradRasterTime)*opt.system.gradRasterTime;
+            if(riseTime==0)
+                riseTime=opt.system.gradRasterTime;
+            end
         end
         flatTime=tEff-riseTime;
         fallTime=riseTime;        
     end
 end
-assert(abs(amplitude)<=maxGrad,'makeTrapezoid:invalidAmplitude','Amplitude violation');
+assert(abs(amplitude)<=maxGrad,'makeTrapezoid:invalidAmplitude',['Amplitude violation (' num2str(round(abs(amplitude)/maxGrad*100)) '%%)']);
 
 grad.type = 'trap';
 grad.channel = opt.channel;
