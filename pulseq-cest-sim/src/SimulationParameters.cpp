@@ -473,6 +473,9 @@ unsigned int SimulationParameters::GetMaxNumberOfPulseSamples()
 //! Decode the unique pulses from the seq file
 void SimulationParameters::DecodeSeqInfo()
 {
+	float rfRaster = 1e-6;
+	if (sequence.GetVersion() >= 1004000)
+		rfRaster = sequence.GetRFRasterTime() * 1e-6;
 	std::vector<std::pair<int, int>> uniquePairs;
 	for (unsigned int nSample = 0; nSample < sequence.GetNumberOfBlocks(); nSample++)
 	{
@@ -515,18 +518,14 @@ void SimulationParameters::DecodeSeqInfo()
 				std::vector<float> phaseArrayUnique(rfLength);
 				std::vector<float>::iterator it_phase = std::unique_copy(phaseArray.begin(), phaseArray.end(), phaseArrayUnique.begin());
 				phaseArrayUnique.resize(std::distance(phaseArrayUnique.begin(), it_phase));
-				//
-				float rfAmplitude = 0.0;
-				float rfPhase = 0.0;
-				float rfFrequency = seqBlock->GetRFEvent().freqOffset;
-				float timestep;
+
 				// need to resample pulse
 				unsigned int max_samples = std::max(amplitudeArrayUnique.size(), phaseArrayUnique.size());
 				if (max_samples > maxNumberOfPulseSamples)
 				{
 					int sampleFactor = ceil(float(rfLength) / maxNumberOfPulseSamples);
 					float pulseSamples = rfLength / sampleFactor;
-					timestep = float(sampleFactor) * 1e-6;
+					float timestep = float(sampleFactor) * rfRaster;
 					// resmaple the original pulse with max ssamples and run the simulation
 					pulse.samples.resize(pulseSamples);
 					for (int i = 0; i < pulseSamples; i++)
@@ -565,7 +564,7 @@ void SimulationParameters::DecodeSeqInfo()
 					{
 						pulse.samples[i].magnitude = seqBlock->GetRFAmplitudePtr()[samplePositions[i]] * seqBlock->GetRFEvent().amplitude;
 						pulse.samples[i].phase = seqBlock->GetRFPhasePtr()[samplePositions[i]] + seqBlock->GetRFEvent().phaseOffset;
-						pulse.samples[i].timestep = (samplePositions[i + 1] - samplePositions[i]) * 1e-6;
+						pulse.samples[i].timestep = (samplePositions[i + 1] - samplePositions[i]) * rfRaster;
 					}
 				}
 				uniquePairs.push_back(p);
