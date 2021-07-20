@@ -18,9 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 
 */
 
-
 #include "SimulationParameters.h"
-
 
 // Water Pool Function Definitions ////
 
@@ -62,7 +60,6 @@ void WaterPool::SetR2(double nR2) { R2 = nR2; }
 /*! \param new fraction of pool */
 void WaterPool::SetFraction(double nf) { f = nf; }
 
-
 // CEST Pool Function Definitions ////
 
 //! Default Constructor
@@ -96,7 +93,6 @@ void CESTPool::SetShiftinPPM(double ndw) { dw = ndw; }
 //! Set exchange rate
 /*! \param nk new exchage rate of pool in Hz*/
 void CESTPool::SetExchangeRateInHz(double nk) { k = nk; }
-
 
 // MT Pool Function Definitions ////
 
@@ -146,7 +142,7 @@ double MTPool::GetMTLineAtCurrentOffset(double offset, double omega0)
 	case Lorentzian:
 	{
 		double T2 = 1 / R2;
-		mtLine = T2 / (1 + pow((offset - dw * omega0)*T2, 2.0));
+		mtLine = T2 / (1 + pow((offset - dw * omega0) * T2, 2.0));
 		break;
 	}
 	case SuperLorentzian: // integrated SL lineshape
@@ -159,9 +155,10 @@ double MTPool::GetMTLineAtCurrentOffset(double offset, double omega0)
 		}
 		else // return lorentian lineshape if we are in a pol region
 		{
-			std::vector<double> px{ -300 - omega0, -100 - omega0, 100 + omega0, 300 + omega0 };
-			std::vector<double> py(px.size(),0);
-			for (int i = 0; i < px.size(); i++) {
+			std::vector<double> px{-300 - omega0, -100 - omega0, 100 + omega0, 300 + omega0};
+			std::vector<double> py(px.size(), 0);
+			for (int i = 0; i < px.size(); i++)
+			{
 				py[i] = InterpolateSuperLorentzianShape(px[i]);
 			}
 			mtLine = CubicHermiteSplineInterpolation(dwPool, px, py);
@@ -188,8 +185,8 @@ double MTPool::InterpolateSuperLorentzianShape(double dw)
 	double sqrt_2_pi = sqrt(2.0 / M_PI);
 	for (int i = 0; i < numberOfIntegrationSamples; i++)
 	{
-		double powcu2 = abs(3.0 * pow(integrationSampleStepSize*double(i), 2.0) - 1.0); // helper variable
-		mtLine += sqrt_2_pi * T2 / powcu2 * exp(-2.0 * pow(dw * T2 / powcu2, 2.0)); // add to integrate
+		double powcu2 = abs(3.0 * pow(integrationSampleStepSize * double(i), 2.0) - 1.0); // helper variable
+		mtLine += sqrt_2_pi * T2 / powcu2 * exp(-2.0 * pow(dw * T2 / powcu2, 2.0));		  // add to integrate
 	}
 	return mtLine * (M_PI * integrationSampleStepSize); // final line
 }
@@ -206,17 +203,17 @@ double MTPool::CubicHermiteSplineInterpolation(double px_int, std::vector<double
 	if (px.size() != 4 || py.size() != 4)
 		return 0.0;
 
-	//y values
-	double p0y = py[1]; //points
+	// y values
+	double p0y = py[1]; // points
 	double p1y = py[2];
 
-	double tangentWeight = 30; // empirically chosen 
-	double d0y = tangentWeight * (p0y - py[0]); //tangents
+	double tangentWeight = 30;					// empirically chosen
+	double d0y = tangentWeight * (p0y - py[0]); // tangents
 	double d1y = tangentWeight * (py[3] - p1y);
 
-	//calculate the interpolation points
-	double cStep = abs((px_int - px[1] + 1.0) / (px[2] - px[1] + 1.0));//
-	double c3 = cStep * cStep*cStep;
+	// calculate the interpolation points
+	double cStep = abs((px_int - px[1] + 1.0) / (px[2] - px[1] + 1.0)); //
+	double c3 = cStep * cStep * cStep;
 	double c2 = cStep * cStep;
 
 	// hermite spline
@@ -224,11 +221,9 @@ double MTPool::CubicHermiteSplineInterpolation(double px_int, std::vector<double
 	double h1 = -2 * c3 + 3 * (c2);
 	double h2 = c3 - 2 * c2 + cStep;
 	double h3 = c3 - c2;
-	//calculate y value
+	// calculate y value
 	return h0 * p0y + h1 * p1y + h2 * d0y + h3 * d1y;
 }
-
-
 
 // Simulation Parameters Function Definitions ////
 
@@ -245,6 +240,34 @@ SimulationParameters::SimulationParameters()
 //! Destructor
 SimulationParameters::~SimulationParameters()
 {
+	if (numberOfCESTPools > 0 && cestMemAllocated)
+		delete[] cestPools;
+}
+
+//! Set external sequence object
+/*!	\param seq ExternalSequence object that should be simulated */
+void SimulationParameters::SetExternalSequence(ExternalSequence seq)
+{
+	sequence = seq;
+	this->DecodeSeqInfo();
+}
+
+//! Get external sequence object
+/*!	\return ExternalSequence object that should be simulated */
+ExternalSequence *SimulationParameters::GetExternalSequence()
+{
+	return &sequence;
+}
+
+//! Init Magnetitazion Vector Array
+/*!
+	Replicate the initial Magnetization vector for output
+	\param M initial magnetization vector after ADC
+	\param numOutput number of ADC events in external sequence
+*/
+void SimulationParameters::InitMagnetizationVectors(VectorXd &M, unsigned int numOutput)
+{
+	Mvec = M.rowwise().replicate(numOutput);
 }
 
 //! Get Magnetization vectors
@@ -256,7 +279,7 @@ void SimulationParameters::SetInitialMagnetizationVector(Eigen::VectorXd magVec)
 
 //! Get Magnetization vectors
 /*!	\return Magnetization vectors at each ADC event */
-Eigen::VectorXd* SimulationParameters::GetInitialMagnetizationVector()
+Eigen::VectorXd *SimulationParameters::GetInitialMagnetizationVector()
 {
 	return &M;
 }
@@ -270,18 +293,17 @@ void SimulationParameters::SetWaterPool(WaterPool wp)
 
 //! Get Water Pool
 /*!	\return pointer to water pool */
-WaterPool* SimulationParameters::GetWaterPool()
+WaterPool *SimulationParameters::GetWaterPool()
 {
 	return &waterPool;
 }
-
 
 //! Set CEST Pool
 /*!
 	\param cp new CEST pool
 	\param poolIdx id of cest pool [0 ... numberOfCESTPools-1]
 */
-void  SimulationParameters::SetCESTPool(CESTPool cp, unsigned int poolIdx)
+void SimulationParameters::SetCESTPool(CESTPool cp, unsigned int poolIdx)
 {
 	if (poolIdx < cestPools.size())
 		cestPools[poolIdx] = cp;
@@ -292,7 +314,7 @@ void  SimulationParameters::SetCESTPool(CESTPool cp, unsigned int poolIdx)
 	\param poolIdx id of cest pool [0 ... numberOfCESTPools-1]
 	\return pointer to cest pool at poolIdx
 */
-CESTPool* SimulationParameters::GetCESTPool(unsigned int poolIdx)
+CESTPool *SimulationParameters::GetCESTPool(unsigned int poolIdx)
 {
 	return poolIdx < cestPools.size() ? &cestPools[poolIdx] : NULL;
 }
@@ -307,7 +329,7 @@ void SimulationParameters::SetMTPool(MTPool mp)
 
 //! Get MT Pool
 /*!	\return pointer to mt pool */
-MTPool* SimulationParameters::GetMTPool()
+MTPool *SimulationParameters::GetMTPool()
 {
 	return simulateMTPool ? &mtPool : NULL;
 }
@@ -323,7 +345,7 @@ MTPool* SimulationParameters::GetMTPool()
 */
 void SimulationParameters::InitScanner(double b0, double b1, double b0Inh, double gamma)
 {
-	Scanner s{ b0,b1,b0Inh,gamma};
+	Scanner s{b0, b1, b0Inh, gamma};
 	this->InitScanner(s);
 }
 
@@ -350,7 +372,7 @@ double SimulationParameters::GetScannerRelB1()
 
 //! Set Scanner B1 inhomogeneity
 /*!	\param b1 new B1 inhomogeneity */
-void  SimulationParameters::SetScannerRelB1(double b1)
+void SimulationParameters::SetScannerRelB1(double b1)
 {
 	scanner.relB1 = b1;
 }
@@ -364,7 +386,7 @@ double SimulationParameters::GetScannerB0Inhom()
 
 //! Set Scanner B0 inhomogeneity
 /*!	\param db0 new B0 inhomogeneity */
-void  SimulationParameters::SetScannerB0Inhom(double db0)
+void SimulationParameters::SetScannerB0Inhom(double db0)
 {
 	scanner.B0Inhomogeneity = db0;
 }
@@ -432,7 +454,7 @@ bool SimulationParameters::GetUseInitMagnetization()
 
 //! Set number of max pulse samples
 /*!
-    pulseq samples pulses at each us. For simulation these pulses are 
+	pulseq samples pulses at each us. For simulation these pulses are
 	resampled to <= maxNumberOfPulseSamples (default = 100)
 	\param numSamples max samples for shaped pulses
 */
@@ -448,3 +470,120 @@ unsigned int SimulationParameters::GetMaxNumberOfPulseSamples()
 	return maxNumberOfPulseSamples;
 }
 
+//! Decode the unique pulses from the seq file
+void SimulationParameters::DecodeSeqInfo()
+{
+	std::vector<std::pair<int, int>> uniquePairs;
+	for (unsigned int nSample = 0; nSample < sequence.GetNumberOfBlocks(); nSample++)
+	{
+		SeqBlock *seqBlock = sequence.GetBlock(nSample);
+		if (seqBlock->isRF())
+		{
+			RFEvent rf = seqBlock->GetRFEvent();
+			// ake unique mag phase pair
+			auto p = std::make_pair(rf.magShape, rf.phaseShape);
+			if (!(std::find(uniquePairs.begin(), uniquePairs.end(), p) != uniquePairs.end()))
+			{
+				// register pulse
+				PulseEvent pulse;
+				// std::vector<PulseSample> uniqueSamples;
+				//  get rf and check its length
+				sequence.decodeBlock(seqBlock);
+				unsigned int rfLength = seqBlock->GetRFLength();
+				// check arrays of uncompresed shape
+				std::vector<float> amplitudeArray(seqBlock->GetRFAmplitudePtr(), seqBlock->GetRFAmplitudePtr() + rfLength);
+				std::vector<float> phaseArray(seqBlock->GetRFPhasePtr(), seqBlock->GetRFPhasePtr() + rfLength);
+				// rfDeadTime is usually zeros at the end of the pulse, we search for them here
+				int nEnd;
+				int delayAfterPulse = 0;
+				for (nEnd = rfLength; nEnd > 0; --nEnd)
+				{
+					if (fabs(amplitudeArray[nEnd - 1]) > 1e-6) // because of the round-up errors in the ascii and derivative/integral reconstructuion
+						break;
+				}
+				delayAfterPulse = rfLength - nEnd;
+				pulse.deadTime = delayAfterPulse;
+				rfLength = nEnd;
+				pulse.length = rfLength;
+
+				amplitudeArray.erase(amplitudeArray.end() - delayAfterPulse, amplitudeArray.end());
+				phaseArray.erase(phaseArray.end() - delayAfterPulse, phaseArray.end());
+				// search for unique samples in amplitude and phase
+				std::vector<float> amplitudeArrayUnique(rfLength);
+				std::vector<float>::iterator it_amplitude = std::unique_copy(amplitudeArray.begin(), amplitudeArray.end(), amplitudeArrayUnique.begin());
+				amplitudeArrayUnique.resize(std::distance(amplitudeArrayUnique.begin(), it_amplitude));
+				std::vector<float> phaseArrayUnique(rfLength);
+				std::vector<float>::iterator it_phase = std::unique_copy(phaseArray.begin(), phaseArray.end(), phaseArrayUnique.begin());
+				phaseArrayUnique.resize(std::distance(phaseArrayUnique.begin(), it_phase));
+				//
+				float rfAmplitude = 0.0;
+				float rfPhase = 0.0;
+				float rfFrequency = seqBlock->GetRFEvent().freqOffset;
+				float timestep;
+				// need to resample pulse
+				unsigned int max_samples = std::max(amplitudeArrayUnique.size(), phaseArrayUnique.size());
+				if (max_samples > maxNumberOfPulseSamples)
+				{
+					int sampleFactor = ceil(float(rfLength) / maxNumberOfPulseSamples);
+					float pulseSamples = rfLength / sampleFactor;
+					timestep = float(sampleFactor) * 1e-6;
+					// resmaple the original pulse with max ssamples and run the simulation
+					pulse.samples.resize(pulseSamples);
+					for (int i = 0; i < pulseSamples; i++)
+					{
+						pulse.samples[i].magnitude = seqBlock->GetRFAmplitudePtr()[i * sampleFactor] * seqBlock->GetRFEvent().amplitude;
+						pulse.samples[i].phase = seqBlock->GetRFPhasePtr()[i * sampleFactor] + seqBlock->GetRFEvent().phaseOffset;
+						pulse.samples[i].timestep = timestep;
+					}
+				}
+				else
+				{
+					std::vector<unsigned int> samplePositions(max_samples + 1);
+					unsigned int sample_idx = 0;
+					if (amplitudeArrayUnique.size() >= phaseArrayUnique.size())
+					{
+						std::vector<float>::iterator it = amplitudeArray.begin();
+						for (it_amplitude = amplitudeArrayUnique.begin(); it_amplitude != amplitudeArrayUnique.end(); ++it_amplitude)
+						{
+							it = std::find(it, amplitudeArray.end(), *it_amplitude);
+							samplePositions[sample_idx++] = std::distance(amplitudeArray.begin(), it);
+						}
+					}
+					else
+					{
+						std::vector<float>::iterator it = phaseArray.begin();
+						for (it_phase = phaseArrayUnique.begin(); it_phase != phaseArrayUnique.end(); ++it_phase)
+						{
+							it = std::find(it, phaseArray.end(), *it_phase);
+							samplePositions[sample_idx++] = std::distance(phaseArray.begin(), it);
+						}
+					}
+					pulse.samples.resize(max_samples);
+					samplePositions[max_samples] = rfLength;
+					// now we have the duration of the single samples -> simulate it
+					for (int i = 0; i < max_samples; i++)
+					{
+						pulse.samples[i].magnitude = seqBlock->GetRFAmplitudePtr()[samplePositions[i]] * seqBlock->GetRFEvent().amplitude;
+						pulse.samples[i].phase = seqBlock->GetRFPhasePtr()[samplePositions[i]] + seqBlock->GetRFEvent().phaseOffset;
+						pulse.samples[i].timestep = (samplePositions[i + 1] - samplePositions[i]) * 1e-6;
+					}
+				}
+				uniquePairs.push_back(p);
+				uniquePulses.insert(std::make_pair(p, pulse));
+			}
+		}
+		delete seqBlock;
+	}
+}
+
+//! Get a unique pulse
+/*!
+	\param pair a pair containing the magnitude and phase id of the seq file
+	\return pointer to vector containing the pulse samples of a unique pulse
+*/
+PulseEvent *SimulationParameters::GetUniquePulse(std::pair<int, int> pair)
+{
+	std::map<std::pair<int, int>, PulseEvent>::iterator it;
+	it = uniquePulses.find(pair);
+	return &(it->second);
+}
