@@ -18,7 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 */
 
 #include "SimulationParameters.h"
-#include "Sim_pulseqSBB_T.h"
+#include "BlochMcConnellSolver.h"
 #include <matrix.h>
 #include <mex.h>
 
@@ -295,7 +295,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		if (sp.IsMTActive())
 			solver = new  BlochMcConnellSolver<13>(sp);
 		else
-			solver = new BlochMcConnellSolver<2>(sp);
+			solver = new BlochMcConnellSolver<12>(sp);
 		break;
 	default:
 		solver = new BlochMcConnellSolver<Dynamic>(sp); // > three pools
