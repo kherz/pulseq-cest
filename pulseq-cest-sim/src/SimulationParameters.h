@@ -21,8 +21,8 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 #pragma once
 
 #include "ExternalSequence.h"
-#include "Eigen/Eigen"
-using namespace Eigen;
+#include "Eigen"
+//using namespace Eigen;
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -205,10 +205,13 @@ public: // TODO: write get and set methods for member variables and make them pr
 	ExternalSequence* GetExternalSequence();
 
 	//! Init Magnetitazion Vector Array
-	void InitMagnetizationVectors(VectorXd &M, unsigned int numOutput);
+	void InitMagnetizationVectors(Eigen::VectorXd &M, unsigned int numOutput);
 
 	//! Get Magnetization vectors
-	MatrixXd* GetMagnetizationVectors();
+	Eigen::MatrixXd* GetMagnetizationVectors();
+
+	//! Get Magnetization vectors as an object (not a pointer)
+	Eigen::MatrixXd GetFinalMagnetizationVectors();
 
 	//! Set Water Pool
 	void SetWaterPool(WaterPool waterPool);
@@ -246,10 +249,10 @@ public: // TODO: write get and set methods for member variables and make them pr
 	//! Get Scanner Gamma
 	double GetScannerGamma();
 
-	//! Get Scanner relative B1
+	//! Set Scanner relative B1
 	void SetScannerRelB1(double rb1);
 
-	//! Get Scanner B0 inhomogeneity
+	//! Set Scanner B0 inhomogeneity
 	void SetScannerB0Inhom(double db0);
 
 	//! Get bool if MT should be simulated
@@ -287,7 +290,7 @@ protected:
 	void DecodeSeqInfo();  /*!< decosed the info from the pulseq file */
 	std::map<std::pair<int, int>, PulseEvent>  uniquePulses; /*!< vector with unique pulse sample */
 
-	MatrixXd Mvec;  /*!< Matrix containing all magnetization vectors */
+	Eigen::MatrixXd Mvec;  /*!< Matrix containing all magnetization vectors */
 
 	WaterPool waterPool; /*!< Water Pool */
 	MTPool mtPool;       /*!< MT Pool */

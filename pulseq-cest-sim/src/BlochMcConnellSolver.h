@@ -41,8 +41,8 @@ public:
 template <int size> class BlochMcConnellSolver : public BlochMcConnellSolverBase
 {
 public:
-	typedef Matrix<double, size, 1> VectorNd; // typedef for Magnetization Vector
-	typedef Matrix<double, size, size> MatrixNd; // typedef for Bloch Matrix
+	typedef Eigen::Matrix<double, size, 1> VectorNd; // typedef for Magnetization Vector
+	typedef Eigen::Matrix<double, size, size> MatrixNd; // typedef for Bloch Matrix
 
 	//! Constructor
 	BlochMcConnellSolver(SimulationParameters &sp);
@@ -66,8 +66,8 @@ public:
 	void RunSimulation(SimulationParameters &sp);
 
 private:
-	Matrix<double, size, size> A;               /*!< Matrix containing pool and pulse paramters   */
-	Matrix<double, size, 1> C;               /*!< Vector containing pool relaxation parameters */
+	Eigen::Matrix<double, size, size> A;               /*!< Matrix containing pool and pulse paramters   */
+	Eigen::Matrix<double, size, 1> C;               /*!< Vector containing pool relaxation parameters */
 	unsigned int N;           /*!< Number of CEST pools */
 	unsigned int numApprox;   /*!< number of steps for pade approximation       */
 	double w0;                /*!< scanner larmor frequency [rad]                  */
@@ -86,7 +86,7 @@ private:
 template<int size> BlochMcConnellSolver<size>::BlochMcConnellSolver(SimulationParameters &sp)
 {
 	// fill A matrix with constant pool exchange and concentration parameters ////
-	if (size == Dynamic)
+	if (size == Eigen::Dynamic)
 	{
 		A.resize(sp.GetMagnetizationVectors()->rows(), sp.GetMagnetizationVectors()->rows()); // allocate space for dynamic matrices
 	}
@@ -159,7 +159,7 @@ template<int size> void BlochMcConnellSolver<size>::UpdateSimulationParameters(S
 	}
 
 	// Fill relaxation vector ////
-	if (size == Dynamic) { // alocate space for dynamic matrices
+	if (size == Eigen::Dynamic) { // alocate space for dynamic matrices
 		C.resize(sp.GetMagnetizationVectors()->rows());
 	}
 
@@ -190,10 +190,12 @@ template<int size> void BlochMcConnellSolver<size>::UpdateBlochMatrix(Simulation
 {
 	A(0, 1 + N) = -dw0; // dephasing of water pool
 	A(1 + N, 0) = dw0;
+
 	// set omega 1
 	double rfAmplitude2pi = rfAmplitude*TWO_PI*sp.GetScannerRelB1();
 	double rfAmplitude2piCosPhi = rfAmplitude2pi * cos(rfPhase);
 	double rfAmplitude2piSinPhi = rfAmplitude2pi * sin(rfPhase);
+
 	//water
 	A(0, 2 * (N + 1)) = -rfAmplitude2piSinPhi;
 	A(2 * (N + 1), 0) = rfAmplitude2piSinPhi;
@@ -242,7 +244,7 @@ template<int size> void BlochMcConnellSolver<size>::SolveBlochEquation(VectorNd 
 	//solve exponential with pade method
 	int infExp; //infinity exponent of the matrix
 	int j;
-	std::frexp(At.template lpNorm<Infinity>(), &infExp); // pade method is only stable if ||A||inf / 2^j <= 0.5
+	std::frexp(At.template lpNorm<Eigen::Infinity>(), &infExp); // pade method is only stable if ||A||inf / 2^j <= 0.5
 	j = std::max(0, infExp + 1);
 	At = At * (1.0 / (pow(2, j)));
 	//the algorithm usually starts with D = X = N = Identity and c = 1
@@ -283,7 +285,7 @@ template<int size> void BlochMcConnellSolver<size>::RunSimulation(SimulationPara
 	unsigned int currentADC = 0;
 	float accummPhase = 0; // since we simulate in reference frame, we need to take care of the accummulated phase
 	// loop through event blocks
-	Matrix<double, size, 1> M = sp.GetMagnetizationVectors()->col(currentADC);
+	Eigen::Matrix<double, size, 1> M = sp.GetMagnetizationVectors()->col(currentADC);
 	for (unsigned int nSample = 0; nSample < sp.GetExternalSequence()->GetNumberOfBlocks(); nSample++)
 	{
 		// get current event block

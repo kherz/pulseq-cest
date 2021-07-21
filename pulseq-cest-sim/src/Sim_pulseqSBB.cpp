@@ -298,7 +298,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			solver = new BlochMcConnellSolver<12>(sp);
 		break;
 	default:
-		solver = new BlochMcConnellSolver<Dynamic>(sp); // > three pools
+		solver = new BlochMcConnellSolver<Eigen::Dynamic>(sp); // > three pools
 		break;
 	}
 
