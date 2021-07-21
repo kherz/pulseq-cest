@@ -265,14 +265,14 @@ ExternalSequence *SimulationParameters::GetExternalSequence()
 	\param M initial magnetization vector after ADC
 	\param numOutput number of ADC events in external sequence
 */
-void SimulationParameters::InitMagnetizationVectors(VectorXd &M, unsigned int numOutput)
+void SimulationParameters::InitMagnetizationVectors(Eigen::VectorXd &M, unsigned int numOutput)
 {
 	Mvec = M.rowwise().replicate(numOutput);
 }
 
 //! Get Magnetization vectors
 /*!	\return Magnetization vectors at each ADC event */
-void SimulationParameters::SetInitialMagnetizationVector(Eigen::VectorXd magVec)
+Eigen::MatrixXd *SimulationParameters::GetMagnetizationVectors()
 {
 	M = magVec;
 }
@@ -282,6 +282,13 @@ void SimulationParameters::SetInitialMagnetizationVector(Eigen::VectorXd magVec)
 Eigen::VectorXd *SimulationParameters::GetInitialMagnetizationVector()
 {
 	return &M;
+}
+
+//! Get Magnetization vectors as object
+/*!	\return Magnetization vectors at each ADC event as object */
+Eigen::MatrixXd SimulationParameters::GetFinalMagnetizationVectors()
+{
+	return Mvec;
 }
 
 //! Set Water Pool

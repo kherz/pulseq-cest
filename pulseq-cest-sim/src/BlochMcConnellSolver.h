@@ -88,12 +88,12 @@ public:
 	void RunSimulation(SimulationParameters &sp);
 
 private:
-	Matrix<double, size, size> A; /*!< Matrix containing pool and pulse paramters   */
-	Matrix<double, size, 1> C;	  /*!< Vector containing pool relaxation parameters */
-	unsigned int N;				  /*!< Number of CEST pools */
-	unsigned int numApprox;		  /*!< number of steps for pade approximation       */
-	double w0;					  /*!< scanner larmor frequency [rad]                  */
-	double dw0;					  /*!< scanner inhomogeneity [rad]                  */
+	Eigen::Matrix<double, size, size> A; /*!< Matrix containing pool and pulse paramters   */
+	Eigen::Matrix<double, size, 1> C;	 /*!< Vector containing pool relaxation parameters */
+	unsigned int N;						 /*!< Number of CEST pools */
+	unsigned int numApprox;				 /*!< number of steps for pade approximation       */
+	double w0;							 /*!< scanner larmor frequency [rad]                  */
+	double dw0;							 /*!< scanner inhomogeneity [rad]                  */
 };
 
 // Template class function definitions go in header file
@@ -184,7 +184,7 @@ void BlochMcConnellSolver<size>::UpdateSimulationParameters(SimulationParameters
 	// Fill relaxation vector ////
 	if (size == Eigen::Dynamic)
 	{ // alocate space for dynamic matrices
-		C.resize(sp.GetInitialMagnetizationVector()->rows());
+		C.resize(sp.GetMagnetizationVectors()->rows());
 	}
 
 	// set entries
@@ -215,8 +215,8 @@ void BlochMcConnellSolver<size>::UpdateSimulationParameters(SimulationParameters
 template <int size>
 void BlochMcConnellSolver<size>::UpdateBlochMatrix(SimulationParameters &sp, double rfAmplitude, double rfFrequency, double rfPhase)
 {
-	A(0, 1 + N) = dw0; // dephasing of water pool
-	A(1 + N, 0) = -dw0;
+	A(0, 1 + N) = -dw0; // dephasing of water pool
+	A(1 + N, 0) = dw0;
 
 	// set omega 1
 	double rfAmplitude2pi = rfAmplitude * TWO_PI * sp.GetScannerRelB1();
@@ -315,7 +315,7 @@ void BlochMcConnellSolver<size>::RunSimulation(SimulationParameters &sp)
 	unsigned int currentADC = 0;
 	float accummPhase = 0; // since we simulate in reference frame, we need to take care of the accummulated phase
 	// loop through event blocks
-	Matrix<double, size, 1> M = sp.GetMagnetizationVectors()->col(currentADC);
+	Eigen::Matrix<double, size, 1> M = sp.GetMagnetizationVectors()->col(currentADC);
 	for (unsigned int nSample = 0; nSample < sp.GetExternalSequence()->GetNumberOfBlocks(); nSample++)
 	{
 		// get current event block

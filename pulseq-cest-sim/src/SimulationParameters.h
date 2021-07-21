@@ -189,8 +189,17 @@ public: // TODO: write get and set methods for member variables and make them pr
 	//! Set Magnetization vector
 	void SetInitialMagnetizationVector(Eigen::VectorXd MagVec);
 
-	//! Get Magnetization vector
-	Eigen::VectorXd *GetInitialMagnetizationVector();
+	//! Get external sequence object
+	ExternalSequence *GetExternalSequence();
+
+	//! Init Magnetitazion Vector Array
+	void InitMagnetizationVectors(Eigen::VectorXd &M, unsigned int numOutput);
+
+	//! Get Magnetization vectors
+	Eigen::MatrixXd *GetMagnetizationVectors();
+
+	//! Get Magnetization vectors as an object (not a pointer)
+	Eigen::MatrixXd GetFinalMagnetizationVectors();
 
 	//! Set Water Pool
 	void SetWaterPool(WaterPool waterPool);
@@ -274,7 +283,22 @@ protected:
 	void DecodeSeqInfo();									/*!< decosed the info from the pulseq file */
 	std::map<std::pair<int, int>, PulseEvent> uniquePulses; /*!< vector with unique pulse sample */
 
+	Eigen::MatrixXd Mvec; /*!< Matrix containing all magnetization vectors */
+
+	WaterPool waterPool; /*!< Water Pool */
+	MTPool mtPool;		 /*!< MT Pool */
+	CESTPool *cestPools; /*!< CEST Pool(s) */
+
+	Scanner scanner; /*!< Sruct with field related info */
+
 	bool simulateMTPool; /*!< true if MT should be simulated */
+
+	unsigned int numberOfCESTPools; /*!< number of CEST Pools */
+	bool cestMemAllocated;			/*!< true if memory for cest pools was allocated*/
+
+	bool verboseMode;					  /*!< true, if you want to have some output information */
+	bool useInitMagnetization;			  /*!< true, if the magnetization vector should be reset to the initial magnetization after each adc */
+	unsigned int maxNumberOfPulseSamples; /*!< number of pulse samples for shaped pulses */
 
 	bool verboseMode;					  /*!< true, if you want to have some output information */
 	bool useInitMagnetization;			  /*!< true, if the magnetization vector should be reset to the initial magnetization after each adc */
