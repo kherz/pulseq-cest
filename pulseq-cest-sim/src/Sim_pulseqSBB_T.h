@@ -97,7 +97,7 @@ template <int size> void Sim_pulseqSBB_T(SimulationParameters& sp)
 				// resmaple the original pulse with max ssamples and run the simulation
 				for (int i = 0; i < pulseSamples; i++) {
 					rfAmplitude = seqBlock->GetRFAmplitudePtr()[i*sampleFactor] * seqBlock->GetRFEvent().amplitude;
-					rfPhase     = seqBlock->GetRFPhasePtr()[i*sampleFactor] + seqBlock->GetRFEvent().phaseOffset;
+					rfPhase     = -seqBlock->GetRFPhasePtr()[i*sampleFactor] + seqBlock->GetRFEvent().phaseOffset;
 					bm_solver.UpdateBlochMatrix(sp, rfAmplitude, rfFrequency, rfPhase-accummPhase);
 					bm_solver.SolveBlochEquation(M, timestep);
 				}
@@ -123,7 +123,7 @@ template <int size> void Sim_pulseqSBB_T(SimulationParameters& sp)
 				// now we have the duration of the single samples -> simulate it
 				for (int i = 0; i < max_samples; i++) {
 					rfAmplitude = seqBlock->GetRFAmplitudePtr()[samplePositions[i]] * seqBlock->GetRFEvent().amplitude;
-					rfPhase = seqBlock->GetRFPhasePtr()[samplePositions[i]] + seqBlock->GetRFEvent().phaseOffset;
+					rfPhase = -seqBlock->GetRFPhasePtr()[samplePositions[i]] + seqBlock->GetRFEvent().phaseOffset;
 					timestep = (samplePositions[i + 1] - samplePositions[i])*1e-6;
 					bm_solver.UpdateBlochMatrix(sp, rfAmplitude, rfFrequency, rfPhase - accummPhase);
 					bm_solver.SolveBlochEquation(M, timestep);

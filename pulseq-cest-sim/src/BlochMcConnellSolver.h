@@ -156,8 +156,8 @@ template<int size> BlochMcConnellSolver<size>::~BlochMcConnellSolver() {}
 */
 template<int size> void BlochMcConnellSolver<size>::UpdateBlochMatrix(SimulationParameters &sp, double rfAmplitude, double rfFrequency, double rfPhase)
 {
-	A(0, 1 + N) = -dw0; // dephasing of water pool
-	A(1 + N, 0) = dw0;
+	A(0, 1 + N) = dw0; // dephasing of water pool
+	A(1 + N, 0) = -dw0;
 	// set omega 1
 	double rfAmplitude2pi = rfAmplitude*TWO_PI*sp.GetScannerRelB1();
 	double rfAmplitude2piCosPhi = rfAmplitude2pi * cos(rfPhase);
@@ -182,14 +182,14 @@ template<int size> void BlochMcConnellSolver<size>::UpdateBlochMatrix(Simulation
 	// set off-resonance terms
 	//water
 	double rfFreqOffset2pi = rfFrequency *TWO_PI;
-	A(0, 1 + N) -= rfFreqOffset2pi;
-	A(1 + N, 0) += rfFreqOffset2pi;
+	A(0, 1 + N) += rfFreqOffset2pi;
+	A(1 + N, 0) -= rfFreqOffset2pi;
 	//cest
 	for (int i = 1; i <= N; i++)
 	{
 		double dwi = sp.GetCESTPool(i - 1)->GetShiftinPPM()*w0 - (rfFreqOffset2pi + dw0);
-		A(i, i + N + 1) = dwi;
-		A(i + N + 1, i) = -dwi;
+		A(i, i + N + 1) = -dwi;
+		A(i + N + 1, i) = dwi;
 	}
 
 	//set MT term
