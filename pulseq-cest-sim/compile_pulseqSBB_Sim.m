@@ -28,7 +28,7 @@ if ~exist(eigen_path, 'dir')
 end
 
 % get all file paths
-i_eigen = ['-I' eigen_path];
+i_eigen = ['-I' fullfile(eigen_path, 'Eigen')];
 i_pulseq = ['-I' fullfile(script_fp, 'src', '3rdParty', 'pulseq-master', 'src')];
 f_sbb = fullfile(script_fp, 'src', 'Sim_pulseqSBB.cpp');
 f_sp = fullfile(script_fp, 'src', 'SimulationParameters.cpp');

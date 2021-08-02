@@ -23,7 +23,7 @@ endif()
 find_package(Matlab REQUIRED)
 
 # and eigen
-set(EIGEN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/eigen3 CACHE PATH "eigen source directory")
+set(EIGEN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/eigen3/Eigen CACHE PATH "eigen source directory")
 if(EXISTS ${EIGEN_SRC_DIR})
    include_directories(${EIGEN_SRC_DIR})
 else()

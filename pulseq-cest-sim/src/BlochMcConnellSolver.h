@@ -308,12 +308,13 @@ template<int size> void BlochMcConnellSolver<size>::RunSimulation(SimulationPara
 				M[i] = 0.0;
 		}
 		else if (seqBlock->isRF()) { // saturation pulse
-			std::pair<int,int> p = std::make_pair(seqBlock->GetRFEvent().magShape, seqBlock->GetRFEvent().phaseShape); // get the magnitude and phase pair
+			int timeID = sp.GetExternalSequence()->GetVersion() >= 1004000 ? seqBlock->GetRFEvent().timeShape : 0;
+			SimulationParameters::PulseID p = std::make_tuple(seqBlock->GetRFEvent().magShape, seqBlock->GetRFEvent().phaseShape, timeID); // get the magnitude and phase pair
 			PulseEvent* pulse = sp.GetUniquePulse(p); // find the unque rf id in the previously decoded seq file library
 			std::vector<PulseSample>* pulseSamples = &(pulse->samples);
 			double rfFrequency = seqBlock->GetRFEvent().freqOffset;
 			for (int p = 0; p < pulseSamples->size(); p++) { // loop through pulse samples
-				this->UpdateBlochMatrix(sp, pulseSamples->at(p).magnitude, rfFrequency, pulseSamples->at(p).phase + seqBlock->GetRFEvent().phaseOffset - accummPhase);
+				this->UpdateBlochMatrix(sp, pulseSamples->at(p).magnitude*seqBlock->GetRFEvent().amplitude, rfFrequency, -pulseSamples->at(p).phase + seqBlock->GetRFEvent().phaseOffset - accummPhase);
 				this->SolveBlochEquation(M, pulseSamples->at(p).timestep);
 			}
 			// delay at end of the pulse

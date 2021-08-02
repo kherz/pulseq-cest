@@ -82,7 +82,7 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp,
 	if (MinRows == 1 || MinCols == 1) {
 		Msize = std::max(MinRows, MinCols);
 		//get the vector
-		VectorXd M;
+		Eigen::VectorXd M;
 		M.resize(Msize, 1);
 		for (int i = 0; i < Msize; i++) {
 			M[i] = Min[i];
@@ -216,7 +216,7 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp,
 	\param plhs Array of pointers to the mxArray output arguments
 	\param M MatrixXd containg Magnetization vectors
 */
-void ReturnResultToMATLAB(mxArray *plhs[], MatrixXd* M) {
+void ReturnResultToMATLAB(mxArray *plhs[], Eigen::MatrixXd* M) {
 	//prepare the output for matlab
 	plhs[0] = mxCreateDoubleMatrix(M->rows(), M->cols(), mxREAL);
 	double *zOut = mxGetPr(plhs[0]);

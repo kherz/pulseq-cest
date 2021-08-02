@@ -487,16 +487,19 @@ void SimulationParameters::DecodeSeqInfo()
 	float rfRaster = 1e-6;
 	if (sequence.GetVersion() >= 1004000)
 		rfRaster = sequence.GetRFRasterTime()*1e-6;
-	std::vector<std::pair<int, int>> uniquePairs;
+	std::vector<PulseID> uniquePuleIDs;
 	for (unsigned int nSample = 0; nSample < sequence.GetNumberOfBlocks(); nSample++)
 	{
 		SeqBlock* seqBlock = sequence.GetBlock(nSample);
 		if (seqBlock->isRF())
 		{
 			RFEvent rf = seqBlock->GetRFEvent();
-			// ake unique mag phase pair 
-			auto p = std::make_pair(rf.magShape, rf.phaseShape);
-			if (!(std::find(uniquePairs.begin(), uniquePairs.end(), p) != uniquePairs.end())) {
+			// make unique magnitude, phase and time tuple 
+			int timeID = 0;
+			if (sequence.GetVersion() >= 1004000)
+				timeID = rf.timeShape;
+			PulseID p = std::make_tuple(rf.magShape, rf.phaseShape, timeID);
+			if (!(std::find(uniquePuleIDs.begin(), uniquePuleIDs.end(), p) != uniquePuleIDs.end())) {
 				// register pulse
 				PulseEvent pulse;
 				//std::vector<PulseSample> uniqueSamples;
@@ -537,8 +540,8 @@ void SimulationParameters::DecodeSeqInfo()
 					// resmaple the original pulse with max ssamples and run the simulation
 					pulse.samples.resize(pulseSamples);
 					for (int i = 0; i < pulseSamples; i++) {
-						pulse.samples[i].magnitude = seqBlock->GetRFAmplitudePtr()[i*sampleFactor] * seqBlock->GetRFEvent().amplitude;
-						pulse.samples[i].phase = seqBlock->GetRFPhasePtr()[i*sampleFactor] + seqBlock->GetRFEvent().phaseOffset;
+						pulse.samples[i].magnitude = seqBlock->GetRFAmplitudePtr()[i*sampleFactor];
+						pulse.samples[i].phase = seqBlock->GetRFPhasePtr()[i*sampleFactor];
 						pulse.samples[i].timestep = timestep;
 					}
 				}
@@ -563,12 +566,12 @@ void SimulationParameters::DecodeSeqInfo()
 					samplePositions[max_samples] = rfLength;
 					// now we have the duration of the single samples -> simulate it
 					for (int i = 0; i < max_samples; i++) {
-						pulse.samples[i].magnitude = seqBlock->GetRFAmplitudePtr()[samplePositions[i]] * seqBlock->GetRFEvent().amplitude;
-						pulse.samples[i].phase = seqBlock->GetRFPhasePtr()[samplePositions[i]] + seqBlock->GetRFEvent().phaseOffset;
+						pulse.samples[i].magnitude = seqBlock->GetRFAmplitudePtr()[samplePositions[i]];
+						pulse.samples[i].phase = seqBlock->GetRFPhasePtr()[samplePositions[i]];
 						pulse.samples[i].timestep = (samplePositions[i + 1] - samplePositions[i])*rfRaster;
 					}
 				}
-				uniquePairs.push_back(p);
+				uniquePuleIDs.push_back(p);
 				uniquePulses.insert(std::make_pair(p, pulse));
 			}
 		}
@@ -582,9 +585,9 @@ void SimulationParameters::DecodeSeqInfo()
 	\param pair a pair containing the magnitude and phase id of the seq file
 	\return pointer to vector containing the pulse samples of a unique pulse
 */
-PulseEvent* SimulationParameters::GetUniquePulse(std::pair<int, int> pair)
+PulseEvent* SimulationParameters::GetUniquePulse(PulseID id)
 {
-	std::map<std::pair<int, int>, PulseEvent>::iterator it;
-	it = uniquePulses.find(pair);
+	std::map<PulseID, PulseEvent>::iterator it;
+	it = uniquePulses.find(id);
 	return &(it->second);
 }
