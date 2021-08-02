@@ -180,6 +180,9 @@ private:
 class SimulationParameters
 {
 public: // TODO: write get and set methods for member variables and make them private
+	// typedef for pulse id with amplitude, phase and time id
+	typedef std::tuple<int, int, int> PulseID;
+
 	//! Constructor
 	SimulationParameters();
 
@@ -271,7 +274,7 @@ public: // TODO: write get and set methods for member variables and make them pr
 	unsigned int GetMaxNumberOfPulseSamples();
 
 	//! Get unique pulse
-	PulseEvent *GetUniquePulse(std::pair<int, int> pair);
+	PulseEvent *GetUniquePulse(PulseID id);
 
 protected:
 	WaterPool waterPool;			 /*!< Water Pool */
@@ -279,9 +282,9 @@ protected:
 	std::vector<CESTPool> cestPools; /*!< CEST Pool(s) */
 	Eigen::VectorXd M;				 /*!< Initial Magnetization vector */
 
-	ExternalSequence sequence;								/*!< pulseq sequence */
-	void DecodeSeqInfo();									/*!< decosed the info from the pulseq file */
-	std::map<std::pair<int, int>, PulseEvent> uniquePulses; /*!< vector with unique pulse sample */
+	ExternalSequence sequence;					/*!< pulseq sequence */
+	void DecodeSeqInfo();						/*!< decosed the info from the pulseq file */
+	std::map<PulseID, PulseEvent> uniquePulses; /*!< vector with unique pulse sample */
 
 	Eigen::MatrixXd Mvec; /*!< Matrix containing all magnetization vectors */
 
