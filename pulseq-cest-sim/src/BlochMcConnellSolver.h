@@ -21,7 +21,10 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 
 #include "SimulationParameters.h"
 
-// Abstract class that can be used for generic pointers to the solver class
+// !BlochMcConnellSolverBase class.
+/*!
+  Abstract class that can be used for generic pointers to the solver class.
+*/
 class BlochMcConnellSolverBase
 {
 public:
@@ -31,10 +34,20 @@ public:
 	// Vitual Update function that can be called from base class pointer
 	virtual void UpdateSimulationParameters(SimulationParameters &sp){};
 
-	// Virtual run function that can be calles from base class pointer
-	virtual void RunSimulation(SimulationParameters &sp){};
+	//! Update Matrix with pulse info
+	virtual void UpdateBlochMatrix(SimulationParameters &sp, double rfAmplitude, double rfFrequency, double rfPhase){};
+
+	//! Solve Bloch McConnell equation
+	virtual void SolveBlochEquation(Eigen::VectorXd &M, double t){};
+
+	//! Set number of steps for pade approximation
+	virtual void SetNumStepsForPadeApprox(unsigned int nApprox){};
 };
 
+// !BlochMcConnellSolver class.
+/*!
+  Template class that handles all the Bloch-McConnell equation stuff
+*/
 template <int size>
 class BlochMcConnellSolver : public BlochMcConnellSolverBase
 {
@@ -83,9 +96,6 @@ public:
 
 	//! Set number of steps for pade approximation
 	void SetNumStepsForPadeApprox(unsigned int nApprox);
-
-	//! Run the simulation on a simulation parameters set
-	void RunSimulation(SimulationParameters &sp);
 
 private:
 	Eigen::Matrix<double, size, size> A; /*!< Matrix containing pool and pulse paramters   */
@@ -184,7 +194,7 @@ void BlochMcConnellSolver<size>::UpdateSimulationParameters(SimulationParameters
 	// Fill relaxation vector ////
 	if (size == Eigen::Dynamic)
 	{ // alocate space for dynamic matrices
-		C.resize(sp.GetMagnetizationVectors()->rows());
+		C.resize(sp.GetInitialMagnetizationVector()->rows());
 	}
 
 	// set entries

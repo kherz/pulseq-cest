@@ -244,9 +244,9 @@ SimulationParameters::~SimulationParameters()
 		delete[] cestPools;
 }
 
-//! Set external sequence object
-/*!	\param seq ExternalSequence object that should be simulated */
-void SimulationParameters::SetExternalSequence(ExternalSequence seq)
+//! Get Magnetization vectors
+/*!	\return Magnetization vectors at each ADC event */
+void SimulationParameters::SetInitialMagnetizationVector(Eigen::VectorXd MagVec)
 {
 	sequence = seq;
 	this->DecodeSeqInfo();
