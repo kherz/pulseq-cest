@@ -17,40 +17,14 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTH
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "SimulationParameters.h"
-#include "BlochMcConnellSolver.h"
+#include "BMCSim.h"
 #include <matrix.h>
 #include <mex.h>
 
 #define MAX_CEST_POOLS 100
 
-//! Reads the seq file from PulSeq
-/*!
-	\param nrhs number of input arguments
-	\param prhs Array of pointers to the mxArray input arguments
-	\param seq ExternalSeq object that should be simulated 
-*/
-void ReadExternalSequence(int nrhs, const mxArray *prhs[], ExternalSequence& seq)
-{
-	if (nrhs < 2) {
-		mexErrMsgIdAndTxt("Sim_pulseqSBB:ReadExternalSequence:nrhs",
-			"2 Inputs required, TissueProperties and PulseSeq filename");
-	}
 
-	// Input 2: Filename of the pulseseq file
-	const int charBufferSize = 2048;
-	char tmpCharBuffer[charBufferSize];
-	// get filename from matlab
-	mxGetString(prhs[1], tmpCharBuffer, charBufferSize);
-	std::string seqFileName = std::string(tmpCharBuffer);
-	//load the seq file
-	if (!seq.load(seqFileName)) {
-		mexErrMsgIdAndTxt("Sim_pulseqSBB:ReadExternalSequence:rrhs",
-			"Seq filename not found");
-	}
-}
-
-//! Reads the MTALAB input
+//! Reads the MATLAB input
 /*!
 	Input should be a single struct. The function searches for all required and optional struct parameters
 	\param nrhs number of input arguments
@@ -58,7 +32,7 @@ void ReadExternalSequence(int nrhs, const mxArray *prhs[], ExternalSequence& seq
 	\param sp SimulationParameters object that gets filled
 	\param numADCEvents number of ADC events
 */
-void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp, unsigned int numADCEvents)
+void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp)
 {
 
 	if (nrhs == 0)
@@ -87,7 +61,7 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp,
 		for (int i = 0; i < Msize; i++) {
 			M[i] = Min[i];
 		}
-		sp.InitMagnetizationVectors(M, numADCEvents);
+		sp.SetInitialMagnetizationVector(M);
 	}
 	//error
 	else {
@@ -236,28 +210,18 @@ void ReturnResultToMATLAB(mxArray *plhs[], Eigen::MatrixXd* M) {
 */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	ExternalSequence seq;
-	ReadExternalSequence(nrhs, prhs, seq);
-
-	//Get number of ADC -> equivalent to number of Blocks
-	unsigned int numberOfADCBlocks = 0;
-	for (unsigned int nSample = 0; nSample < seq.GetNumberOfBlocks(); nSample++) {
-		SeqBlock* seqBlock = seq.GetBlock(nSample);
-		if (seqBlock->isADC()) {
-			numberOfADCBlocks++;
-		}
-		delete seqBlock; // pointer gets allocate with new in the GetBlock() function
-	}
-	if (numberOfADCBlocks == 0) {
-		mexErrMsgIdAndTxt("MRF_CEST:Sim_pulseqSBB", "No ADC event found in .seq file");
+	if (nrhs < 2) {
+		mexErrMsgIdAndTxt("Sim_pulseqSBB:mexFunction:nrhs",
+			"2 Inputs required, TissueProperties and Pulseq filename");
 	}
 
 	//Init sim parameters
 	SimulationParameters sp;
 	//init the simulation interface and read the input
-    ParseInputStruct(nrhs, prhs, sp, numberOfADCBlocks);
-	// set sequence
-	sp.SetExternalSequence(seq);
+	ParseInputStruct(nrhs, prhs, sp);
+
+	// init simulation framework with simulation parameters
+	BMCSim simFramework(sp);
 
 	// disp info about input
 	if (sp.IsVerbose()) {
@@ -265,48 +229,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		mexPrintf("Found %i CEST pool(s) and %i MT Pool(s) \n", sp.GetNumberOfCESTPools(), sp.IsMTActive() ? 1 : 0);
 	}
 
+	// get seq filename
+	const int charBufferSize = 2048;
+	char tmpCharBuffer[charBufferSize];
+	// get filename from matlab
+	mxGetString(prhs[1], tmpCharBuffer, charBufferSize);
+	std::string seqFileName = std::string(tmpCharBuffer);
 
-	/* For a small number of pools the matrix size can be set at compile time. This ensures allocation on the stack and therefore a faster simulation. 
-	   This speed advantade vanishes for more pools and can even result in a stack overflow for very large matrices
-	   In this case more than 3 pools are simulated with dynamic matrices, but this could be expanded eventually
-	*/
-	BlochMcConnellSolverBase* solver;
-	switch (sp.GetNumberOfCESTPools())
-	{
-	case 0: // only water
-		if (sp.IsMTActive())
-			solver = new  BlochMcConnellSolver<4>(sp);
-		else
-			solver = new BlochMcConnellSolver<3>(sp);
-		break;
-	case 1: // one cest pool
-		if (sp.IsMTActive())
-			solver = new  BlochMcConnellSolver<7>(sp);
-		else
-			solver = new BlochMcConnellSolver<6>(sp);
-		break;
-	case 2: // two cest pools
-		if (sp.IsMTActive())
-			solver = new  BlochMcConnellSolver<10>(sp);
-		else
-			solver = new BlochMcConnellSolver<9>(sp);
-		break;
-	case 3: // three cest pools
-		if (sp.IsMTActive())
-			solver = new  BlochMcConnellSolver<13>(sp);
-		else
-			solver = new BlochMcConnellSolver<12>(sp);
-		break;
-	default:
-		solver = new BlochMcConnellSolver<Eigen::Dynamic>(sp); // > three pools
-		break;
+	// set sequence 
+	if (!simFramework.LoadExternalSequence(seqFileName)) {
+		mexErrMsgIdAndTxt("Sim_pulseqSBB:mexFunction", "Could not read external .seq file");
 	}
 
-	// it is possible to change parameters now and update the function like this:
-	// sp.SetScannerB0Inhom(1.0);
-	// solver->UpdateSimulationParameters(sp);
-	solver->RunSimulation(sp);
+	// run simulation
+	if (!simFramework.RunSimulation()) {
+		mexErrMsgIdAndTxt("Sim_pulseqSBB:mexFunction", "Could not run simulation. Make sure that .seq file is set.");
+	}
 
-	ReturnResultToMATLAB(plhs, sp.GetMagnetizationVectors()); // return results after simulation
-	delete solver;
+	// return to matlab
+	ReturnResultToMATLAB(plhs, &(simFramework.GetMagnetizationVectors())); // return results after simulation
 }

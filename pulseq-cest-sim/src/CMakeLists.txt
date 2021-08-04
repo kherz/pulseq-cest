@@ -37,6 +37,9 @@ set(SOURCE_FILES Sim_pulseqSBB.cpp
                  BlochMcConnellSolver.h
                  SimulationParameters.h
                  SimulationParameters.cpp
+				 BMCSim.h
+				 BMCSim.cpp
+				 3rdParty/pulseq-master/src/ExternalSequence.h
                  3rdParty/pulseq-master/src/ExternalSequence.cpp)
 			 		
 matlab_add_mex(NAME Sim_pulseqSBB SRC ${SOURCE_FILES})

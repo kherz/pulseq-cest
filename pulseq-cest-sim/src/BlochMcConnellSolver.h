@@ -18,9 +18,13 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 */
 
 #pragma once
+
 #include "SimulationParameters.h"
 
-// Abstract class that can be used for generic pointers to the solver class
+// !BlochMcConnellSolverBase class.
+/*!
+  Abstract class that can be used for generic pointers to the solver class.
+*/
 class BlochMcConnellSolverBase
 {
 public:
@@ -31,13 +35,24 @@ public:
 	// Vitual Update function that can be called from base class pointer
 	virtual void UpdateSimulationParameters(SimulationParameters &sp) {};
 
-	// Virtual run function that can be calles from base class pointer
-	virtual void RunSimulation(SimulationParameters &sp) {};
+	//! Update Matrix with pulse info 
+	virtual void UpdateBlochMatrix(SimulationParameters &sp, double rfAmplitude, double rfFrequency, double rfPhase) {};
+
+	//! Solve Bloch McConnell equation 
+	virtual void SolveBlochEquation(Eigen::VectorXd &M, double t) {};
+
+	//! Set number of steps for pade approximation 
+	virtual void SetNumStepsForPadeApprox(unsigned int nApprox) {};
+
+
 
 };
 
 
-
+// !BlochMcConnellSolver class.
+/*!
+  Template class that handles all the Bloch-McConnell equation stuff 
+*/
 template <int size> class BlochMcConnellSolver : public BlochMcConnellSolverBase
 {
 public:
@@ -57,13 +72,11 @@ public:
 	void UpdateBlochMatrix(SimulationParameters &sp, double rfAmplitude, double rfFrequency, double rfPhase);
 
 	//! Solve Bloch McConnell equation 
-	void SolveBlochEquation(VectorNd &M, double t);
+	void SolveBlochEquation(Eigen::VectorXd &M, double t);
 
 	//! Set number of steps for pade approximation 
 	void SetNumStepsForPadeApprox(unsigned int nApprox);
 
-	//! Run the simulation on a simulation parameters set
-	void RunSimulation(SimulationParameters &sp);
 
 private:
 	Eigen::Matrix<double, size, size> A;               /*!< Matrix containing pool and pulse paramters   */
@@ -88,7 +101,7 @@ template<int size> BlochMcConnellSolver<size>::BlochMcConnellSolver(SimulationPa
 	// fill A matrix with constant pool exchange and concentration parameters ////
 	if (size == Eigen::Dynamic)
 	{
-		A.resize(sp.GetMagnetizationVectors()->rows(), sp.GetMagnetizationVectors()->rows()); // allocate space for dynamic matrices
+		A.resize(sp.GetInitialMagnetizationVector()->rows(), sp.GetInitialMagnetizationVector()->rows()); // allocate space for dynamic matrices
 	}
 
 	// Get number of CEST pools for matrix size
@@ -160,7 +173,7 @@ template<int size> void BlochMcConnellSolver<size>::UpdateSimulationParameters(S
 
 	// Fill relaxation vector ////
 	if (size == Eigen::Dynamic) { // alocate space for dynamic matrices
-		C.resize(sp.GetMagnetizationVectors()->rows());
+		C.resize(sp.GetInitialMagnetizationVector()->rows());
 	}
 
 	// set entries
@@ -237,7 +250,7 @@ template<int size> void BlochMcConnellSolver<size>::UpdateBlochMatrix(Simulation
 	\param M SimulationParamter VectorNd for which the equation should be solved
 	\param t timestep for which the equation should be solved
 */
-template<int size> void BlochMcConnellSolver<size>::SolveBlochEquation(VectorNd &M, double t)
+template<int size> void BlochMcConnellSolver<size>::SolveBlochEquation(Eigen::VectorXd &M, double t)
 {
 	VectorNd AInvT = A.inverse()*C; // helper variable A^-1 * C
 	MatrixNd At = A * t;			// helper variable A * t
@@ -275,66 +288,6 @@ template<int size> void BlochMcConnellSolver<size>::SolveBlochEquation(VectorNd 
 	}
 	M = F * (M + AInvT) - AInvT;
 }
-
-//! Runs the simulation
-/*!
-   \param sp SimulationParameters object containing pool and pulse info
-*/
-template<int size> void BlochMcConnellSolver<size>::RunSimulation(SimulationParameters &sp)
-{
-	unsigned int currentADC = 0;
-	float accummPhase = 0; // since we simulate in reference frame, we need to take care of the accummulated phase
-	// loop through event blocks
-	Eigen::Matrix<double, size, 1> M = sp.GetMagnetizationVectors()->col(currentADC);
-	for (unsigned int nSample = 0; nSample < sp.GetExternalSequence()->GetNumberOfBlocks(); nSample++)
-	{
-		// get current event block
-		SeqBlock* seqBlock = sp.GetExternalSequence()->GetBlock(nSample);
-		if (seqBlock->isADC()) {
-			sp.GetMagnetizationVectors()->col(currentADC) = M;
-			if (sp.GetMagnetizationVectors()->cols() <= ++currentADC) {
-				break;
-			}
-			if (sp.GetUseInitMagnetization()) {
-				M = sp.GetMagnetizationVectors()->col(currentADC);
-			}
-		}
-		else if (seqBlock->isTrapGradient(0) && seqBlock->isTrapGradient(1) && seqBlock->isTrapGradient(2)) {
-			// delay for block duration
-			this->UpdateBlochMatrix(sp, 0, 0, 0);
-			this->SolveBlochEquation(M, seqBlock->GetDuration()*1e-6);
-			// kill transverse magnetization
-			for (int i = 0; i < (sp.GetNumberOfCESTPools() + 1) * 2; i++)
-				M[i] = 0.0;
-		}
-		else if (seqBlock->isRF()) { // saturation pulse
-			int timeID = sp.GetExternalSequence()->GetVersion() >= 1004000 ? seqBlock->GetRFEvent().timeShape : 0;
-			SimulationParameters::PulseID p = std::make_tuple(seqBlock->GetRFEvent().magShape, seqBlock->GetRFEvent().phaseShape, timeID); // get the magnitude and phase pair
-			PulseEvent* pulse = sp.GetUniquePulse(p); // find the unque rf id in the previously decoded seq file library
-			std::vector<PulseSample>* pulseSamples = &(pulse->samples);
-			double rfFrequency = seqBlock->GetRFEvent().freqOffset;
-			for (int p = 0; p < pulseSamples->size(); p++) { // loop through pulse samples
-				this->UpdateBlochMatrix(sp, pulseSamples->at(p).magnitude*seqBlock->GetRFEvent().amplitude, rfFrequency, -pulseSamples->at(p).phase + seqBlock->GetRFEvent().phaseOffset - accummPhase);
-				this->SolveBlochEquation(M, pulseSamples->at(p).timestep);
-			}
-			// delay at end of the pulse
-			if (pulse->deadTime > 0) {
-				this->UpdateBlochMatrix(sp, 0, 0, 0);
-				this->SolveBlochEquation(M, pulse->deadTime*1e-6);
-			}
-			int phaseDegree = pulse->length * 1e-6 * 360 * seqBlock->GetRFEvent().freqOffset;
-			phaseDegree %= 360;
-			accummPhase += float(phaseDegree) / 180 * PI;
-		}
-		else { // delay or single gradient -> simulated as delay
-			float timestep = float(seqBlock->GetDuration())*1e-6;
-			this->UpdateBlochMatrix(sp, 0, 0, 0);
-			this->SolveBlochEquation(M, timestep);
-		}
-		delete seqBlock; // pointer gets allocated with new in the GetBlock() function
-	}
-}
-
 
 
 //! Set number of steps for pade approximation 
