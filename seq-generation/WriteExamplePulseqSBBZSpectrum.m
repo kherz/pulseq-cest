@@ -41,7 +41,7 @@ seq_filename = fullfile('../examples', strcat(seq_defs.seq_id_string,'.seq')); %
 % see pulseq doc for more ino
 lims = Get_scanner_limits();
 pulseSamples = 200;
-lims.rfRasterTime = seq_defs.tp/lims.rfRasterTime/pulseSamples*lims.rfRasterTime;
+rfTimestep = seq_defs.tp/lims.rfRasterTime/pulseSamples*lims.rfRasterTime;
 
 %% create scanner events
 % satpulse
@@ -49,7 +49,7 @@ gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 fa_sat        = B1pa*gyroRatio_rad*tp; % flip angle of sat pulse
 % create pulseq saturation pulse object
-satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',lims,'timeBwProduct', 0.2,'apodization', 0.5, 'dwell', lims.rfRasterTime); % siemens-like gauss
+satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',lims,'timeBwProduct', 0.2,'apodization', 0.5, 'dwell', rfTimestep); % siemens-like gauss
 
 [B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,tp,td,0,gyroRatio_hz);
 seq_defs.B1cwpe = B1cwpe;

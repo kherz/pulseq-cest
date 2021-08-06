@@ -22,8 +22,8 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 
 //! Constructor
 /*!	\param SimPars initial SimulationParameters object */
-BMCSim::BMCSim(SimulationParameters &SimPars) {
-	sp = &SimPars;
+BMCSim::BMCSim(SimulationParameters &simPars) {
+	sp = &simPars;
 	InitSolver();
 	sequenceLoaded = false;
 }
@@ -56,11 +56,11 @@ bool BMCSim::LoadExternalSequence(std::string path)
 	\param SimPars new SimulationParameters object
 	\return true if SimPars hase the same amount of pool as the initial sp
 */
-bool BMCSim::SetSimulationParameters(SimulationParameters &SimPars) {
+bool BMCSim::SetSimulationParameters(SimulationParameters &simPars) {
 	// sim parameters can only be updated if number of pools did not change
-	bool newSimParamsValid = (sp->GetNumberOfCESTPools() == SimPars.GetNumberOfCESTPools() && sp->IsMTActive() == SimPars.IsMTActive());
+	bool newSimParamsValid = (sp->GetNumberOfCESTPools() == simPars.GetNumberOfCESTPools() && sp->IsMTActive() == simPars.IsMTActive());
 	if (newSimParamsValid)
-		sp = &SimPars;
+		sp = &simPars;
 	return newSimParamsValid;
 }
 
@@ -113,9 +113,6 @@ void BMCSim::InitSolver() {
 //! Decode the unique pulses from the seq file
 void BMCSim::DecodeSeqRFInfo()
 {
-	float rfRaster = 1e-6;
-	if (seq.GetVersion() >= 1004000)
-		rfRaster = seq.GetRFRasterTime()*1e-6;
 	std::vector<PulseID> uniquePuleIDs;
 	for (unsigned int nSample = 0; nSample < seq.GetNumberOfBlocks(); nSample++)
 	{
@@ -131,73 +128,89 @@ void BMCSim::DecodeSeqRFInfo()
 			if (!(std::find(uniquePuleIDs.begin(), uniquePuleIDs.end(), p) != uniquePuleIDs.end())) {
 				// register pulse
 				PulseEvent pulse;
-				//std::vector<PulseSample> uniqueSamples;
 				// get rf and check its length
 				seq.decodeBlock(seqBlock);
 				unsigned int rfLength = seqBlock->GetRFLength();
-				// check arrays of uncompresed shape
-				std::vector<float> amplitudeArray(seqBlock->GetRFAmplitudePtr(), seqBlock->GetRFAmplitudePtr() + rfLength);
-				std::vector<float> phaseArray(seqBlock->GetRFPhasePtr(), seqBlock->GetRFPhasePtr() + rfLength);
-				// rfDeadTime is usually zeros at the end of the pulse, we search for them here
-				int nEnd;
-				int delayAfterPulse = 0;
-				for (nEnd = rfLength; nEnd > 0; --nEnd) {
-					if (fabs(amplitudeArray[nEnd - 1]) > 1e-6)// because of the round-up errors in the ascii and derivative/integral reconstructuion
-						break;
-				}
-				delayAfterPulse = rfLength - nEnd;
-				pulse.deadTime = delayAfterPulse;
-				rfLength = nEnd;
-				pulse.length = rfLength;
-
-				amplitudeArray.erase(amplitudeArray.end() - delayAfterPulse, amplitudeArray.end());
-				phaseArray.erase(phaseArray.end() - delayAfterPulse, phaseArray.end());
-				// search for unique samples in amplitude and phase
-				std::vector<float> amplitudeArrayUnique(rfLength);
-				std::vector<float>::iterator it_amplitude = std::unique_copy(amplitudeArray.begin(), amplitudeArray.end(), amplitudeArrayUnique.begin());
-				amplitudeArrayUnique.resize(std::distance(amplitudeArrayUnique.begin(), it_amplitude));
-				std::vector<float> phaseArrayUnique(rfLength);
-				std::vector<float>::iterator it_phase = std::unique_copy(phaseArray.begin(), phaseArray.end(), phaseArrayUnique.begin());
-				phaseArrayUnique.resize(std::distance(phaseArrayUnique.begin(), it_phase));
-
-				// need to resample pulse
-				unsigned int max_samples = std::max(amplitudeArrayUnique.size(), phaseArrayUnique.size());
-				if (max_samples > sp->GetMaxNumberOfPulseSamples()) {
-					int sampleFactor = ceil(float(rfLength) / sp->GetMaxNumberOfPulseSamples());
-					float pulseSamples = rfLength / sampleFactor;
-					float timestep = float(sampleFactor) * rfRaster;
-					// resmaple the original pulse with max ssamples and run the simulation
-					pulse.samples.resize(pulseSamples);
-					for (int i = 0; i < pulseSamples; i++) {
+				if (seq.GetVersion() >= 1004000) { // much easier thanks to variable dwell time and no zero-adding anymore in Pulseq 1.4
+					int sampleFactor = 1;
+					if (rfLength > sp->GetMaxNumberOfPulseSamples()) {
+						sampleFactor = ceil(float(rfLength) / sp->GetMaxNumberOfPulseSamples());
+						rfLength /= sampleFactor;
+					}
+					pulse.samples.resize(rfLength);
+					for (int i = 0; i < rfLength; i++) {
 						pulse.samples[i].magnitude = seqBlock->GetRFAmplitudePtr()[i*sampleFactor];
 						pulse.samples[i].phase = seqBlock->GetRFPhasePtr()[i*sampleFactor];
-						pulse.samples[i].timestep = timestep;
+						pulse.samples[i].timestep = seqBlock->GetRFDwellTime()*sampleFactor * 1e-6;
 					}
+					pulse.length = rfLength * seqBlock->GetRFDwellTime() * sampleFactor * 1e-6;
+					pulse.deadTime = 0.0;
 				}
 				else {
-					std::vector<unsigned int>samplePositions(max_samples + 1);
-					unsigned int sample_idx = 0;
-					if (amplitudeArrayUnique.size() >= phaseArrayUnique.size()) {
-						std::vector<float>::iterator it = amplitudeArray.begin();
-						for (it_amplitude = amplitudeArrayUnique.begin(); it_amplitude != amplitudeArrayUnique.end(); ++it_amplitude) {
-							it = std::find(it, amplitudeArray.end(), *it_amplitude);
-							samplePositions[sample_idx++] = std::distance(amplitudeArray.begin(), it);
+					// check arrays of uncompresed shape
+					std::vector<float> amplitudeArray(seqBlock->GetRFAmplitudePtr(), seqBlock->GetRFAmplitudePtr() + rfLength);
+					std::vector<float> phaseArray(seqBlock->GetRFPhasePtr(), seqBlock->GetRFPhasePtr() + rfLength);
+					// rfDeadTime is usually zeros at the end of the pulse, we search for them here
+					int nEnd;
+					int delayAfterPulse = 0;
+					for (nEnd = rfLength; nEnd > 0; --nEnd) {
+						if (fabs(amplitudeArray[nEnd - 1]) > 1e-6)// because of the round-up errors in the ascii and derivative/integral reconstructuion
+							break;
+					}
+					delayAfterPulse = rfLength - nEnd;
+					pulse.deadTime = double(delayAfterPulse)*1e-6;
+					rfLength = nEnd;
+					pulse.length = rfLength;
+
+					amplitudeArray.erase(amplitudeArray.end() - delayAfterPulse, amplitudeArray.end());
+					phaseArray.erase(phaseArray.end() - delayAfterPulse, phaseArray.end());
+					// search for unique samples in amplitude and phase
+					std::vector<float> amplitudeArrayUnique(rfLength);
+					std::vector<float>::iterator it_amplitude = std::unique_copy(amplitudeArray.begin(), amplitudeArray.end(), amplitudeArrayUnique.begin());
+					amplitudeArrayUnique.resize(std::distance(amplitudeArrayUnique.begin(), it_amplitude));
+					std::vector<float> phaseArrayUnique(rfLength);
+					std::vector<float>::iterator it_phase = std::unique_copy(phaseArray.begin(), phaseArray.end(), phaseArrayUnique.begin());
+					phaseArrayUnique.resize(std::distance(phaseArrayUnique.begin(), it_phase));
+
+					// need to resample pulse
+					unsigned int max_samples = std::max(amplitudeArrayUnique.size(), phaseArrayUnique.size());
+					if (max_samples > sp->GetMaxNumberOfPulseSamples()) {
+						int sampleFactor = ceil(float(rfLength) / sp->GetMaxNumberOfPulseSamples());
+						float pulseSamples = rfLength / sampleFactor;
+						float timestep = float(sampleFactor) * 1e-6;
+						// resmaple the original pulse with max ssamples and run the simulation
+						pulse.samples.resize(pulseSamples);
+						for (int i = 0; i < pulseSamples; i++) {
+							pulse.samples[i].magnitude = seqBlock->GetRFAmplitudePtr()[i*sampleFactor];
+							pulse.samples[i].phase = seqBlock->GetRFPhasePtr()[i*sampleFactor];
+							pulse.samples[i].timestep = timestep;
 						}
 					}
 					else {
-						std::vector<float>::iterator it = phaseArray.begin();
-						for (it_phase = phaseArrayUnique.begin(); it_phase != phaseArrayUnique.end(); ++it_phase) {
-							it = std::find(it, phaseArray.end(), *it_phase);
-							samplePositions[sample_idx++] = std::distance(phaseArray.begin(), it);
+						std::vector<unsigned int>samplePositions(max_samples + 1);
+						unsigned int sample_idx = 0;
+						if (amplitudeArrayUnique.size() >= phaseArrayUnique.size()) {
+							std::vector<float>::iterator it = amplitudeArray.begin();
+							for (it_amplitude = amplitudeArrayUnique.begin(); it_amplitude != amplitudeArrayUnique.end(); ++it_amplitude) {
+								it = std::find(it, amplitudeArray.end(), *it_amplitude);
+								samplePositions[sample_idx++] = std::distance(amplitudeArray.begin(), it);
+							}
 						}
-					}
-					pulse.samples.resize(max_samples);
-					samplePositions[max_samples] = rfLength;
-					// now we have the duration of the single samples -> simulate it
-					for (int i = 0; i < max_samples; i++) {
-						pulse.samples[i].magnitude = seqBlock->GetRFAmplitudePtr()[samplePositions[i]];
-						pulse.samples[i].phase = seqBlock->GetRFPhasePtr()[samplePositions[i]];
-						pulse.samples[i].timestep = (samplePositions[i + 1] - samplePositions[i])*rfRaster;
+						else {
+							std::vector<float>::iterator it = phaseArray.begin();
+							for (it_phase = phaseArrayUnique.begin(); it_phase != phaseArrayUnique.end(); ++it_phase) {
+								it = std::find(it, phaseArray.end(), *it_phase);
+								samplePositions[sample_idx++] = std::distance(phaseArray.begin(), it);
+							}
+						}
+						pulse.samples.resize(max_samples);
+						samplePositions[max_samples] = rfLength;
+						// now we have the duration of the single samples -> simulate it
+						for (int i = 0; i < max_samples; i++) {
+							pulse.samples[i].magnitude = seqBlock->GetRFAmplitudePtr()[samplePositions[i]];
+							pulse.samples[i].phase = seqBlock->GetRFPhasePtr()[samplePositions[i]];
+							pulse.samples[i].timestep = (samplePositions[i + 1] - samplePositions[i]) * 1e-6;
+						}
 					}
 				}
 				uniquePuleIDs.push_back(p);
@@ -266,6 +279,11 @@ bool BMCSim::RunSimulation() {
 					M[i] = 0.0;
 			}
 			else if (seqBlock->isRF()) { // saturation pulse
+				// lead time set?
+				if (sp->GetScannerCoilLeadTime() > 0) {
+					solver->UpdateBlochMatrix(*sp, 0, 0, 0);
+					solver->SolveBlochEquation(M, sp->GetScannerCoilLeadTime());
+				}
 				int timeID = seq.GetVersion() >= 1004000 ? seqBlock->GetRFEvent().timeShape : 0;
 				BMCSim::PulseID p = std::make_tuple(seqBlock->GetRFEvent().magShape, seqBlock->GetRFEvent().phaseShape, timeID); // get the magnitude and phase pair
 				PulseEvent* pulse = this->GetUniquePulse(p); // find the unque rf id in the previously decoded seq file library
@@ -276,9 +294,10 @@ bool BMCSim::RunSimulation() {
 					solver->SolveBlochEquation(M, pulseSamples->at(p).timestep);
 				}
 				// delay at end of the pulse
-				if (pulse->deadTime > 0) {
+				double delayAterPulse = std::max<double>(pulse->deadTime, sp->GetScannerCoilHoldTime());
+				if (delayAterPulse > 0) {
 					solver->UpdateBlochMatrix(*sp, 0, 0, 0);
-					solver->SolveBlochEquation(M, pulse->deadTime*1e-6);
+					solver->SolveBlochEquation(M, delayAterPulse);
 				}
 				int phaseDegree = pulse->length * 1e-6 * 360 * seqBlock->GetRFEvent().freqOffset;
 				phaseDegree %= 360;

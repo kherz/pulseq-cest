@@ -50,7 +50,7 @@ public:
 	typedef std::tuple<int, int, int> PulseID;
 
 	//! Constructor
-	BMCSim(SimulationParameters &SimPars);
+	BMCSim(SimulationParameters &simPars);
 
 	//! Destructor
 	~BMCSim();
@@ -62,7 +62,7 @@ public:
 	PulseEvent* GetUniquePulse(PulseID id);
 
 	//! Set simulations parameters object
-	bool SetSimulationParameters(SimulationParameters &SimPars);
+	bool SetSimulationParameters(SimulationParameters &simPars);
 
 	//! Get simulations parameters object
 	SimulationParameters GetSimulationParameters();

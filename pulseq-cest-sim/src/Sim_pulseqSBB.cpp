@@ -165,11 +165,14 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp)
 	if (mxGetField(scannerIdx, 0, "B0") == NULL) {
 		mexErrMsgIdAndTxt("Sim_pulseqSBB:ParseInputStruct", "Could not parse arguments of Scanner. Please make sure that the struct contains B0");
 	}
-	double B0 = *(mxGetPr(mxGetField(scannerIdx, 0, "B0")));
-	double relB1 = mxGetField(scannerIdx, 0, "relB1") == NULL ? 1.0 : *(mxGetPr(mxGetField(scannerIdx, 0, "relB1")));
-	double B0Inhomogeneity = mxGetField(scannerIdx, 0, "B0Inhomogeneity") == NULL ? 0.0 : *(mxGetPr(mxGetField(scannerIdx, 0, "B0Inhomogeneity")));
-	double Gamma = mxGetField(scannerIdx, 0, "Gamma") == NULL ? 42.577 * 2 * M_PI : *(mxGetPr(mxGetField(scannerIdx, 0, "Gamma")));
-	sp.InitScanner(B0, relB1, B0Inhomogeneity, Gamma);
+	Scanner scanner;
+	scanner.B0 = *(mxGetPr(mxGetField(scannerIdx, 0, "B0")));
+	scanner.relB1 = mxGetField(scannerIdx, 0, "relB1") == NULL ? 1.0 : *(mxGetPr(mxGetField(scannerIdx, 0, "relB1")));
+	scanner.B0Inhomogeneity = mxGetField(scannerIdx, 0, "B0Inhomogeneity") == NULL ? 0.0 : *(mxGetPr(mxGetField(scannerIdx, 0, "B0Inhomogeneity")));
+	scanner.Gamma = mxGetField(scannerIdx, 0, "Gamma") == NULL ? 42.577 * 2 * M_PI : *(mxGetPr(mxGetField(scannerIdx, 0, "Gamma")));
+	scanner.coilLeadTime = mxGetField(scannerIdx, 0, "coilLeadTime") == NULL ? 0.0 : *(mxGetPr(mxGetField(scannerIdx, 0, "coilLeadTime")));
+	scanner.coilHoldTime = mxGetField(scannerIdx, 0, "coilHoldTime") == NULL ? 0.0 : *(mxGetPr(mxGetField(scannerIdx, 0, "coilHoldTime")));
+	sp.InitScanner(scanner);
 
 	//** Verbose mode **//
 	if (mxGetField(inStruct, 0, "Verbose") != NULL)

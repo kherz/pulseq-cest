@@ -259,9 +259,9 @@ SimulationParameters::~SimulationParameters()
 
 //! Get Magnetization vectors
 /*!	\return Magnetization vectors at each ADC event */
-void SimulationParameters::SetInitialMagnetizationVector(Eigen::VectorXd MagVec)
+void SimulationParameters::SetInitialMagnetizationVector(Eigen::VectorXd magVec)
 {
-	M = MagVec;
+	M = magVec;
 }
 
 //! Get Magnetization vectors
@@ -339,13 +339,21 @@ MTPool* SimulationParameters::GetMTPool()
     \param relB1 relative B1
     \param B0Inhomogeneity field inhomogeneity [ppm]
     \param Gamma gyromagnetic ratio [rad/uT]
+	\param leadtime coil lead time [s]
+	\param holdtime coil hold time [s]
 */
-void SimulationParameters::InitScanner(double b0, double b1, double b0Inh, double gamma)
+void SimulationParameters::InitScanner(double b0, double b1, double b0Inh, double gamma, double leadtime, double holdtime)
 {
-	scanner.B0 = b0;
-	scanner.relB1 = b1;
-	scanner.B0Inhomogeneity = b0Inh;
-	scanner.Gamma = gamma;
+	Scanner s{ b0,b1,b0Inh,gamma,leadtime,holdtime };
+	this->InitScanner(s);
+
+}
+
+//! Set Scanner related info
+/*!	\parem Scanner object */
+void SimulationParameters::InitScanner(Scanner s)
+{
+	scanner = s;
 }
 
 //! Get Scanner B0
@@ -388,6 +396,20 @@ void  SimulationParameters::SetScannerB0Inhom(double db0)
 double SimulationParameters::GetScannerGamma()
 {
 	return scanner.Gamma;
+}
+
+//! Get coil lead time
+/*!	\return coil lead time [s] */
+double SimulationParameters::GetScannerCoilLeadTime()
+{
+	return scanner.coilLeadTime;
+}
+
+//! Get coil hold time
+/*!	\return coil hold time [s] */
+double SimulationParameters::GetScannerCoilHoldTime()
+{
+	return scanner.coilHoldTime;
 }
 
 //! Get bool if MT should be simulated

@@ -137,6 +137,14 @@ if isfield(params, 'rel_b1')
     PMEX.Scanner.relB1 = str2param(params.rel_b1);
 end
 
+if isfield(params, 'coil_lead_time')
+    PMEX.Scanner.coilLeadTime = str2param(params.coil_lead_time);
+end
+
+if isfield(params, 'coil_hold_time')
+    PMEX.Scanner.coilHoldTime = str2param(params.coil_hold_time);
+end
+
 
 %% more optinal paramters
 if isfield(params, 'verbose')
