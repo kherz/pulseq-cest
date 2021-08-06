@@ -246,7 +246,7 @@ SimulationParameters::~SimulationParameters()
 
 //! Get Magnetization vectors
 /*!	\return Magnetization vectors at each ADC event */
-void SimulationParameters::SetInitialMagnetizationVector(Eigen::VectorXd MagVec)
+void SimulationParameters::SetInitialMagnetizationVector(Eigen::VectorXd magVec)
 {
 	sequence = seq;
 	this->DecodeSeqInfo();
@@ -350,9 +350,9 @@ MTPool *SimulationParameters::GetMTPool()
 	\param leadtime coil lead time [s]
 	\param holdtime coil hold time [s]
 */
-void SimulationParameters::InitScanner(double b0, double b1, double b0Inh, double gamma)
+void SimulationParameters::InitScanner(double b0, double b1, double b0Inh, double gamma, double leadtime, double holdtime)
 {
-	Scanner s{b0, b1, b0Inh, gamma};
+	Scanner s{b0, b1, b0Inh, gamma, leadtime, holdtime};
 	this->InitScanner(s);
 }
 
@@ -403,6 +403,20 @@ void SimulationParameters::SetScannerB0Inhom(double db0)
 double SimulationParameters::GetScannerGamma()
 {
 	return scanner.Gamma;
+}
+
+//! Get coil lead time
+/*!	\return coil lead time [s] */
+double SimulationParameters::GetScannerCoilLeadTime()
+{
+	return scanner.coilLeadTime;
+}
+
+//! Get coil hold time
+/*!	\return coil hold time [s] */
+double SimulationParameters::GetScannerCoilHoldTime()
+{
+	return scanner.coilHoldTime;
 }
 
 //! Get bool if MT should be simulated
