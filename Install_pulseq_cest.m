@@ -19,7 +19,7 @@ yaml_path = fullfile(script_fp, 'pulseq-cest-sim', 'yamlmatlab');
 
 % check if git is there
 [st, rs] = system('git --version');
-has_git = st;
+has_git = ~st;
 if has_git %good, we can just clone everything
     disp('git found, cloning external libraries...');
     disp(['Running git in ' script_fp]);
