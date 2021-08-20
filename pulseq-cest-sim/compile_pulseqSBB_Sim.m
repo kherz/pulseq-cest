@@ -29,10 +29,10 @@ end
 
 % get all file paths
 i_eigen = ['-I' eigen_path];
-i_pulseq = ['-I' fullfile(script_fp, 'src', '3rdParty', 'pulseq-master', 'src')];
+i_pulseq = ['-I' fullfile(script_fp, 'pulseq', 'src')];
 f_sbb = fullfile(script_fp, 'src', 'Sim_pulseqSBB.cpp');
 f_sp = fullfile(script_fp, 'src', 'SimulationParameters.cpp');
-f_es = fullfile(script_fp, 'src', '3rdParty', 'pulseq-master', 'src', 'ExternalSequence.cpp');
+f_es = fullfile(script_fp, 'pulseq', 'src', 'ExternalSequence.cpp');
 opt_flag = 'CXXOPTIMFLAGS=""'; % gets overwritten if supported compiler is found
 
 % compile simulation

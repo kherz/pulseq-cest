@@ -51,20 +51,12 @@ satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',lims,'timeBwPr
 [B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,tp,td,0,gyroRatio_hz);
 seq_defs.B1cwpe = B1cwpe;
 
-% spoilers
-spoilRiseTime = 1e-3;
-spoilDuration = 4500e-6+ spoilRiseTime; % [s]
-% create pulseq gradient object
-[gxSpoil, gySpoil, gzSpoil] = Create_spoiler_gradients(lims, spoilDuration, spoilRiseTime);
-
-% pseudo adc, not played out
-pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
 
 %% loop through zspec offsets
 offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
 
 % init sequence
-seq = mr.Sequence();
+seq = SequenceSBB(lims);
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
     if currentOffset == seq_defs.M0_offset*gyroRatio_hz*B0
@@ -88,9 +80,9 @@ for currentOffset = offsets_Hz
         end
     end
     if spoiling % spoiling before readout
-        seq.addBlock(gxSpoil,gySpoil,gzSpoil);
+        seq.addSpoilerGradients(lims);
     end
-    seq.addBlock(pseudoADC); % readout trigger event
+    seq.addPseudoADCBlock(); % readout trigger event
 end
 
 
@@ -102,4 +94,6 @@ for n_id = 1:numel(def_fields)
 end
 seq.write(seq_filename, author);
 
+%% plot
+seq.plotSaturationPhase();
 
