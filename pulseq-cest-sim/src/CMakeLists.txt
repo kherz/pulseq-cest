@@ -38,7 +38,7 @@ set(SOURCE_FILES Sim_pulseqSBB.cpp
                  Sim_pulseqSBB_T.h
                  SimulationParameters.h
                  SimulationParameters.cpp
-                 3rdParty/pulseq-master/src/ExternalSequence.cpp)
+                 ../pulseq/src/ExternalSequence.cpp)
 			 		
 matlab_add_mex(NAME Sim_pulseqSBB SRC ${SOURCE_FILES})
 
