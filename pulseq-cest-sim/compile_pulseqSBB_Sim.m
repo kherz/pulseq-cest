@@ -6,10 +6,9 @@ if strcmp(mfilename, 'LiveEditorEvaluationHelperESectionEval')
 else
     script_fp = fileparts(which(mfilename));
 end
-%cd(script_fp);
 
 % check for eigen and clone if not there
-eigen_path = fullfile(script_fp, 'src', '3rdParty', 'eigen3');
+eigen_path = fullfile(script_fp, 'src', '3rdParty', 'eigen3', 'Eigen');
 if ~exist(eigen_path, 'dir')
     % try to clone eigen
     disp('eigen not found, trying to clone...');
@@ -31,6 +30,7 @@ end
 i_eigen = ['-I' eigen_path];
 i_pulseq = ['-I' fullfile(script_fp, 'pulseq', 'src')];
 f_sbb = fullfile(script_fp, 'src', 'Sim_pulseqSBB.cpp');
+f_bmc = fullfile(script_fp, 'src', 'BMCSim.cpp');
 f_sp = fullfile(script_fp, 'src', 'SimulationParameters.cpp');
 f_es = fullfile(script_fp, 'pulseq', 'src', 'ExternalSequence.cpp');
 opt_flag = 'CXXOPTIMFLAGS=""'; % gets overwritten if supported compiler is found
@@ -48,4 +48,4 @@ else
     warning('No tested compiler found. Trying to compile...');
 end
 disp(['Start compilation with ' mex.getCompilerConfigurations('CPP').Name '...']);
-mex(opt_flag, i_eigen, i_pulseq, f_sbb, f_sp, f_es, '-outdir', script_fp);
+mex(opt_flag, i_eigen, i_pulseq, f_sbb, f_bmc, f_sp, f_es, '-outdir', script_fp);

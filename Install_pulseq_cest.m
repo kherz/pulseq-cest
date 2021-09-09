@@ -25,7 +25,7 @@ if has_git %good, we can just clone everything
     disp(['Running git in ' script_fp]);
     
     %clone pulseq
-    cloneRepo(pulseq_path, 'https://github.com/pulseq/pulseq.git', 1, 'v1.3.0');
+    cloneRepo(pulseq_path, 'https://github.com/pulseq/pulseq.git', 1, 'develop_1.4.0');
     % clone pulseq-cest-library
     cloneRepo(lib_path, 'https://github.com/kherz/pulseq-cest-library.git');
     % clone yamlmatlab
@@ -35,7 +35,7 @@ else % no git, try to download
     disp('git not found, trying to install without it...');
     
     % download pulseq
-    unzipRepo(pulseq_path, 'https://github.com/pulseq/pulseq.git', 'v1.3.0');
+    unzipRepo(pulseq_path, 'https://github.com/pulseq/pulseq.git', 'develop_1.4.0');
     % download pulseq-cest-library
     unzipRepo(lib_path, 'https://github.com/kherz/pulseq-cest-library.git');
     % download yamlmatlab

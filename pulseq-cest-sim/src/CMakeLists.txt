@@ -24,7 +24,7 @@ find_package(Matlab REQUIRED)
 include_directories(Matlab_INCLUDE_DIRS)
 
 # and eigen
-set(EIGEN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/eigen3 CACHE PATH "eigen source directory")
+set(EIGEN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/eigen3/Eigen CACHE PATH "eigen source directory")
 if(EXISTS ${EIGEN_SRC_DIR})
    include_directories(${EIGEN_SRC_DIR})
 else()
@@ -42,9 +42,11 @@ endif()
 
 set(SOURCE_FILES Sim_pulseqSBB.cpp
                  BlochMcConnellSolver.h
-                 Sim_pulseqSBB_T.h
                  SimulationParameters.h
                  SimulationParameters.cpp
+				 BMCSim.h
+				 BMCSim.cpp
+				 ${PULSEQ_SRC_DIR}/ExternalSequence.h
                  ${PULSEQ_SRC_DIR}/ExternalSequence.cpp)
 			 		
 matlab_add_mex(NAME Sim_pulseqSBB SRC ${SOURCE_FILES})
