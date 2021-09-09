@@ -257,36 +257,18 @@ SimulationParameters::~SimulationParameters()
 		delete[] cestPools;
 }
 
-//! Set external sequence object
-/*!	\param seq ExternalSequence object that should be simulated */
-void SimulationParameters::SetExternalSequence(ExternalSequence seq)
+//! Get Magnetization vectors
+/*!	\return Magnetization vectors at each ADC event */
+void SimulationParameters::SetInitialMagnetizationVector(Eigen::VectorXd magVec)
 {
-	sequence = seq;
-}
-
-//! Get external sequence object
-/*!	\return ExternalSequence object that should be simulated */
-ExternalSequence* SimulationParameters::GetExternalSequence()
-{
-	return &sequence;
-}
-
-//! Init Magnetitazion Vector Array
-/*!
-	Replicate the initial Magnetization vector for output
-	\param M initial magnetization vector after ADC
-	\param numOutput number of ADC events in external sequence
-*/
-void SimulationParameters::InitMagnetizationVectors(VectorXd &M, unsigned int numOutput)
-{
-	Mvec = M.rowwise().replicate(numOutput);
+	M = magVec;
 }
 
 //! Get Magnetization vectors
 /*!	\return Magnetization vectors at each ADC event */
-MatrixXd* SimulationParameters::GetMagnetizationVectors()
+Eigen::VectorXd* SimulationParameters::GetInitialMagnetizationVector()
 {
-	return &Mvec;
+	return &M;
 }
 
 //! Set Water Pool
@@ -357,13 +339,21 @@ MTPool* SimulationParameters::GetMTPool()
     \param relB1 relative B1
     \param B0Inhomogeneity field inhomogeneity [ppm]
     \param Gamma gyromagnetic ratio [rad/uT]
+	\param leadtime coil lead time [s]
+	\param holdtime coil hold time [s]
 */
-void SimulationParameters::InitScanner(double b0, double b1, double b0Inh, double gamma)
+void SimulationParameters::InitScanner(double b0, double b1, double b0Inh, double gamma, double leadtime, double holdtime)
 {
-	scanner.B0 = b0;
-	scanner.relB1 = b1;
-	scanner.B0Inhomogeneity = b0Inh;
-	scanner.Gamma = gamma;
+	Scanner s{ b0,b1,b0Inh,gamma,leadtime,holdtime };
+	this->InitScanner(s);
+
+}
+
+//! Set Scanner related info
+/*!	\parem Scanner object */
+void SimulationParameters::InitScanner(Scanner s)
+{
+	scanner = s;
 }
 
 //! Get Scanner B0
@@ -380,6 +370,13 @@ double SimulationParameters::GetScannerRelB1()
 	return scanner.relB1;
 }
 
+//! Set Scanner B1 inhomogeneity
+/*!	\param b1 new B1 inhomogeneity */
+void  SimulationParameters::SetScannerRelB1(double b1)
+{
+	scanner.relB1 = b1;
+}
+
 //! Get Scanner B0 inhomogeneity
 /*!	\return field inhomogeneity [ppm] of scanner */
 double SimulationParameters::GetScannerB0Inhom()
@@ -387,11 +384,32 @@ double SimulationParameters::GetScannerB0Inhom()
 	return scanner.B0Inhomogeneity;
 }
 
+//! Set Scanner B0 inhomogeneity
+/*!	\param db0 new B0 inhomogeneity */
+void  SimulationParameters::SetScannerB0Inhom(double db0)
+{
+	scanner.B0Inhomogeneity = db0;
+}
+
 //! Get Scanner Gamma
 /*!	\return gyromagnetic ratio of simulated nucleus [rad/uT] */
 double SimulationParameters::GetScannerGamma()
 {
 	return scanner.Gamma;
+}
+
+//! Get coil lead time
+/*!	\return coil lead time [s] */
+double SimulationParameters::GetScannerCoilLeadTime()
+{
+	return scanner.coilLeadTime;
+}
+
+//! Get coil hold time
+/*!	\return coil hold time [s] */
+double SimulationParameters::GetScannerCoilHoldTime()
+{
+	return scanner.coilHoldTime;
 }
 
 //! Get bool if MT should be simulated
@@ -458,3 +476,4 @@ unsigned int SimulationParameters::GetMaxNumberOfPulseSamples()
 {
 	return maxNumberOfPulseSamples;
 }
+
