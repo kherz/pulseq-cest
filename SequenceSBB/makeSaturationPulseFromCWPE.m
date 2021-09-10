@@ -1,4 +1,4 @@
-function sat_pulse = makeSaturationPulseFromCWPE(shape, b1_cwpe, tp,td,lims,gamma_hz)
+function sat_pulse = makeSaturationPulseFromCWPE(shape, b1_cwpe, tp,td,lims)
 % Generate a sat pulse based on the specified B1 continous wave power
 % equivalent
 %
@@ -7,19 +7,21 @@ function sat_pulse = makeSaturationPulseFromCWPE(shape, b1_cwpe, tp,td,lims,gamm
 % b1_amp: desired amplitude for specified type
 % tp: pulse duration
 % td: interpulse delay
+% lims: scanner limits
 %
 % output: 
 % pulseq sat pulse type
 %
 % kai.herz@tuebingen.mpg.de
 
-if nargin < 6
-   gamma_hz = 42.5764;
-end
-
 % output init
 sat_pulse = [];
 
+if nargin < 5
+    error('Needs shape, b1, tp, td and lims as input');
+end
+
+gamma_hz = lims.gamma*1e-6;
 dummy_b1 = 1;
 dummy_fa = tp*dummy_b1*gamma_hz*2*pi;
 

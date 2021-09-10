@@ -1,2 +1,2 @@
-warning('Simulate_example is deprecated, please use simulateExample instead.');
+deprecationWarning(mfilename, 'simulateExample');
 simulateExample;

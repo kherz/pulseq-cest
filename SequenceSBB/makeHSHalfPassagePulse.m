@@ -1,6 +1,10 @@
 %% generate hyperbolic secant half passage pulses
-function adia_SL = makeHSHalfPassagePulses(B1,lims)
+function hs_pulse = makeHSHalfPassagePulse(B1,lims)
 
+hs_pule = [];
+if nargin < 2 
+    error('Need b1 and lims as input');
+end
 
 %% pulse definition
 tp_us = 8000;
@@ -48,7 +52,7 @@ end
 % shift negative phase to positive
 dphase = dphase+2*pi;
 signal = w1.*exp(1i*(dphase));
-adia_SL = makeArbitraryRfWithPhaseArray(signal,B1*gyroRatio_rad, 'system', lims);
+hs_pulse = makeArbitraryRfWithPhaseArray(signal,B1*gyroRatio_rad, 'system', lims);
  
 end
 

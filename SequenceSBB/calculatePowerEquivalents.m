@@ -18,7 +18,7 @@ B1cwae_pure= alpha_rad/(gamma_hz*2*pi*t_p); % amplitude equivalent over single p
 
 if plot_flag
 figure(),plot(linspace(0,tpulse(end),numel(B1)),B1); hold on; 
-ylabel('B1 amplitude in µT');
-xlabel(sprintf('tp in s\ncw-power-equivalent =%.3f µT\ncw-ampl-equivalent = %.3f µT\ncw-ampl-equivalent over single pulse =%.3f µT\n flip angle = %.2f °',...
+ylabel('B1 amplitude in uT');
+xlabel(sprintf('tp in s\ncw-power-equivalent =%.3f uT\ncw-ampl-equivalent = %.3f uT\ncw-ampl-equivalent over single pulse =%.3f uT\n flip angle = %.2f degree',...
     B1cwpe,B1cwae,B1cwae_pure,alpha));
 end

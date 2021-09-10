@@ -3,3 +3,4 @@ pulseq-cest-sim/src/3rdParty/eigen3
 pulseq-cest-sim/doc
 pulseq-cest-sim/build
 pulseq-cest-sim/pulseq
+*.asv
