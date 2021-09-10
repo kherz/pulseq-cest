@@ -44,9 +44,9 @@ set(SOURCE_FILES PulseqCESTmex.cpp
                  BlochMcConnellSolver.h
                  SimulationParameters.h
                  SimulationParameters.cpp
-				 BMCSim.h
-				 BMCSim.cpp
-				 ${PULSEQ_SRC_DIR}/ExternalSequence.h
+                 BMCSim.h
+                 BMCSim.cpp
+                 ${PULSEQ_SRC_DIR}/ExternalSequence.h
                  ${PULSEQ_SRC_DIR}/ExternalSequence.cpp)
 				 
 matlab_add_mex(NAME pulseqcestmex SRC ${SOURCE_FILES})

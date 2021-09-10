@@ -2,7 +2,7 @@
 Have a look at the saturation events by running:
 ```Matlab
 >> seq = SequenceSBB;
->> seq.read('APTw_3T_example');
+>> seq.read('APTw_3T_example.seq');
 >> seq.plotSaturationPhase();
 ```
 

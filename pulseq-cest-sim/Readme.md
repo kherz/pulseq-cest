@@ -3,8 +3,7 @@
 ## Introduction
 This simulation package runs Bloch-McConnell simulations for CEST experiments on [pulseq](http://pulseq.github.io/) sequence files. The MATLAB code can also be used to create .seq files for the pulseq sequence building block for SIEMENS idea sequences. More info about how to use the simulation can be found in the following documentation.
 
-This open source project is published under the [MIT License](LICENSE.md).
-Different license terms may apply for included source code in the [3rdParty folder](src/3rdParty).
+This open source project is published under the [MIT License](../LICENSE).
 
 ## Compile the .mex files (skip, if you want to use the included .mex-files)
 This package includes precompiled mex files for 64-bit Windows (compiled with MinGW C++ 5.3.0), Linux (compiled on Linux Mint with g++ 7.3.0) and Mac OS.
@@ -15,10 +14,10 @@ If you want or need to compile a version for yourself, there are two different w
 If you do not have git installed, you need to download the [eigen](https://gitlab.com/libeigen/eigen/) package manually and make sure to put the code here */src/3rdParty/eigen3*
 
 
- If you have git installed, eigen is cloned during the compilation and you can just run the [compile_pulseqSBB_Sim.m](compile_pulseqSBB_Sim.m) script in MATLAB and should get a similar output like this depending on your compiler: 
+ If you have git installed, eigen is cloned during the compilation and you can just run the [compile_pulseqcest.m](compile_pulseqcest.m) script in MATLAB and should get a similar output like this depending on your compiler: 
 
 ```Matlab
->> compile_pulseqSBB_Sim
+>> compile_pulseqcest
 eigen not found, trying to clone...
 ...done!
 Checking compilers...
@@ -32,9 +31,9 @@ For more infos, have a look at the MATLAB [documentation](https://mathworks.com/
 A [CMakeLists.txt](src/CMakeLists.txt) file is included in the package (tested with MSVC and GCC on Windows). *eigen* is expected to be in */src/3rdParty/eigen3*, but you can change the path manually by changing *EIGEN_SRC_DIR*. If you choose CMake over the MATLAB function, I assume no further instructions are needed here.
 
 ## Run example Z-spectrum simulation
-This package includes an example [file](../seq-generation/WriteExamplePulseqSBBZSpectrum.m) to generate .seq-files for a APTw Z-spectrum simulation. You can find that in the subfolder [../seq-generation](../seq-generation). Feel free to play around with various parameters to generate different preparation periods. You can find more info in the subfolder [Readme](../seq-generation/Readme.md).
+This package includes an example [file](../seq-generation/writeExampleAPTwSeqFile.m) to generate .seq-files for an APTw Z-spectrum simulation. You can find that in the subfolder [../seq-generation](../seq-generation). Feel free to play around with various parameters to generate different preparation periods. You can find more info in the subfolder [Readme](../seq-generation/Readme.md).
 
-You can simulate  .seq-files by running [Run_pulseq_cest_Simulation.m](Run_pulseq_cest_Simulation.m). The function takes the pulseq .seq-file and a .yaml parameter file with the simulation setting as an input. The parameters from the .yaml-file are [read](Read_simulation_params.m) and used to generate a struct wich is used as input for the mex-function. All members PMEX (**P**arameters for **MEX** ) struct and shortly described here.
+You can simulate .seq-files by running [simulate_pulseqcest.m](simulate_pulseqcest.m). The function takes the pulseq .seq-file and a .yaml parameter file with the simulation setting as an input. The parameters from the .yaml-file are [read](readSimulationParameters.m) and used to generate a struct wich is used as input for the mex-function. All members PMEX (**P**arameters for **MEX** ) struct and shortly described here.
 
 ### Water Pool (mandatory) 
 Water relaxation rates R1 = 1/T1 and R2 = 1/T2 are set here.
