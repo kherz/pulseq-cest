@@ -18,17 +18,15 @@ seq_fn   = fullfile(script_fp, 'APTw_3T_example.seq');
 param_fn = fullfile(script_fp, 'GM_3T_example_bmsim.yaml'); 
 
 %% run simulation
-M_z = Run_pulseq_cest_Simulation(seq_fn, param_fn);
+M_z = simulate_pulseqcest(seq_fn, param_fn);
 
-% read the .seq-file
-seq = mr.Sequence;
-seq.read(seq_fn);
+%% read the .seq-file definitions
+definitions = readSequenceDefinitions(seq_fn);
 
 % get the definitions in the file
-offsets_ppm = seq.definitions('offsets_ppm'); % offsets
-m0_offset = seq.definitions('M0_offset');     % m0 offset frequency
+offsets_ppm = definitions('offsets_ppm'); % offsets
+m0_offset = definitions('M0_offset');     % m0 offset frequency
 
 figure(1);
-
-Plot_pulseq_cest_Simulation(M_z,offsets_ppm,m0_offset)
+plotSimulationResults(M_z,offsets_ppm,m0_offset)
  

@@ -1,4 +1,7 @@
 % !! make this files folder your current folder !!
+
+warning('plot_seq_file is deprecated, please use the plotSaturationPhase function of the SequenceSBB class instead.');
+
 if strcmp(mfilename, 'LiveEditorEvaluationHelperESectionEval')
     cd(fileparts(matlab.desktop.editor.getActiveFilename));
 else

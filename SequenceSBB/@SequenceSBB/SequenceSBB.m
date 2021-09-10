@@ -4,7 +4,7 @@ classdef SequenceSBB < mr.Sequence
     % Kai Herz, 2021
     
     methods
-       
+        
         % contructor
         % passes arguments to parent constructr
         function obj = SequenceSBB(varargin)
@@ -30,21 +30,21 @@ classdef SequenceSBB < mr.Sequence
         % Input: system limits
         function addSpoilerGradients(obj, lims)
             if nargin < 2
-                error('Please provide scanner limits for spoiler gradients');
+                lims = obj.sys;
             end
             % spoilers
             spoilRiseTime = 1e-3;
             spoilDuration = 4500e-6+ spoilRiseTime; % [s]
             % create pulseq gradient object
-            [gxSpoil, gySpoil, gzSpoil] = Create_spoiler_gradients(lims, spoilDuration, spoilRiseTime);
+            [gxSpoil, gySpoil, gzSpoil] = makeSpoilerGradients(lims, spoilDuration, spoilRiseTime);
             addBlock(obj, gxSpoil, gySpoil, gzSpoil);
         end
         
         % plots the saturation phase from the firts to the second adc
-        % event. 
+        % event.
         % input: gamma (optional) gyromagnetic ratio for the nucleus,
         % standard is water [MHz/T]
-        function plotSaturationPhase(obj, gamma)
+        function p = plotSaturationPhase(obj)
             t=0; tADC=[];
             for iB=1:length(obj.blockEvents)
                 block = obj.getBlock(iB);
@@ -53,11 +53,7 @@ classdef SequenceSBB < mr.Sequence
                     tADC(end+1) = t; % save time of ADC events here
                 end
             end
-            % gamma for conversion from Hz tu uT
-            gammaHz = 42.5764;
-            if nargin > 1
-               gammaHz = gamma;
-            end
+            
             % plot only from first to second ADC,
             p = obj.plot('TimeRange',[tADC(1)-0.02 tADC(2)],'timeDisp','s');
             % get the rf axis
@@ -68,7 +64,7 @@ classdef SequenceSBB < mr.Sequence
             end
             rf_ax = p.Children(rf_mag_id);
             % how many ticks do we need?
-            max_tick = ceil(str2num(rf_ax.YTickLabel{end})/gammaHz);
+            max_tick = ceil(str2num(rf_ax.YTickLabel{end})/(obj.sys.gamma*1e-6));
             ticks = [];
             if max_tick < 3
                 tick = 0:0.5:max_tick;
@@ -76,7 +72,7 @@ classdef SequenceSBB < mr.Sequence
                 tick = 0:max_tick;
             end
             % scale to gat uT.
-            rf_ax.YTick = tick*gammaHz;
+            rf_ax.YTick = tick*(obj.sys.gamma*1e-6);
             rf_ax.YLim = [0 rf_ax.YTick(end)];
             for cl = 1:numel(rf_ax.YTick)
                 rf_ax.YTickLabel{cl} = num2str(cl-1);

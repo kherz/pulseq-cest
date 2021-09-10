@@ -3,7 +3,7 @@
 
 cmake_minimum_required(VERSION 3.18.0)
 
-project(Sim_pulseqSBB)
+project(pulseqcestmex)
 
 # need c++11 standards
 set (CMAKE_CXX_STANDARD 11)
@@ -40,7 +40,7 @@ else()
 endif()
 
 
-set(SOURCE_FILES Sim_pulseqSBB.cpp
+set(SOURCE_FILES PulseqCESTmex.cpp
                  BlochMcConnellSolver.h
                  SimulationParameters.h
                  SimulationParameters.cpp
@@ -48,6 +48,5 @@ set(SOURCE_FILES Sim_pulseqSBB.cpp
 				 BMCSim.cpp
 				 ${PULSEQ_SRC_DIR}/ExternalSequence.h
                  ${PULSEQ_SRC_DIR}/ExternalSequence.cpp)
-			 		
-matlab_add_mex(NAME Sim_pulseqSBB SRC ${SOURCE_FILES})
-
+				 
+matlab_add_mex(NAME pulseqcestmex SRC ${SOURCE_FILES})

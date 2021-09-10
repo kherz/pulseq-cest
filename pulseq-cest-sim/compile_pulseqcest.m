@@ -1,4 +1,4 @@
-% compile_pulseqSBB_Sim
+% compile_pulseqcest
 % get filepath
 script_fp = [];
 if strcmp(mfilename, 'LiveEditorEvaluationHelperESectionEval')
@@ -29,7 +29,7 @@ end
 % get all file paths
 i_eigen = ['-I' eigen_path];
 i_pulseq = ['-I' fullfile(script_fp, 'pulseq', 'src')];
-f_sbb = fullfile(script_fp, 'src', 'Sim_pulseqSBB.cpp');
+f_sbb = fullfile(script_fp, 'src', 'PulseqCESTmex.cpp');
 f_bmc = fullfile(script_fp, 'src', 'BMCSim.cpp');
 f_sp = fullfile(script_fp, 'src', 'SimulationParameters.cpp');
 f_es = fullfile(script_fp, 'pulseq', 'src', 'ExternalSequence.cpp');
@@ -48,4 +48,4 @@ else
     warning('No tested compiler found. Trying to compile...');
 end
 disp(['Start compilation with ' mex.getCompilerConfigurations('CPP').Name '...']);
-mex(opt_flag, i_eigen, i_pulseq, f_sbb, f_bmc, f_sp, f_es, '-outdir', script_fp);
+mex(opt_flag, i_eigen, i_pulseq, f_sbb, f_bmc, f_sp, f_es, '-output', fullfile(script_fp,'pulseqcestmex'));

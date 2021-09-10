@@ -1,0 +1,4 @@
+while true
+    line = fgetl(fid);
+    if (strcmp(line, '[DEFINITIONS]'))
+end

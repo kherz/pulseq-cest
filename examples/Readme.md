@@ -1,16 +1,18 @@
 # Getting started
 Have a look at the saturation events by running:
 ```Matlab
->> plot_seq_file
+>> seq = SequenceSBB;
+>> seq.read('APTw_3T_example');
+>> seq.plotSaturationPhase();
 ```
-and choose the [APTw_3T_example.seq](APTw_3T_example.seq) file. 
-You should see something similar as this:
 
-![seq_plot](seq_plot_example.png)
+You should see something similar to this:
+
+![APTw_3T_example](APTw_3T_example.png)
 
 If you want to run the Bloch-McConnell simulation for that Z-spectrum experiment with a standard setting for 3 T, just run
 ```Matlab
->> Simulate_example
+>> simulateExample
 ```
 
 The simulation runs the Bloch-McConnell simulation of the [.seq-file](APTw_3T_example.seq) for the simulation setting defined in the [.yaml-file](GM_3T_example_bmsim.yaml). You should see a plot of the Z-spectrum and the MTR<sub>asym</sub> curve.
