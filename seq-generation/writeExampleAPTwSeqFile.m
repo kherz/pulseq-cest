@@ -56,8 +56,12 @@ seq = SequenceSBB(getScannerLimits());
 gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 fa_sat        = B1pa*gyroRatio_rad*tp; % flip angle of sat pulse
+
 % create pulseq saturation pulse object
-satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',seq.sys,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
+% pulseq 1.4 supports variable times
+pulseSamples  = 200;
+dwelltime     = tp/pulseSamples; 
+satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'dwell', dwelltime, 'system',seq.sys,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
 
 [B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,0,gyroRatio_hz);
 seq_defs.B1cwpe = B1cwpe;
