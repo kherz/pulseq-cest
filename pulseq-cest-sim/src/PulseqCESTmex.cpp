@@ -293,7 +293,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			break;
 		case RUN:
 			simFramework->RunSimulation();
-			ReturnResultToMATLAB(plhs, &(simFramework->GetMagnetizationVectors()));
+			ReturnResultToMATLAB(plhs, simFramework->GetMagnetizationVectors());
 			break;
 		case CLOSE:
 			if (simFramework != NULL) {

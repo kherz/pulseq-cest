@@ -67,8 +67,11 @@ public:
 	//! Get simulations parameters object
 	SimulationParameters GetSimulationParameters();
 
-	//! Get magnetization vector after simulation
-	Eigen::MatrixXd GetMagnetizationVectors();
+	//! Get pointer to magnetization vector after simulation
+	Eigen::MatrixXd* GetMagnetizationVectors();
+
+	//! Get a copy of the magnetization vector object
+	Eigen::MatrixXd GetCopyOfMagnetizationVectors();
 
 	//! Run Simulation
 	bool RunSimulation();

@@ -70,11 +70,19 @@ SimulationParameters BMCSim::GetSimulationParameters() {
 	return *sp;
 }
 
+//! Get pointer to magnetitazion vectors
+/*!	\return Magnetization vector at each adc event */
+Eigen::MatrixXd* BMCSim::GetMagnetizationVectors() {
+	return &Mvec;
+}
+
 //! Get magnetitazion vectors
 /*!	\return Magnetization vector at each adc event */
-Eigen::MatrixXd BMCSim::GetMagnetizationVectors() {
+Eigen::MatrixXd BMCSim::GetCopyOfMagnetizationVectors()
+{
 	return Mvec;
 }
+
 
 //! Init the solver
 void BMCSim::InitSolver() {
