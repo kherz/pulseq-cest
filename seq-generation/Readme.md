@@ -1,6 +1,6 @@
 # How to write a .seq file for the pulseqSBB
 
-This documentation explains the generation of a suitable .seq file for the pulseqSBB simulation and sequence. It uses the the [SequenceSBB](../SequenceSBB/@SequenceSBB/SequenceSBB.m) class which is derived from the [Pulseq MATLAB code](https://github.com/pulseq/pulseq/tree/master/matlab/%2Bmr). 
+This documentation explains the generation of a suitable .seq file for the pulseqSBB simulation and sequence. It uses the the [SequenceSBB](SequenceSBB/@SequenceSBB/SequenceSBB.m) class which is derived from the [Pulseq MATLAB code](https://github.com/pulseq/pulseq/tree/master/matlab/%2Bmr). 
 
 It is also possible to use the [python](https://github.com/imr-framework/pypulseq) package.
 
