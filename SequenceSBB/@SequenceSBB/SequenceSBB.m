@@ -71,11 +71,11 @@ classdef SequenceSBB < mr.Sequence
             else
                 tick = 0:max_tick;
             end
-            % scale to gat uT.
+            % scale to get uT.
             rf_ax.YTick = tick*(obj.sys.gamma*1e-6);
             rf_ax.YLim = [0 rf_ax.YTick(end)];
             for cl = 1:numel(rf_ax.YTick)
-                rf_ax.YTickLabel{cl} = num2str(cl-1);
+                rf_ax.YTickLabel{cl} = tick(cl);
             end
             rf_ax.YLabel.String = 'RF mag (uT)';
         end
