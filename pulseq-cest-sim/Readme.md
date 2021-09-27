@@ -125,7 +125,7 @@ PMEX.MaxPulseSamples = 100;
 ### Running the simulation
 Once all parameters are set, you can simply run the simulation with 
 ```Matlab
-M_out = Sim_pulseqSBB(PMEX, seq_fn);
+M_out = simulate_pulseqcest(PMEX, seq_fn);
 ```
 Where PMEX is the sruct with all parameters and seq_fn is the filename of the pulseq .seq file.
 The function will return a NxM Matrix where N is the number of entries of the initial magnetization vector PMEX.M and M is the number of ADC events in the .seq file. The Z-value of the water magnetization is at position ((Number of CEST pools) + 1) * 2 + 1 (see definition of the PMEX.M).

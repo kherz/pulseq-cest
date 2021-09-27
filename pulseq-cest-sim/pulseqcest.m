@@ -1,4 +1,8 @@
-% call the matlan function for a single simulation with a single seq file
+% call the mex function for a parameter setting and a seq file
+% Input:  PMEX       : parameter struct for mex function
+%         seq_fn     : seq filename
+%
+% Output: M          : final magnetitzation vector at each offset     
 function M = pulseqcest(PMEX, seq_fn)
 
 % output init
