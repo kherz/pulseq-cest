@@ -51,6 +51,9 @@ classdef SequenceSBB < mr.Sequence
                 t = t+mr.calcDuration(block);
                 if ~isempty(block.adc)
                     tADC(end+1) = t; % save time of ADC events here
+                    if numel(tADC) == 2
+                        break;
+                    end
                 end
             end
             

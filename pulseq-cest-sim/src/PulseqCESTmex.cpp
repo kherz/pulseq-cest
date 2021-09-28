@@ -26,7 +26,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 // global variables 
 ExternalSequence seq;
 SimulationParameters sp;
-BMCSim* simFramework = NULL;
+std::unique_ptr<BMCSim> simFramework;
 
 // determine how the mex function was called
 enum CallMode { INIT, UPDATE, RUN, CLOSE, INVALID };
@@ -256,7 +256,7 @@ void Initialize(int nrhs, const mxArray *prhs[])
 	// parse input
 	ParseInputStruct(nrhs, prhs, sp);
 	// init framework
-	simFramework = new BMCSim(sp);
+	simFramework = std::make_unique<BMCSim>(sp);
 	// get seq filename
 	const int charBufferSize = 2048;
 	char tmpCharBuffer[charBufferSize];
@@ -296,9 +296,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			ReturnResultToMATLAB(plhs, simFramework->GetMagnetizationVectors());
 			break;
 		case CLOSE:
-			if (simFramework != NULL) {
-				delete simFramework;
-			}
 			if (mexIsLocked()) {
 				mexUnlock();
 			}
@@ -313,9 +310,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	catch (...) // clean up if sth didn't work
 	{
 		mexWarnMsgIdAndTxt("pulseqcestmex:mexFunction", "Error! Cleaning up...");
-		if (simFramework != NULL) {
-			delete simFramework;
-		}
 		if (mexIsLocked()) {
 			mexUnlock();
 		}	
