@@ -254,7 +254,7 @@ void Initialize(int nrhs, const mxArray *prhs[])
 	// parse input
 	ParseInputStruct(nrhs, prhs, sp);
 	// init framework
-	simFramework = std::make_unique<BMCSim>(sp);
+	simFramework = std::unique_ptr<BMCSim>(new BMCSim(sp));
 	// get seq filename
 	const int charBufferSize = 2048;
 	char tmpCharBuffer[charBufferSize];

@@ -22,6 +22,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 
 #include "ExternalSequence.h"
 #include "Eigen"
+#include <memory>
 
 #define _USE_MATH_DEFINES
 #include <cmath>

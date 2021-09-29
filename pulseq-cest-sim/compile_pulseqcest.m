@@ -8,7 +8,7 @@ else
 end
 
 % check for eigen and clone if not there
-eigen_path = fullfile(script_fp, 'src', '3rdParty', 'eigen3', 'Eigen');
+eigen_path = fullfile(script_fp, 'src', '3rdParty', 'eigen3');
 if ~exist(eigen_path, 'dir')
     % try to clone eigen
     disp('eigen not found, trying to clone...');
@@ -25,9 +25,10 @@ if ~exist(eigen_path, 'dir')
     end
     disp('...done!');
 end
+eigen_inlude_path = fullfile(eigen_path, 'Eigen');
 
 % get all file paths
-i_eigen = ['-I' eigen_path];
+i_eigen = ['-I' eigen_inlude_path];
 i_pulseq = ['-I' fullfile(script_fp, 'pulseq', 'src')];
 f_sbb = fullfile(script_fp, 'src', 'PulseqCESTmex.cpp');
 f_bmc = fullfile(script_fp, 'src', 'BMCSim.cpp');

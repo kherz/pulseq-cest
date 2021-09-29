@@ -88,30 +88,30 @@ void BMCSim::InitSolver() {
 	switch (sp->GetNumberOfCESTPools()) {
 	case 0: // only water
 		if (sp->IsMTActive())
-			solver = std::make_unique< BlochMcConnellSolver<4> >(*sp);
+			solver = std::unique_ptr<BlochMcConnellSolver<4> >(new BlochMcConnellSolver<4>(*sp));
 		else
-			solver = std::make_unique< BlochMcConnellSolver<3> >(*sp);
+			solver = std::unique_ptr<BlochMcConnellSolver<3> >(new BlochMcConnellSolver<3>(*sp));
 		break;
 	case 1: // one cest pool
 		if (sp->IsMTActive())
-			solver = std::make_unique < BlochMcConnellSolver<7> >(*sp);
+			solver = std::unique_ptr<BlochMcConnellSolver<7> >(new BlochMcConnellSolver<7>(*sp));
 		else
-			solver = std::make_unique < BlochMcConnellSolver<6> >(*sp);
+			solver = std::unique_ptr<BlochMcConnellSolver<6> >(new BlochMcConnellSolver<6>(*sp));
 		break;
 	case 2: // two cest pools
 		if (sp->IsMTActive())
-			solver = std::make_unique < BlochMcConnellSolver<10> >(*sp);
+			solver = std::unique_ptr<BlochMcConnellSolver<10> >(new BlochMcConnellSolver<10>(*sp));
 		else
-			solver = std::make_unique < BlochMcConnellSolver<9> >(*sp);
+			solver = std::unique_ptr<BlochMcConnellSolver<9> >(new BlochMcConnellSolver<9>(*sp));
 		break;
 	case 3: // three cest pools
 		if (sp->IsMTActive())
-			solver = std::make_unique < BlochMcConnellSolver<13> >(*sp);
+			solver = std::unique_ptr<BlochMcConnellSolver<13> >(new BlochMcConnellSolver<13>(*sp));
 		else
-			solver = std::make_unique < BlochMcConnellSolver<12> >(*sp);
+			solver = std::unique_ptr<BlochMcConnellSolver<12> >(new BlochMcConnellSolver<12>(*sp));
 		break;
 	default:
-		solver = std::make_unique < BlochMcConnellSolver<Eigen::Dynamic> >(*sp); // > three pools
+		solver = std::unique_ptr<BlochMcConnellSolver<Eigen::Dynamic> >(new BlochMcConnellSolver<Eigen::Dynamic>(*sp)); // > three pools
 		break;
 	}
 }
