@@ -137,7 +137,7 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp)
 			mexWarnMsgTxt("Only 100 CEST pools are possible! Ignoring the rest...");
 			numCESTPools = MAX_CEST_POOLS;
 		}
-		sp.InitCESTPoolMemory(numCESTPools);
+		sp.SetNumberOfCESTPools(numCESTPools);
 
 		if (mxGetNumberOfFields(cestIdx) != 5) {
 			mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "Could not parse arguments of CESTPool. Please make sure that the struct contains R1, R2, f, k and dw");

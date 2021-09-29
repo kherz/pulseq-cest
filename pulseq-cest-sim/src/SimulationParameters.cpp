@@ -78,12 +78,6 @@ CESTPool::CESTPool() : dw(0), k(0) {}
 */
 CESTPool::CESTPool(double nR1, double nR2, double nf, double ndw, double nk) : WaterPool(nR1, nR2, nf), dw(ndw), k(nk) {}
 
-//! Copy Constructor
-/*!
-  \param c pointer to existing CESTPool class object
-*/
-CESTPool::CESTPool(CESTPool* c) : WaterPool(c->R1, c->R2, c->f), dw(c->dw), k(c->k) {}
-
 //! Default destructor
 CESTPool::~CESTPool() {}
 
@@ -241,9 +235,7 @@ double MTPool::CubicHermiteSplineInterpolation(double px_int, std::vector<double
 //! Constructor
 SimulationParameters::SimulationParameters()
 {
-	numberOfCESTPools = 0;
 	simulateMTPool = false;
-	cestMemAllocated = false;
 	verboseMode = false;
 	useInitMagnetization = true;
 	maxNumberOfPulseSamples = 100;
@@ -253,8 +245,6 @@ SimulationParameters::SimulationParameters()
 //! Destructor
 SimulationParameters::~SimulationParameters()
 {
-	if (numberOfCESTPools > 0 && cestMemAllocated)
-		delete[] cestPools;
 }
 
 //! Get Magnetization vectors
@@ -285,17 +275,6 @@ WaterPool* SimulationParameters::GetWaterPool()
 	return &waterPool;
 }
 
-//! Init CEST pool memory
-/*!
-	Allocate heap memory for CEST pools
-	\param numPools number of CEST pools that should be simulated
-*/
-void  SimulationParameters::InitCESTPoolMemory(unsigned int numPools)
-{
-	numberOfCESTPools = numPools;
-	cestPools = new CESTPool[numberOfCESTPools];
-	cestMemAllocated = true;
-}
 
 //! Set CEST Pool
 /*!
@@ -304,7 +283,7 @@ void  SimulationParameters::InitCESTPoolMemory(unsigned int numPools)
 */
 void  SimulationParameters::SetCESTPool(CESTPool cp, unsigned int poolIdx)
 {
-	if (poolIdx < numberOfCESTPools)
+	if (poolIdx < cestPools.size())
 		cestPools[poolIdx] = cp;
 }
 
@@ -315,7 +294,7 @@ void  SimulationParameters::SetCESTPool(CESTPool cp, unsigned int poolIdx)
 */
 CESTPool* SimulationParameters::GetCESTPool(unsigned int poolIdx)
 {
-	return poolIdx < numberOfCESTPools ? &cestPools[poolIdx] : NULL;
+	return poolIdx < cestPools.size() ? &cestPools[poolIdx] : NULL;
 }
 
 //! Set MT Pool
@@ -404,11 +383,18 @@ bool SimulationParameters::IsMTActive()
 	return simulateMTPool;
 }
 
+//! Set Number of CEST Pools
+/*!	\param total number of CEST pools that should be simulates */
+void SimulationParameters::SetNumberOfCESTPools(unsigned int nPools)
+{
+	cestPools.resize(nPools);
+}
+
 //! Get Number of CEST Pools
 /*!	\return total number of CEST pools that should be simulates */
 unsigned int SimulationParameters::GetNumberOfCESTPools()
 {
-	return numberOfCESTPools;
+	return cestPools.size();
 }
 
 //! Set Verbose mode

@@ -103,9 +103,6 @@ public:
 	//! Constructor
 	CESTPool(double nR1, double nR2, double nf, double ndw, double nk);
 
-	//! Copy Constructor
-	CESTPool(CESTPool* c);
-
 	//! Default destructor
 	~CESTPool();
 
@@ -194,9 +191,6 @@ public: // TODO: write get and set methods for member variables and make them pr
 	//! Get Water Pool
 	WaterPool* GetWaterPool();
 
-	//! Init CEST pools
-	void InitCESTPoolMemory(unsigned int numPools);
-
 	//! Set CEST Pool
 	void SetCESTPool(CESTPool cp, unsigned int poolIdx);
 
@@ -236,6 +230,9 @@ public: // TODO: write get and set methods for member variables and make them pr
 	//! Get bool if MT should be simulated
 	bool IsMTActive();
 
+	//! Set Number of CEST Pools
+	void SetNumberOfCESTPools(unsigned int nPools);
+
 	//! Get Number of CEST Pools
 	unsigned int GetNumberOfCESTPools();
 
@@ -260,17 +257,14 @@ public: // TODO: write get and set methods for member variables and make them pr
 
 protected:
 
-	WaterPool waterPool; /*!< Water Pool */
-	MTPool mtPool;       /*!< MT Pool */
-	CESTPool* cestPools; /*!< CEST Pool(s) */
-	Eigen::VectorXd M;   /*!< Initial Magnetization vector */
+	WaterPool waterPool;             /*!< Water Pool */
+	MTPool mtPool;                   /*!< MT Pool */
+	std::vector<CESTPool> cestPools; /*!< CEST Pool(s) */
+	Eigen::VectorXd M;               /*!< Initial Magnetization vector */
 
-	Scanner scanner;     /*!< Sruct with field related info */
+	Scanner scanner;                 /*!< Sruct with field related info */
 	
-	bool simulateMTPool;    /*!< true if MT should be simulated */
-
-	unsigned int numberOfCESTPools; /*!< number of CEST Pools */
-	bool cestMemAllocated;          /*!< true if memory for cest pools was allocated*/
+	bool simulateMTPool;             /*!< true if MT should be simulated */
 
 	bool verboseMode;                      /*!< true, if you want to have some output information */
 	bool useInitMagnetization;             /*!< true, if the magnetization vector should be reset to the initial magnetization after each adc */
