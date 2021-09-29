@@ -36,8 +36,6 @@ struct Scanner
 	double relB1;             /*!< relative B1 (adapt for B1 inhomogeneity simulation) */
 	double B0Inhomogeneity;   /*!< field inhomogeneity [ppm] */
 	double Gamma;             /*!< gyromagnetic ratio [rad/uT] */
-	double coilLeadTime;      /*!< coil lead time (delay before pulse starts in rf event) [s] */
-	double coilHoldTime;      /*!< coil lead time (delay after pulse rf event) [s] */
 };
 
 
@@ -212,7 +210,7 @@ public: // TODO: write get and set methods for member variables and make them pr
 	MTPool* GetMTPool();
 
 	//! Init Scanner variables (old call for compat)
-	void InitScanner(double b0, double b1 = 1.0, double b0Inh = 0.0, double gamma = 42.577 * 2 * M_PI, double leadTime = 0.0, double holdTime = 0.0);
+	void InitScanner(double b0, double b1 = 1.0, double b0Inh = 0.0, double gamma = 42.577 * 2 * M_PI);
 
 	//! Init Scanner variables
 	void InitScanner(Scanner s);
@@ -228,12 +226,6 @@ public: // TODO: write get and set methods for member variables and make them pr
 
 	//! Get Scanner Gamma
 	double GetScannerGamma();
-
-	//! Get coil lead time
-	double GetScannerCoilLeadTime();
-
-	//! Get coil hold time
-	double GetScannerCoilHoldTime();
 
 	//! Set Scanner relative B1
 	void SetScannerRelB1(double rb1);

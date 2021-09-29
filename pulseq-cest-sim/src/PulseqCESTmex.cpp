@@ -178,8 +178,6 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp)
 	scanner.relB1 = mxGetField(scannerIdx, 0, "relB1") == NULL ? 1.0 : *(mxGetPr(mxGetField(scannerIdx, 0, "relB1")));
 	scanner.B0Inhomogeneity = mxGetField(scannerIdx, 0, "B0Inhomogeneity") == NULL ? 0.0 : *(mxGetPr(mxGetField(scannerIdx, 0, "B0Inhomogeneity")));
 	scanner.Gamma = mxGetField(scannerIdx, 0, "Gamma") == NULL ? 42.577 * 2 * M_PI : *(mxGetPr(mxGetField(scannerIdx, 0, "Gamma")));
-	scanner.coilLeadTime = mxGetField(scannerIdx, 0, "coilLeadTime") == NULL ? 0.0 : *(mxGetPr(mxGetField(scannerIdx, 0, "coilLeadTime")));
-	scanner.coilHoldTime = mxGetField(scannerIdx, 0, "coilHoldTime") == NULL ? 0.0 : *(mxGetPr(mxGetField(scannerIdx, 0, "coilHoldTime")));
 	sp.InitScanner(scanner);
 
 	//** Verbose mode **//
