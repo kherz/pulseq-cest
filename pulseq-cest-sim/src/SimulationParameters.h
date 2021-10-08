@@ -70,6 +70,12 @@ public:
 	//! Get R2
 	const double GetR2();
 
+	//! Get T1
+	const double GetT1();
+
+	//! Get T2
+	const double GetT2();
+
 	//! Get f
 	const double GetFraction();
 
@@ -78,6 +84,12 @@ public:
 
 	//! Set R2
 	void SetR2(double nR2);
+
+	//! Set T1
+	void SetT1(double nT1);
+
+	//! Set R2
+	void SetT2(double nT2);
 
 	//! Set f
 	void SetFraction(double nf);

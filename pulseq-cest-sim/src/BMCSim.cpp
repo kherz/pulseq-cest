@@ -242,12 +242,13 @@ bool BMCSim::DecodeSeqADCInfo() {
 }
 
 //! Run Simulation
+/*!	\return true if simulation was successful */
 bool BMCSim::RunSimulation() {
 	bool status = sequenceLoaded;
 	if (status) {
 		solver->UpdateSimulationParameters(*sp);
 		unsigned int currentADC = 0;
-		float accummPhase = 0; // since we simulate in reference frame, we need to take care of the accummulated phase
+		float accumPhase = 0; // since we simulate in reference frame, we need to take care of the accummulated phase
 		// loop through event blocks
 		Eigen::VectorXd M = Mvec.col(currentADC);
 		for (unsigned int nSample = 0; nSample < seq.GetNumberOfBlocks(); nSample++)
@@ -263,43 +264,9 @@ bool BMCSim::RunSimulation() {
 					M = Mvec.col(currentADC);
 				}
 			}
-			else if (seqBlock->isTrapGradient(0) && seqBlock->isTrapGradient(1) && seqBlock->isTrapGradient(2)) {
-				// delay for block duration
-				solver->UpdateBlochMatrix(*sp, 0, 0, 0);
-				solver->SolveBlochEquation(M, seqBlock->GetDuration()*1e-6);
-				// kill transverse magnetization
-				for (int i = 0; i < (sp->GetNumberOfCESTPools() + 1) * 2; i++)
-					M[i] = 0.0;
-			}
-			else if (seqBlock->isRF()) { // saturation pulse
-				int timeID = 0; // timeID is placeholder for future Pulseq 1.4 support
-				BMCSim::PulseID p = std::make_tuple(seqBlock->GetRFEvent().magShape, seqBlock->GetRFEvent().phaseShape, timeID); // get the magnitude, phase and time tuple
-				PulseEvent* pulse = this->GetUniquePulse(p); // find the unque rf id in the previously decoded seq file library
-				// delay before pulse?
-				if (pulse->deadTime > 0) {
-					solver->UpdateBlochMatrix(*sp, 0, 0, 0);
-					solver->SolveBlochEquation(M, pulse->deadTime);
-				}
-				// looü trough pulse samples
-				std::vector<PulseSample>* pulseSamples = &(pulse->samples);
-				double rfFrequency = seqBlock->GetRFEvent().freqOffset;
-				for (int p = 0; p < pulseSamples->size(); p++) { // loop through pulse samples
-					solver->UpdateBlochMatrix(*sp, pulseSamples->at(p).magnitude*seqBlock->GetRFEvent().amplitude, rfFrequency, -pulseSamples->at(p).phase + seqBlock->GetRFEvent().phaseOffset - accummPhase);
-					solver->SolveBlochEquation(M, pulseSamples->at(p).timestep);
-				}
-				// delay at end of the pulse?
-				if (pulse->deadTime > 0) {
-					solver->UpdateBlochMatrix(*sp, 0, 0, 0);
-					solver->SolveBlochEquation(M, pulse->deadTime);
-				}
-				int phaseDegree = pulse->length * 1e-6 * 360 * seqBlock->GetRFEvent().freqOffset;
-				phaseDegree %= 360;
-				accummPhase += float(phaseDegree) / 180 * PI;
-			}
-			else { // delay or single gradient -> simulated as delay
-				float timestep = float(seqBlock->GetDuration())*1e-6;
-				solver->UpdateBlochMatrix(*sp, 0, 0, 0);
-				solver->SolveBlochEquation(M, timestep);
+			else
+			{
+				RunEventBlock(M, accumPhase, seqBlock);
 			}
 			delete seqBlock; // pointer gets allocated with new in the GetBlock() function
 		}
@@ -307,3 +274,50 @@ bool BMCSim::RunSimulation() {
 	return status;
 }
 
+//! Run a specific event block
+/*!
+   \param M reference to current magnetization vector
+   \param accumPhase reference to current accumulated phase
+   \param seqBlock pointer to specific ebent block
+*/
+void BMCSim::RunEventBlock(Eigen::VectorXd &M, float &accumPhase, SeqBlock* seqBlock)
+{
+	if (seqBlock->isTrapGradient(0) && seqBlock->isTrapGradient(1) && seqBlock->isTrapGradient(2)) {
+		// delay for block duration
+		solver->UpdateBlochMatrix(*sp, 0, 0, 0);
+		solver->SolveBlochEquation(M, seqBlock->GetDuration()*1e-6);
+		// kill transverse magnetization
+		for (int i = 0; i < (sp->GetNumberOfCESTPools() + 1) * 2; i++)
+			M[i] = 0.0;
+	}
+	else if (seqBlock->isRF()) { // saturation pulse
+		int timeID = 0; // timeID is placeholder for future Pulseq 1.4 support
+		BMCSim::PulseID p = std::make_tuple(seqBlock->GetRFEvent().magShape, seqBlock->GetRFEvent().phaseShape, timeID); // get the magnitude, phase and time tuple
+		PulseEvent* pulse = this->GetUniquePulse(p); // find the unque rf id in the previously decoded seq file library
+		// delay before pulse?
+		if (pulse->deadTime > 0) {
+			solver->UpdateBlochMatrix(*sp, 0, 0, 0);
+			solver->SolveBlochEquation(M, pulse->deadTime);
+		}
+		// looü trough pulse samples
+		std::vector<PulseSample>* pulseSamples = &(pulse->samples);
+		double rfFrequency = seqBlock->GetRFEvent().freqOffset;
+		for (int p = 0; p < pulseSamples->size(); p++) { // loop through pulse samples
+			solver->UpdateBlochMatrix(*sp, pulseSamples->at(p).magnitude*seqBlock->GetRFEvent().amplitude, rfFrequency, -pulseSamples->at(p).phase + seqBlock->GetRFEvent().phaseOffset - accumPhase);
+			solver->SolveBlochEquation(M, pulseSamples->at(p).timestep);
+		}
+		// delay at end of the pulse?
+		if (pulse->deadTime > 0) {
+			solver->UpdateBlochMatrix(*sp, 0, 0, 0);
+			solver->SolveBlochEquation(M, pulse->deadTime);
+		}
+		int phaseDegree = pulse->length * 1e-6 * 360 * seqBlock->GetRFEvent().freqOffset;
+		phaseDegree %= 360;
+		accumPhase += float(phaseDegree) / 180 * PI;
+	}
+	else { // delay or single gradient -> simulated as delay
+		float timestep = float(seqBlock->GetDuration())*1e-6;
+		solver->UpdateBlochMatrix(*sp, 0, 0, 0);
+		solver->SolveBlochEquation(M, timestep);
+	}
+}

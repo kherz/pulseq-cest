@@ -46,6 +46,14 @@ const double WaterPool::GetR1() { return R1; }
 /*! \return 1/T2 of pool */
 const double WaterPool::GetR2() { return R2; }
 
+//! Get T1
+/*! \return T1 of pool */
+const double WaterPool::GetT1() { return 1.0 / R1; }
+
+//! Get T2
+/*! \return T2 of pool */
+const double WaterPool::GetT2() { return 1.0 / R2; }
+
 //! Get f
 /*! \return fraction of pool */
 const double WaterPool::GetFraction() { return f; }
@@ -57,6 +65,14 @@ void WaterPool::SetR1(double nR1) { R1 = nR1; }
 //! Set R2
 /*! \param new 1/T2 of pool */
 void WaterPool::SetR2(double nR2) { R2 = nR2; }
+
+//! Set T1
+/*! \param new T1 of pool */
+void WaterPool::SetT1(double nT1) { R1 = 1.0 / nT1; }
+
+//! Set T2
+/*! \param new 1/T2 of pool */
+void WaterPool::SetT2(double nT2) { R2 = 1.0 / nT2; }
 
 //! Set f
 /*! \param new fraction of pool */

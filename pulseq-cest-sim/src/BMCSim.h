@@ -78,7 +78,7 @@ public:
 	bool RunSimulation();
 
 
-private:
+protected:
 
 	ExternalSequence seq; /*!< External Pulseq sequence */
 	bool sequenceLoaded; /*!< true if sequence was succesfully loaded */
@@ -99,4 +99,7 @@ private:
 
 	//! Decode the adc in the sequence
 	bool DecodeSeqADCInfo();
+
+	//! Run a specific event block
+	void RunEventBlock(Eigen::VectorXd &M, float &accumPhase, SeqBlock* seqBlock);
 };
