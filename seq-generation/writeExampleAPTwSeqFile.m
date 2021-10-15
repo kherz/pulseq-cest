@@ -59,6 +59,8 @@ fa_sat        = B1pa*gyroRatio_rad*tp; % flip angle of sat pulse
 
 % create pulseq saturation pulse object
 satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp, 'system',seq.sys,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
+% resample pulse for reduced file size and io time
+satPulse      = resamplePulseForRLE(satPulse, 1000); 
 
 [B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,0,gyroRatio_hz);
 seq_defs.B1cwpe = B1cwpe;
