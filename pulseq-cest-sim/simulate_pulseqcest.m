@@ -24,11 +24,8 @@ PMEX = readSimulationParameters(param_fn);
 %% simulation start
 disp('Simulating .seq file ... ');
 t_start = tic;
-%% single isochromat case (standard)
-if ~isfield(PMEX, 'isochromats')
-    M_out = pulseqcest(PMEX, seq_fn);
-    %% multiple isochromats
-else
+%% multiple isochromats
+if isfield(PMEX, 'isochromats') && (PMEX.isochromats.numIsochromats > 1)
     r2dash  = 1/PMEX.isochromats.t2star - PMEX.WaterPool.R2;
     nIsochromats = PMEX.isochromats.numIsochromats;
     dwSpins = r2dash*tan(pi*.9*linspace(-.5,.5,nIsochromats));
@@ -68,6 +65,9 @@ else
         end
     end
     M_out = M_out./(idx-1);
+else
+    %% single isochromat case (standard)
+    M_out = pulseqcest(PMEX, seq_fn);
 end
 
 %% simulation end
