@@ -23,7 +23,7 @@ water_pool: {
   # with 1/t2dash = 1/t2star-1/t2
   # see doi:10.1002/mrm.22406 or supporting info of https://doi.org/10.1002/mrm.28825 
   t2star: 65.0e-3,
-  isochromats: 1
+  isochromats: 16
 }
 
 ### MT pool
