@@ -21,10 +21,56 @@ end
 %% read .yaml file
 PMEX = readSimulationParameters(param_fn);
 
-%% run the simulation
+%% simulation start
 disp('Simulating .seq file ... ');
 t_start = tic;
-M_out = pulseqcest(PMEX, seq_fn);
+%% single isochromat case (standard)
+if ~isfield(PMEX, 'isochromats')
+    M_out = pulseqcest(PMEX, seq_fn);
+    %% multiple isochromats
+else
+    r2dash  = 1/PMEX.isochromats.t2star - PMEX.WaterPool.R2;
+    nIsochromats = PMEX.isochromats.numIsochromats;
+    dwSpins = r2dash*tan(pi*.9*linspace(-.5,.5,nIsochromats));
+    dwSpins = dwSpins./(PMEX.Scanner.B0*PMEX.Scanner.Gamma);
+    % prepare parallel pool and indices to spread optimal
+    pp = gcp;
+    Mpar = cell(pp.NumWorkers,1);
+    % every worker gets a set of indices in the dwSpins array
+    workerIds = mat2cell((1:nIsochromats)', diff(fix(linspace(0, nIsochromats, pp.NumWorkers+1))), 1);
+    parfor w = 1:pp.NumWorkers
+        PMEX_local = PMEX; % local variable for parfor loop
+        dwSpins_local = dwSpins;
+        % we dont know the size of the output vector yet, so we store it in
+        % a cell
+        Mpar{w} = cell(numel(workerIds{w}),1);
+        idx = 1;
+        % one process for each worker
+        pulseqcestmex('init', PMEX, seq_fn);
+        for dwIdx = workerIds{w}(:)'
+            PMEX_local.Scanner.B0Inhomogeneity = dwSpins_local(dwIdx);
+            pulseqcestmex('update', PMEX_local);
+            Mpar{w}{idx} = pulseqcestmex('run');
+            idx = idx+1;
+        end
+        pulseqcestmex('close');
+    end
+    % calculate mean of all spectra
+    idx = 1;
+    for w = 1:pp.NumWorkers
+        for p = 1:numel(Mpar{w})
+            if idx == 1
+                M_out = Mpar{w}{p};
+            else
+                M_out = M_out + Mpar{w}{p};
+            end
+            idx = idx+1;
+        end
+    end
+    M_out = M_out./(idx-1);
+end
+
+%% simulation end
 t_end = toc(t_start);
 disp(['Simulating .seq file took ' num2str(t_end) ' s']);
 

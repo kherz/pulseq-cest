@@ -38,6 +38,11 @@ else
 end
 PMEX.WaterPool.f  = str2param(wp.f);  % proton fraction
 
+% optinal multi isochromats case
+if isfield(wp, 't2star') && isfield(wp, 'isochromats')
+    PMEX.isochromats.t2star = str2param(wp.t2star);
+    PMEX.isochromats.numIsochromats = str2param(wp.isochromats);
+end
 
 %% CEST pools
 num_pools = 0;
