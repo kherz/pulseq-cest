@@ -42,6 +42,9 @@ PMEX.WaterPool.f  = str2param(wp.f);  % proton fraction
 if isfield(wp, 't2star') && isfield(wp, 'isochromats')
     PMEX.isochromats.t2star = str2param(wp.t2star);
     PMEX.isochromats.numIsochromats = str2param(wp.isochromats);
+    if PMEX.isochromats.numIsochromats < 30
+        warning('Although the number of isochromats depends on various parameters, we recommend to use at least 30.');
+    end
 end
 
 %% CEST pools
