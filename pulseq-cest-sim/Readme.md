@@ -50,7 +50,7 @@ When defining the pools as A (Water pool), B (1st CEST pool), C (ssMT pool), D (
 M =  [ MxA, MxB, MxD, ... MxN, MyA, MyB, MyD, ... MyN, MzA, MzB, MzD, ... MzN, MzC ]
 ```
 
-In the [readSimulationParameters](readSimulationParameters.m) function the initial magnetization vector is put together assuming equilibrity, i.e. no transverse components and the longitudinal component is defined by the proton fraction. Fo instance, for a single CEST pool, an MT pool and of course, a water pool. The magnetization vector would have 7 entries. This is because the transverse components of the MT pool are neglected due to the very short T<sub>2</sub>. The initial magnetization vector would look like this:
+In the [readSimulationParameters](readSimulationParameters.m) function the initial magnetization vector is put together assuming equilibrity, i.e. no transverse components and the longitudinal component is defined by the proton fraction. For instance, for a single CEST pool, an MT pool and of course, a water pool, the magnetization vector would have 7 entries. This is because the transverse components of the MT pool are neglected due to the very short T<sub>2</sub>. The initial magnetization vector would look like this:
 
 ```
 M = [  Mx_water = 0,
