@@ -19,7 +19,12 @@ If you want to run the Bloch-McConnell simulation for that Z-spectrum experiment
 
 The simulation runs the Bloch-McConnell simulation of the [.seq-file](APTw_3T_example.seq) for the simulation setting defined in the [.yaml-file](GM_3T_example_bmsim.yaml). You should see a plot of the Z-spectrum and the MTR<sub>asym</sub> curve.
 
-## .yaml parameter files
+## pulseq-files
+
+This example APT-weighted protocol [file](APTw_3T_example.seq) was generated using the [writeExampleAPTwSeqFile](../seq-generation/writeExampleAPTwSeqFile.m) function. Feel free to play around with various parameters to generate different preparation periods for your own purpose. You can find more info in the subfolder [Readme](../seq-generation/Readme.md).
+
+
+## yaml parameter files
 Simulation parameter definitions in yaml files allows to share settings without the need to adapt any code. The files can be viewed and edited with a simple text editor. All parameters for the simulation are quickly described here:
 
 ### Water Pool (mandatory)  
@@ -94,21 +99,24 @@ rel_b1: 1
 scale: 0.5
 ```
 * scale: relative Magnetization after recovery between 0 and 1, default is 1 (float)
+This is neccessary as the readout is not simulated, just the preparation period. This means that the magnetization vector after the readout marks the initial magnetization vector for the simulation. For an EPI with a 90 degree flip angle, there would be almost no longitudinal magnetization, i.e. scale = 0.0. For a flash sequence it would be 1/(2 - T<sub>R</sub>/T<sub>1</sub>).
 
 ```
-verbose: 0.5
+verbose: false
 ```
 * verbose: true, you want some output info from the mex-funtion. Default is false
 
 ```
 reset_init_mag: true
 ```
-* reset_init_mag: True if magnetization should be reset after each ADC, default is True (bool)
+* reset_init_mag: True if magnetization should be reset to the initial value after each ADC, default is True (bool)
+As eleborated for the *scale* parameter, the readout sequence is usually not simulated and the initial magnetization vector is the same after each ADC. However, some applications require the evolution of the transient magnetization and therefore also inlude a basic readout simulation. For this purpose, *reset_init_mag* can be set to false, in which case one magnetization vector is used for the entire simulation and there is no reset after an ADC. 
 
 ```
 max_pulse_samples: 200
 ```
 * max_pulse_samples: sets the number of samples for the shaped pulses, default is 500 (int)
+The simulation detects the shape of the saturation pulse and chooses the minimum required samples automatically. For instance, a block pulse can be simulated with just a single sample, which saves a lot of time. Shaped pulses with more samples than max_pulse_samples are resampled to that number.
 
 ## Multiple Z-spectra for intravoxel dephasing
 CEST simulations are usually performed for a single isochromat, i.e. a set of spins resonating at the same resonance frequency. However, in a real system, a sample experiences dephasing due to isochromats resonating at different Larmor frequencies (T<sub>2</sub>*) and therefore multiple isochromats are needed to describe the system more accurate. As CEST preparation pulses are spatially non-selective, the same location for all isochromats can be used. The use of multiple isochromats can be enabled by setting the corresponding parameters in the .yaml-file. There is an example included in [GM_3T_multi_isochromats_example_bmsim.yaml](GM_3T_multi_isochromats_example_bmsim.yaml). 
