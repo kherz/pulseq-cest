@@ -6,11 +6,13 @@ Have a look at the saturation events by running:
 >> seq.plotSaturationPhase();
 ```
 
+These commands load the .seq-file containing all preparation events and plots a single preparation period (from the first to the second ADC event).
+
 You should see something similar to this:
 
 ![APTw_3T_example](APTw_3T_example.png)
 
-If you want to run the Bloch-McConnell simulation for that Z-spectrum experiment with a standard setting for 3 T, just run
+If you want to run the Bloch-McConnell simulation for that Z-spectrum experiment with a example setting for 3 T, just run
 ```Matlab
 >> simulateExample
 ```
@@ -23,30 +25,30 @@ Simulation parameter definitions in yaml files allows to share settings without 
 ### Water Pool (mandatory)  
 ```
 water_pool: {
-  f: 1,
-  r1: 1 / 1.3,
-  r2: 1 / 75e-3
+  f:  1,
+  t1: 1.3,
+  t2: 75.0e-3
 }
 ```
 * f: proton fraction (relative) (float)
-* r1: inverse relaxation time R1 = 1/T1 [Hz] (float)
-* r2 inverse relaxation time R2 = 1/T2 [Hz] (float)
+* t1: T1 [s] (float)
+* t2: T2 [s] (float)
 
 ### CEST pool(s) (optional)
 An arbitrary number of pools ca be set here, by just adding new pools in the *cest_pool* dict. 
 ```
 cest_pool: {
   'Amide': {
-    f: 72e-3/111,
-    r1: 1 / 1.3,
-    r2: 1/100e-3,
+    f: 6.4865e-04,
+    t1: 1.3,
+    t2: 100.0e-3,
     k: 30,
     dw: 3.5
   },
   'Creatine': {
-    f: 20e-3/111,
-    r1: 1 / 1.3,
-    r2: 1/100e-3,
+    f: 1.8018e-04,
+    t1: 1.3,
+    t2: 100.0e-3,
     k: 1100,
     dw: 2
   }
@@ -62,8 +64,8 @@ A semi-solid MT pool with either a Lorentzian or a SuperLorentzian lineshape can
 ```
 mt_pool: {
   f: 0.05,
-  r1: 1 / 1.3,
-  r2: 1e5,
+  t1: 1.3,
+  t2: 1.0e-5,
   k: 23,
   dw: 0,
   lineshape: 'SuperLorentzian'
@@ -108,3 +110,26 @@ max_pulse_samples: 200
 ```
 * max_pulse_samples: sets the number of samples for the shaped pulses, default is 500 (int)
 
+## Multiple Z-spectra for intravoxel dephasing
+CEST simulations are usually performed for a single isochromat, i.e. a set of spins resonating at the same resonance frequency. However, in a real system, a sample experiences dephasing due to isochromats resonating at different Larmor frequencies (T<sub>2</sub>*) and therefore multiple isochromats are needed to describe the system more accurate. As CEST preparation pulses are spatially non-selective, the same location for all isochromats can be used. The use of multiple isochromats can be enabled by setting the corresponding parameters in the .yaml-file. There is an example included in [GM_3T_multi_isochromats_example_bmsim.yaml](GM_3T_multi_isochromats_example_bmsim.yaml). 
+
+The different isochromats are simulated as shifted Z-spectra, where the offset frequency follows a Cauchy-Lorentz distribution according to [Stöcker et al.](https://doi.org/10.1002/mrm.22406):
+
+&delta&omega(r) = R<sub>2</sub>' tan(0.9*&pi(X(r)-0.5))
+
+The example uses 32 isochromats and a T<sub>2</sub>* of 65 ms. All isocromats are simulated as an entire Z-spectrum, where parallelization is employed via the [Parallel Computing Toolbox](https://de.mathworks.com/help/parallel-computing/spmd.html) of MATLAB.
+```
+### water pool
+water_pool: {
+  f: 1,
+  t1: 1.3,
+  t2: 75.0e-3,
+  # optional parameters for multiple isochromat simulation
+  # if these are set, a total amount of isochromats is simulates with a b0 shift following:
+  # \delta\omega(r) = 1/t2dash * tan(.9*pi(X(r)-.5))
+  # with 1/t2dash = 1/t2star-1/t2
+  # see doi:10.1002/mrm.22406 or supporting info of https://doi.org/10.1002/mrm.28825 
+  t2star: 65.0e-3,
+  isochromats: 32
+}
+```
