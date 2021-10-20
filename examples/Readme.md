@@ -115,7 +115,7 @@ CEST simulations are usually performed for a single isochromat, i.e. a set of sp
 
 The different isochromats are simulated as shifted Z-spectra, where the offset frequency follows a Cauchy-Lorentz distribution according to [Stöcker et al.](https://doi.org/10.1002/mrm.22406):
 
-&delta&omega(r) = R<sub>2</sub>' tan(0.9*&pi(X(r)-0.5))
+&delta &omega(r) = R<sub>2</sub>' tan(0.9*&pi(X(r)-0.5))
 
 The example uses 32 isochromats and a T<sub>2</sub>* of 65 ms. All isocromats are simulated as an entire Z-spectrum, where parallelization is employed via the [Parallel Computing Toolbox](https://de.mathworks.com/help/parallel-computing/spmd.html) of MATLAB.
 ```
