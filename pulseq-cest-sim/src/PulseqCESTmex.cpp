@@ -265,8 +265,6 @@ void Initialize(int nrhs, const mxArray *prhs[])
 	if (!simFramework->LoadExternalSequence(seqFileName)) {
 		mexErrMsgIdAndTxt("pulseqcestmex:Initialize", "Could not read external .seq file");
 	}
-	// lock dll after succesfull init
-    mexLock();
 }
 
 
@@ -284,6 +282,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		switch (GetCallMode(nrhs, prhs))
 		{
 		case INIT:
+			mexLock(); // start with locking mex
 			Initialize(nrhs, prhs);
 			break;
 		case UPDATE:
@@ -307,9 +306,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 	catch (...) // clean up if sth didn't work
 	{
-		mexWarnMsgIdAndTxt("pulseqcestmex:mexFunction", "Error! Cleaning up...");
 		if (mexIsLocked()) {
 			mexUnlock();
 		}	
+		mexErrMsgIdAndTxt("pulseqcestmex:mexFunction", "Error! Cleaning up...");
 	}
 }

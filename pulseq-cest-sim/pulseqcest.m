@@ -22,3 +22,4 @@ end
 pulseqcestmex('init', PMEX, seq_fn); % init the mex library
 M = pulseqcestmex('run');            % run the simulation
 pulseqcestmex('close');              % close the library
+clear pulseqcestmex;                 % clear mex memory             
