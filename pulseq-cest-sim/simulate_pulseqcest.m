@@ -26,27 +26,24 @@ disp('Simulating .seq file ... ');
 t_start = tic;
 %% multiple isochromats
 if isfield(PMEX, 'isochromats') && (PMEX.isochromats.numIsochromats > 1)
+    % prepare off-resonances
     r2dash  = 1/PMEX.isochromats.t2star - PMEX.WaterPool.R2;
     nIsochromats = PMEX.isochromats.numIsochromats;
-    dwSpins = Composite();
     dwSpins = r2dash*tan(pi*.9*linspace(-.5,.5,nIsochromats));
     dwSpins = dwSpins./(PMEX.Scanner.B0*PMEX.Scanner.Gamma);
-    % prepare parallel pool and indices to spread optimal
-    pp = gcp;
+    % allocate cell array for magnetization vecors
     Mpar = cell(nIsochromats,1);
-    % every worker gets a set of indices in the dwSpins array
-    workerIds = mat2cell((1:nIsochromats)', diff(fix(linspace(0, nIsochromats, pp.NumWorkers+1))), 1);
     spmd 
         PMEX_local = PMEX; % local variable for parfor loop
-        % one process for each worker
-        pulseqcestmex('init', PMEX, seq_fn);
-        for dwIdx = workerIds{labindex}(:)'
+        pulseqcestmex('init', PMEX, seq_fn); % one process for each worker
+        for dwIdx = drange(1:numel(dwSpins))
             PMEX_local.Scanner.B0Inhomogeneity = dwSpins(dwIdx);
             pulseqcestmex('update', PMEX_local);
             Mpar{dwIdx} = pulseqcestmex('run');
         end
         pulseqcestmex('close');
     end
+    clear pulseqcestmex; % clear mex memory
     % combine data from all workes in single cell
     Mcomb = [Mpar{:}];
     Mcomb = Mcomb(~cellfun('isempty',Mcomb));
