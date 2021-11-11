@@ -280,7 +280,7 @@ bool BMCSim::RunSimulation() {
 					solver->UpdateBlochMatrix(*sp, 0, 0, 0);
 					solver->SolveBlochEquation(M, pulse->deadTime);
 				}
-				// looü trough pulse samples
+				// loop trough pulse samples
 				std::vector<PulseSample>* pulseSamples = &(pulse->samples);
 				double rfFrequency = seqBlock->GetRFEvent().freqOffset;
 				for (int p = 0; p < pulseSamples->size(); p++) { // loop through pulse samples

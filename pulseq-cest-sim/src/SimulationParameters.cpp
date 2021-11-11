@@ -314,10 +314,10 @@ MTPool* SimulationParameters::GetMTPool()
 
 //! Set Scanner related info
 /*!
-    \param b0 static field [T]
-    \param relB1 relative B1
-    \param B0Inhomogeneity field inhomogeneity [ppm]
-    \param Gamma gyromagnetic ratio [rad/uT]
+	\param b0 static field [T]
+	\param relB1 relative B1
+	\param B0Inhomogeneity field inhomogeneity [ppm]
+	\param Gamma gyromagnetic ratio [rad/uT]
 	\param leadtime coil lead time [s]
 	\param holdtime coil hold time [s]
 */
