@@ -20,18 +20,13 @@ jobs:
       - name: Setup MATLAB
         uses: matlab-actions/setup-matlab@v1
      
-      - name: Display MEX compiler version
+      - name: Install Pulseq-CEST
         uses: matlab-actions/run-command@v1
         with:
-          command: disp(mex.getCompilerConfigurations('CPP'));
+          command: install_pulseqcest; 
 
-
-     # - name: Install Pulseq-CEST
-     #   uses: matlab-actions/run-command@v1
-     #   with:
-     #     command: install_pulseqcest; 
-
-     # - name: Build and Unit tests
-     #   uses: matlab-actions/run-command@v1
-     #   with:
-     #     command: addpath(genpath(pwd)); compile_pulseqcest; cd tests; testResults = runtests(); assert(nnz([testResults.Failed])==0);
+      - name: Build and Unit tests
+        uses: matlab-actions/run-command@v1
+        with:
+          command: addpath(genpath(pwd)); compile_pulseqcest; cd tests; testResults = runtests(); assert(nnz([testResults.Failed])==0);
+          
