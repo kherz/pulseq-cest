@@ -1,3 +1,5 @@
+[![MATLAB_CI](https://github.com/kherz/pulseq-cest/actions/workflows/ci.yml/badge.svg?branch=major_update)](https://github.com/kherz/pulseq-cest/blob/major_update/.github/workflows/ci.yml)
+
 # pulseq-cest
 
 Welcome to the **pulseq-cest** repository, a project to faciliate reproducibility in CEST MRI research using the open [*Pulseq*](https://pulseq.github.io/) standard. The repository consists of two parts:

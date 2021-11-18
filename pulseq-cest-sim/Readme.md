@@ -4,7 +4,7 @@ This simulation package runs Bloch-McConnell simulations for CEST experiments on
 This open source project is published under the [MIT License](../LICENSE).
 
 # Compile the .mex files (skip, if you want to use the included .mex-files)
-This package includes precompiled mex files for 64-bit Windows (compiled with MinGW C++ 5.3.0), Linux (compiled on Linux Mint with g++ 7.3.0) and Mac OS.
+This package includes precompiled mex files for 64-bit Windows and Linux.
 [eigen](https://gitlab.com/libeigen/eigen/) is used as an external dependency.
 If you want or need to compile a version for yourself, there are two different ways:
 ## 1. MATLAB (simpler approach)

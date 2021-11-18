@@ -1,0 +1,2 @@
+# Tests
+This folder contains some test cases that are automatically used in the GitHub Actions workflow [file](https://github.com/kherz/pulseq-cest/blob/major_update/.github/workflows/ci.yml), but can of course also be used for local tests.
