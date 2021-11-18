@@ -17,18 +17,12 @@ jobs:
       - name: Setup MATLAB
         uses: matlab-actions/setup-matlab@v1
 
-      - name: Install Pulseq-CEST
+      - name: Install and build Pulseq-CEST
         uses: matlab-actions/run-command@v1
         with:
-          command: install_pulseqcest;
-
-      - name: Build mex file 
-        uses: matlab-actions/run-command@v1
-        with:
-          command: compile_pulseqcest;
+          command: install_pulseqcest; compile_pulseqcest;
 
       - name: Run MATLAB tests
         uses: matlab-actions/run-command@v1
         with:
           command: cd tests; testResults = runtests(); assert(nnz([testResults.Failed])==0);
-          
