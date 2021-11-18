@@ -1,4 +1,4 @@
-name: Pulseq-CEST build and unit tests
+name: Build and Unit Test
 
 on:
 # so far only for major_update branch
@@ -25,4 +25,4 @@ jobs:
       - name: Run MATLAB tests
         uses: matlab-actions/run-command@v1
         with:
-          command: cd tests; testResults = runtests(); assert(nnz([testResults.Failed])==0);
+          command: addpath(genpath(pwd)); cd tests; testResults = runtests(); assert(nnz([testResults.Failed])==0);
