@@ -8,10 +8,10 @@ on:
 jobs:
   matlab:
     name: Matlab build and unit test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     env:
-      CC: gcc-9
-      CXX: g++-9
+      CC: gcc-7
+      CXX: g++-7
 
     steps:
       - name: Check out repository
