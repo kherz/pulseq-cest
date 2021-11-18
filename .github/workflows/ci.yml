@@ -23,7 +23,8 @@ jobs:
       - name: Display MEX compiler version
         uses: matlab-actions/run-command@v1
         with:
-          command: disp('g++ version: '); disp(mex.getCompilerConfigurations('CPP'));
+          command: disp(mex.getCompilerConfigurations('CPP'));
+
 
      # - name: Install Pulseq-CEST
      #   uses: matlab-actions/run-command@v1
