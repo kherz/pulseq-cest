@@ -9,6 +9,9 @@ jobs:
   matlab:
     name: Matlab build and unit test
     runs-on: ubuntu-latest
+    env:
+      CC: gcc-9
+      CXX: g++-9
 
     steps:
       - name: Check out repository
