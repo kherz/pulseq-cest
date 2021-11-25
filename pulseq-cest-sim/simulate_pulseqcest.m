@@ -46,10 +46,8 @@ if isfield(PMEX, 'isochromats') && (PMEX.isochromats.numIsochromats > 1)
     clear pulseqcestmex; % clear mex memory
     % combine data from all workes in single cell
     Mcomb = [Mpar{:}];
-    if iscell(Mcomb) % only a cell if spmd call worked
-        Mcomb = Mcomb(~cellfun('isempty',Mcomb));
-        Mcomb = cell2mat(Mcomb');
-    end
+    Mcomb = Mcomb(~cellfun('isempty',Mcomb));
+    Mcomb = cell2mat(Mcomb');
     % reshape and calculate mean
     M_out = mean(reshape(Mcomb, [size(Mcomb,1), size(Mcomb,2)/nIsochromats, nIsochromats]),3);
 else
