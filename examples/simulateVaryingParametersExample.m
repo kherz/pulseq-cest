@@ -54,6 +54,7 @@ for t = 1:nT2
     results{t,2} = T2(t);
 end
 pulseqcestmex('close');                  % close the library
+clear pulseqcestmex; 
 toc;
 
 
