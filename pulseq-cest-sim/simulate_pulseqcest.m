@@ -9,7 +9,7 @@
 function M_z = simulate_pulseqcest(seq, param)
 
 if isa(seq,'mr.Sequence')
-seq_fn = seq.definitions('seq_id_string');
+seq_fn = [seq.definitions('seq_id_string') '.seq'];
 seq.write(seq_fn);
 else
     seq_fn=seq;
