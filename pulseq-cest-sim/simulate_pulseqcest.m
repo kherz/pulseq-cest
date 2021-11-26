@@ -1,16 +1,18 @@
 % This function runs the standard simulation for a specific .seq and .yaml pair and plots the results
+% The parameters seq and param can be .seq and .yaml file names, or a seq object and a param object/struct
 %
 % kai.herz@tuebingen.mpg.de
 % Input:  seq_fn:   filename of the .seq-file
 %         param_fn: filename of the .yaml parameter file
 %
 % Output: Mz: Water z-magnetization at each ADC event
-function M_z = simulate_pulseqcest(seq_fn, param_fn)
-if nargin < 2
-    [seq_fn, seq_fp] = uigetfile({'*.seq','All .seq Files'},'Choose .seq-file for simulation');
-    seq_fn = fullfile(seq_fp, seq_fn);
-    [param_fn, param_fp] = uigetfile({'*.yaml; *.yml','All .yaml Files'},'Choose .yaml-file for simulation');
-    param_fn = fullfile(param_fp, param_fn);
+function M_z = simulate_pulseqcest(seq, param)
+
+if isa(seq,'mr.Sequence')
+seq_fn = seq.definitions('seq_id_string');
+seq.write(seq_fn);
+else
+    seq_fn=seq;
 end
 
 %% check for files
@@ -19,7 +21,11 @@ if ~exist(seq_fn, 'file')
 end
 
 %% read .yaml file
-PMEX = readSimulationParameters(param_fn);
+if ischar(param) || ischar(param)
+    PMEX = readSimulationParameters(param);
+else
+    PMEX = param;
+end
 
 %% simulation start
 disp('Simulating .seq file ... ');
