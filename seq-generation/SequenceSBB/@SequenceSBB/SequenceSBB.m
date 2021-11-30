@@ -40,10 +40,8 @@ classdef SequenceSBB < mr.Sequence
             addBlock(obj, gxSpoil, gySpoil, gzSpoil);
         end
         
-        % plots the saturation phase from the firts to the second adc
-        % event.
-        % input: gamma (optional) gyromagnetic ratio for the nucleus,
-        % standard is water [MHz/T]
+        % plots the saturation phase from the first to the second adc
+        % event.       
         function p = plotSaturationPhase(obj)
             t=0; tADC=[];
             for iB=1:length(obj.blockEvents)
@@ -84,13 +82,15 @@ classdef SequenceSBB < mr.Sequence
         end
         
         % write the seq file. The parent class write function is used, but
-        % we add some additinal information for the Pulseq-CETS files
-        function write(obj, filename,author)
+        % we add some additional information for the Pulseq-CEST files
+        % input: filename: seq filename (string)
+        % input: author: seq file author (string)
+        function write(obj, filename, author)
             
             if nargin < 3
                 author = 'unknown';
             end
-            if ~ischar(author)
+            if ~ischar(author) && ~isstring(author) 
                 author = 'unknown';
             end
             
