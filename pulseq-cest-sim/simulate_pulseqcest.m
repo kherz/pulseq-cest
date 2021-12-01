@@ -36,9 +36,10 @@ else
 end
 
 %% check B0
-if PMEX.Scanner.B0 ~= seq.definitions('B0')
-    warning(['B0 in yaml (' + string(PMEX.Scanner.B0) + ...
-        'T) and seq (' + string(seq.definitions('B0')) + 'T) file different!'])
+definitions = readSequenceDefinitions(seq_fn);
+if PMEX.Scanner.B0 ~= definitions('B0')
+    warning(['B0 in yaml (' num2str(PMEX.Scanner.B0)  ...
+        'T) and seq ('  num2str(definitions('B0'))  'T) file different!'])
 end
 
 %% simulation start
