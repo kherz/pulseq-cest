@@ -1,9 +1,6 @@
 name: Build and Unit Test
 
-on:
-# so far only for major_update branch
-  push:
-    branches: major_update
+on: pull_request
 
 jobs:
   matlab:
