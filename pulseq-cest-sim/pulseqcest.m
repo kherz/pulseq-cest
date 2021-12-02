@@ -39,10 +39,14 @@ catch ME
                        'Please recompile by running the compile_pulseqcest function!']);
                 
             end
+        case 'pulseqcestmex:ParseInputStruct'
+            error(['An error was detected during parsing of the PMEX input! ' newline ...
+                    ME.message]);
+        case 'pulseqcestmex:Initialize'
+            error(['An error was detected the initialization of the mex-file! ' newline ...
+                    ME.message]);
         case 'pulseqcestmex:mexFunction'
             error(['An error was detected during the simulation in the mex-file! ' newline ...
-                   'Please check your input variables for the mex-function! ' newline ... 
-                   'Here is the full error message: ' newline ...
                     ME.message]);
         otherwise
             warning('Unpecified error!');

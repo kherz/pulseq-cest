@@ -31,6 +31,15 @@ std::unique_ptr<BMCSim> simFramework;
 // determine how the mex function was called
 enum CallMode { INIT, UPDATE, RUN, CLOSE, INVALID };
 
+//! Simple class to handle matlab error messages in try, catch block
+class MatlabError 
+{
+public:
+	MatlabError(std::string id, std::string msg): errorID(id), errorMessage(msg) {} // Constructor
+	std::string errorID;       // identifier for matlab error message
+	std::string errorMessage;  // actual error message
+};
+
 
 //! Reads the MATLAB input
 /*!
@@ -44,14 +53,14 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp)
 {
 
 	if (nrhs < 2)
-		mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "No input found.");
+		throw(MatlabError("pulseqcestmex:ParseInputStruct", "No input found."));
 
 	//Struct containing everything
 	const mxArray* inStruct = prhs[1];
 
 	//** Magnetization Vector **//
 	if (mxGetField(inStruct, 0, "M") == NULL) {
-		mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "No input Magnetization vector found. \nInput struct must contain an 'M' field!");
+		throw(MatlabError("pulseqcestmex:ParseInputStruct", "No input Magnetization vector found. \nInput struct must contain an 'M' field!"));
 	}
 
 	unsigned int MinRows, MinCols, Msize;
@@ -73,19 +82,19 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp)
 	}
 	//error
 	else {
-		mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "Magnetitazion vector needs to be one-dimensional");
+		throw(MatlabError("pulseqcestmex:ParseInputStruct", "Magnetitazion vector needs to be one-dimensional"));
 	}
 
 	//** Water Pool **//
 	if (mxGetField(inStruct, 0, "WaterPool") == NULL) {
-		mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "No Water Pool found. \nInput struct must contain a 'WaterPool' field!");
+		throw(MatlabError("pulseqcestmex:ParseInputStruct", "No Water Pool found. \nInput struct must contain a 'WaterPool' field!"));
 	}
 
 	//water pool properties
 	const mxArray* waterIdx = mxGetField(inStruct, 0, "WaterPool");
 	if (mxGetField(waterIdx, 0, "R1") == NULL || mxGetField(waterIdx, 0, "R2") == NULL ||
 		mxGetField(waterIdx, 0, "f") == NULL) {
-		mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "Could not parse arguments of WaterPool. Please make sure that the struct contains R1, R2 and f");
+		throw(MatlabError("pulseqcestmex:ParseInputStruct", "Could not parse arguments of WaterPool. Please make sure that the struct contains R1, R2 and f"));
 	}
 	double* Water_R1 = mxGetPr(mxGetField(waterIdx, 0, "R1"));
 	double* Water_R2 = mxGetPr(mxGetField(waterIdx, 0, "R2"));
@@ -100,7 +109,7 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp)
 		const mxArray* mtIdx = mxGetField(inStruct, 0, "MTPool");
 		if (mxGetField(mtIdx, 0, "R1") == NULL || mxGetField(mtIdx, 0, "R2") == NULL || mxGetField(mtIdx, 0, "f") == NULL ||
 			mxGetField(mtIdx, 0, "k") == NULL || mxGetField(mtIdx, 0, "dw") == NULL || mxGetField(mtIdx, 0, "Lineshape") == NULL) {
-			mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "Could not parse arguments of MTPool. Please make sure that the struct contains R1, R2, f, k, dw and Lineshape");
+			throw(MatlabError("pulseqcestmex:ParseInputStruct", "Could not parse arguments of MTPool. Please make sure that the struct contains R1, R2, f, k, dw and Lineshape"));
 		}
 		double* MT_R1 = mxGetPr(mxGetField(mtIdx, 0, "R1"));
 		double* MT_R2 = mxGetPr(mxGetField(mtIdx, 0, "R2"));
@@ -110,7 +119,7 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp)
 		const int cbuffer = 64;
 		char tempMtls[cbuffer];
 		if (mxGetString(mxGetField(mtIdx, 0, "Lineshape"), tempMtls, cbuffer) != 0) {
-			mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "Reading lineshape failed");
+			throw(MatlabError("pulseqcestmex:ParseInputStruct", "Reading lineshape failed"));
 		}
 		std::string mtlsString = std::string(tempMtls);
 		if (mtlsString.compare("Lorentzian") == 0) {
@@ -123,7 +132,7 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp)
 			sp.SetMTPool(MTPool(*MT_R1, *MT_R2, *MT_f, *MT_dw, *MT_k, None));
 		}
 		else {
-			mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "No valid MT Lineshape! Use None, Lorentzian or SuperLorentzian");
+			throw(MatlabError("pulseqcestmex:ParseInputStruct", "No valid MT Lineshape! Use None, Lorentzian or SuperLorentzian"));
 		}
 	}
 
@@ -139,10 +148,6 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp)
 		}
 		sp.SetNumberOfCESTPools(numCESTPools);
 
-		if (mxGetNumberOfFields(cestIdx) != 5) {
-			mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "Could not parse arguments of CESTPool. Please make sure that the struct contains R1, R2, f, k and dw");
-		}
-
 		for (int i = 0; i < sp.GetNumberOfCESTPools(); i++) {
 			double* CEST_R1 = mxGetPr(mxGetField(cestIdx, i, "R1"));
 			double* CEST_R2 = mxGetPr(mxGetField(cestIdx, i, "R2"));
@@ -152,7 +157,7 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp)
 
 			if (CEST_R1 == NULL || CEST_R2 == NULL || CEST_f == NULL || CEST_k == NULL || CEST_dw == NULL)
 			{
-				mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "Could not parse arguments of CESTPool. Please make sure that the struct contains R1, R2, f, k, dw and Lineshape");
+				throw(MatlabError("pulseqcestmex:ParseInputStruct", "Could not parse arguments of CESTPool. Please make sure that the struct contains R1, R2, f, k, dw and Lineshape"));
 			}
 			sp.SetCESTPool(CESTPool(*CEST_R1, *CEST_R2, *CEST_f, *CEST_dw, *CEST_k), i);
 		}
@@ -161,17 +166,17 @@ void ParseInputStruct(int nrhs, const mxArray *prhs[], SimulationParameters &sp)
 	// Check if Magnetization vetor fits with number of pools
 	unsigned int requiredM0Size = (sp.GetNumberOfCESTPools() + 1) * 3 + (sp.IsMTActive() ? 1 : 0);
 	if (requiredM0Size != Msize) {
-		mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "Number of Pools does not match with the M vector! Make sure M contains %i entries", requiredM0Size);
+		throw(MatlabError("pulseqcestmex:ParseInputStruct", "Number of Pools does not match with the M vector!"));
 	}
 
 	//** Scanner properties **//
 	if (mxGetField(inStruct, 0, "Scanner") == NULL) {
-		mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "No Scanner found. \nInput struct must contain a 'Scanner' field!");
+		throw(MatlabError("pulseqcestmex:ParseInputStruct", "No Scanner found. \nInput struct must contain a 'Scanner' field!"));
 	}
 
 	const mxArray* scannerIdx = mxGetField(inStruct, 0, "Scanner");
 	if (mxGetField(scannerIdx, 0, "B0") == NULL) {
-		mexErrMsgIdAndTxt("pulseqcestmex:ParseInputStruct", "Could not parse arguments of Scanner. Please make sure that the struct contains B0");
+		throw(MatlabError("pulseqcestmex:ParseInputStruct", "Could not parse arguments of Scanner. Please make sure that the struct contains B0"));
 	}
 	Scanner scanner;
 	scanner.B0 = *(mxGetPr(mxGetField(scannerIdx, 0, "B0")));
@@ -263,7 +268,7 @@ void Initialize(int nrhs, const mxArray *prhs[])
 	std::string seqFileName = std::string(tmpCharBuffer);
 	// set sequence 
 	if (!simFramework->LoadExternalSequence(seqFileName)) {
-		mexErrMsgIdAndTxt("pulseqcestmex:Initialize", "Could not read external .seq file");
+		throw(MatlabError("pulseqcestmex:Initialize", "Could not read external .seq file"));
 	}
 }
 
@@ -298,17 +303,24 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			}
 			break;
 		case INVALID:
-			mexWarnMsgIdAndTxt("pulseqcestmex:mexFunction", "Invalid call mode, no function is called");
+			throw(MatlabError("pulseqcestmex:mexFunction", "Invalid call mode, no function is called"));
 			break;
 		default:
-			mexErrMsgIdAndTxt("pulseqcestmex:mexFunction", "Unspecified Error");
+			throw(MatlabError("pulseqcestmex:mexFunction", "Unspecified Error"));
 		}
+	}
+	catch (MatlabError matlabError)
+	{
+		if (mexIsLocked()) {
+			mexUnlock();
+		}
+		mexErrMsgIdAndTxt(matlabError.errorID.c_str(), matlabError.errorMessage.c_str());
 	}
 	catch (...) // clean up if sth didn't work
 	{
 		if (mexIsLocked()) {
 			mexUnlock();
 		}	
-		mexErrMsgIdAndTxt("pulseqcestmex:mexFunction", "Error! Cleaning up...");
+		mexErrMsgIdAndTxt("pulseqcestmex:mexFunction", "Unspecified Error! Cleaning up...");
 	}
 }
