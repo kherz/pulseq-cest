@@ -47,4 +47,4 @@ xlabel('\Delta\omega [ppm]'); legend show;
 subplot(2,1,2), hold on; grid on;
 plot(ppm_sort,MTRasym,'Displayname','MTR_{asym}'); set(gca,'xdir','reverse');
 xlabel('\Delta\omega [ppm]'); legend show;
-axis([ppm_sort(1) ppm_sort(end) -(2*max(abs(MTRasym))) (2*max(abs(MTRasym)))])
+axis([ppm_sort(1) ppm_sort(end) -(2*max(abs(MTRasym))) (2*max(abs(MTRasym)))]);

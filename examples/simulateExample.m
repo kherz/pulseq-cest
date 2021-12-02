@@ -28,5 +28,5 @@ offsets_ppm = definitions('offsets_ppm'); % offsets
 m0_offset = definitions('M0_offset');     % m0 offset frequency
 
 figure(1);
-plotSimulationResults(M_z,offsets_ppm,m0_offset)
+Z = plotSimulationResults(M_z,offsets_ppm,m0_offset);
  
