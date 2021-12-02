@@ -74,6 +74,7 @@ if isfield(params, 'cest_pool')
         PMEX.CESTPool(p).f  = str2param(cpool.f);
         PMEX.CESTPool(p).dw = str2param(cpool.dw);
         PMEX.CESTPool(p).k  = str2param(cpool.k);
+        PMEX.CESTPool(p).id  = pool_names{p};
     end
 else
     warning('No CEST pools found in param files! specify with "cest_pool"');
