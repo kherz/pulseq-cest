@@ -1,5 +1,5 @@
 # Introduction
-This simulation package runs Bloch-McConnell simulations for CEST experiments on [pulseq](http://pulseq.github.io/) sequence files. The MATLAB code can also be used to create .seq files for the pulseq sequence building block for SIEMENS idea sequences. More info about how to use the simulation can be found in the following documentation.
+This simulation package runs Bloch-McConnell simulations for CEST experiments on [Pulseq](http://pulseq.github.io/) sequence files. The MATLAB code can also be used to create .seq files for the *pulseq* sequence building block for SIEMENS IDEA sequences. More info about how to use the simulation can be found in the following documentation.
 
 This open source project is published under the [MIT License](../LICENSE).
 
@@ -36,7 +36,7 @@ You can simulate .seq-files by running [simulate_pulseqcest.m](simulate_pulseqce
 Mz = simulate_pulseqcest(seq_fn, param_fn);
 ```
 
-The function takes the .seq filename and a .yaml parameter filename with the simulation settings as an input and returns the final water longitudinal magnetization.
+The function takes the .seq filename (```seq_fn```) and a .yaml parameter filename (```param_fn```) with the simulation settings as an input and returns the final water longitudinal magnetization.
 The parameters from the .yaml-file are [read](readSimulationParameters.m) and used to generate a struct wich is used as input for the mex-function. The struct therefore just serves as an interface from the .yaml-file to the mex-function. For a detailled description of the parameters in these yaml-files have a look at the corresponding [Readme](../examples/Readme.md#yaml-parameter-files). 
 
 The only parameter that is input to the mex-function but not defined in the yaml-file is the initial magnetization vector **M**.

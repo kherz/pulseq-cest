@@ -17,7 +17,7 @@ If you want to run the Bloch-McConnell simulation for that Z-spectrum experiment
 >> simulateExample
 ```
 
-The simulation runs the Bloch-McConnell simulation of the [.seq-file](APTw_3T_example.seq) for the simulation setting defined in the [.yaml-file](GM_3T_example_bmsim.yaml). You should see a plot of the Z-spectrum and the MTR<sub>asym</sub> curve.
+This simulates the [.seq-file](APTw_3T_example.seq) sequence for the simulation setting defined in the [.yaml-file](GM_3T_example_bmsim.yaml). You should see a plot of the Z-spectrum and the MTR<sub>asym</sub> curve.
 
 ## pulseq-files
 
@@ -115,7 +115,7 @@ As eleborated for the *scale* parameter, the readout sequence is usually not sim
 ```
 max_pulse_samples: 200
 ```
-* max_pulse_samples: sets the number of samples for the shaped pulses, default is 500 (int)
+* max_pulse_samples: sets the number of samples for the shaped pulses, default is 100 (int)
 The simulation detects the shape of the saturation pulse and chooses the minimum required samples automatically. For instance, a block pulse can be simulated with just a single sample, which saves a lot of time. Shaped pulses with more samples than max_pulse_samples are resampled to that number.
 
 ## Multiple Z-spectra for intravoxel dephasing
