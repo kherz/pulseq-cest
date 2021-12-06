@@ -60,12 +60,12 @@ if rf.deadTime > rf.delay
     rf.delay = rf.deadTime;
 end
 
-% v1.4 finally eliminates RF zerofilling
-% if rf.ringdownTime > 0
-%     tFill = (1:round(rf.ringdownTime/1e-6))*1e-6;  % Round to microsecond
-%     rf.t = [rf.t rf.t(end)+tFill];
-%     rf.signal = [rf.signal, zeros(size(tFill))];
-% end
+if rf.ringdownTime > 0
+    tFill = (1:round(rf.ringdownTime/1e-6))*1e-6;  % Round to microsecond
+    rf.t = [rf.t rf.t(end)+tFill];
+    rf.signal = [rf.signal, zeros(size(tFill))];
+end
+
 if rf.ringdownTime > 0 && nargout > 1
     delay=mr.makeDelay(mr.calcDuration(rf)+rf.ringdownTime);
 end
