@@ -1,0 +1,2 @@
+deprecationWarning(mfilename, 'writeExampleAPTwSeqFile');
+writeExampleAPTwSeqFile;

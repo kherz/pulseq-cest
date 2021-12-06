@@ -1,0 +1,2 @@
+deprecationWarning(mfilename, 'simulateExample');
+simulateExample;

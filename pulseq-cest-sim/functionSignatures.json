@@ -1,10 +1,34 @@
 {
-"Run_pulseq_cest_Simulation":
+"simulate_pulseqcest":
 {
   "inputs":
   [
     {"name":"seq_fn", "kind":"optional", "type":"filepath=*.seq", "purpose":"Filename of the pulseq-file" },
     {"name":"param_fn", "kind":"optional", "type":"filepath=*.yml,*.yaml", "purpose":"Filename of the simulation configuration file" }
+  ]
+},
+"readSimulationParameters":
+{
+  "inputs":
+  [
+    {"name":"yaml_fn", "kind":"required", "type":"filepath=*.yml,*.yaml", "purpose":"Filename of the simulation configuration file" }
+  ]
+},
+"plotSimulationResults":
+{
+  "inputs":
+  [
+    {"name":"M_z", "kind":"required", "purpose":"Z magnetization" },
+    {"name":"offsets_ppm", "kind":"required", "purpose":"offsets [ppm] in .seq file" },
+    {"name":"m0_offset", "kind":"optional", "purpose":"offsets of M0 scan for normalization" }
+  ]
+},
+"pulseqcest":
+{
+  "inputs":
+  [
+    {"name":"PMEX", "kind":"required", "purpose":"struct containing all simulation parameters" },
+    {"name":"seq_fn", "kind":"required", "type":"filepath=*.seq", "purpose":"Filename of the pulseq-file"  }
   ]
 }
 }

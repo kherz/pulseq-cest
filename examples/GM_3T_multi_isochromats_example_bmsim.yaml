@@ -16,7 +16,14 @@
 water_pool: {
   f: 1,
   t1: 1.3,
-  t2: 75.0e-3
+  t2: 75.0e-3,
+  # optional parameters for multiple isochromat simulation
+  # if these are set, a total amount of isochromats is simulates with a b0 shift following:
+  # \delta\omega(r) = 1/t2dash * tan(.9*pi(X(r)-.5))
+  # with 1/t2dash = 1/t2star-1/t2
+  # see doi:10.1002/mrm.22406 or supporting info of https://doi.org/10.1002/mrm.28825 
+  t2star: 65.0e-3,
+  isochromats: 32
 }
 
 ### MT pool

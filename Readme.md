@@ -1,3 +1,5 @@
+[![MATLAB_CI](https://github.com/kherz/pulseq-cest/actions/workflows/ci.yml/badge.svg?branch=major_update)](https://github.com/kherz/pulseq-cest/blob/major_update/.github/workflows/ci.yml)
+
 # pulseq-cest
 
 Welcome to the **pulseq-cest** repository, a project to faciliate reproducibility in CEST MRI research using the open [*Pulseq*](https://pulseq.github.io/) standard. The repository consists of two parts:
@@ -18,14 +20,14 @@ There are 3 ways to install pulseq-cest, listed here in the recommended order:
 **1. If you have git installed**
 * Clone the repository 
 * Open MATLAB
-* Run [Install_pulseq_cest.m](Install_pulseq_cest.m)
+* Run [install_pulseqcest.m](install_pulseqcest.m)
 * External packages will be cloned 
 
 **2. If you do not have git installed**
 * Download pulseq-cest as .zip 
 * Unpack it
 * Open MATLAB
-* Run [Install_pulseq_cest.m](Install_pulseq_cest.m)
+* Run [install_pulseqcest.m](install_pulseqcest.m)
 * External packages will be downloaded as .zip and unpacked
 
 **3. If you want to do everything manually, or 1. and 2. don't work for you**
@@ -35,23 +37,27 @@ There are 3 ways to install pulseq-cest, listed here in the recommended order:
 * Unpack it in the parent directory of pulseq-cest
 * Download [yamlmatlab](https://github.com/ewiger/yamlmatlab) as .zip
 * Unpack it in [pulseq-cest/pulseq-cest-sim](pulseq-cest-sim)
+* Download [Pulseq](https://github.com/pulseq/pulseq/releases/tag/v1.3.1) as .zip
+* Unpack it in [pulseq-cest/pulseq-cest-sim](pulseq-cest-sim)
 * Add the pulseq-cest folder and the subfolders to your MATLAB search path
 
 ## Getting started
 To get an overview about the project and how the .seq-files and simulations work, go to the [examples](examples) folder.
 There you will find an example .seq-file for which you can display the different sequence events and run the simulation.
 
-For plotting, just run the function:
+For plotting, just run the following code in the console:
 ```Matlab
->> plot_seq_file
+>> seq = SequenceSBB;
+>> seq.read('examples/APTw_3T_example.seq');
+>> seq.plotSaturationPhase();
 ```
-and choose the [APTw_3T_example.seq](examples/APTw_3T_example.seq) file. You can have a look at the RF amplitude and phase, as well as the gradient events.
+You can have a look at the RF amplitude and phase, as well as the gradient events.
 
 If you want to run the Bloch-McConnell simulation for that Z-spectrum experiment with a standard setting for 3 T, just run:
 ```Matlab
->> Simulate_example
+>> simulateExample();
 ```
 
-For more infos check the subfolder readmes.
+For more infos check the subfolder Readmes.
 
 
