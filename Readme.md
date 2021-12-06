@@ -1,4 +1,4 @@
-[![MATLAB_CI](https://github.com/kherz/pulseq-cest/actions/workflows/ci.yml/badge.svg)](https://github.com/kherz/pulseq-cest/blob/major_update/.github/workflows/ci.yml)
+[![MATLAB_CI](https://github.com/kherz/pulseq-cest/actions/workflows/ci.yml/badge.svg)](https://github.com/kherz/pulseq-cest/blob/master/.github/workflows/ci.yml)
 
 # pulseq-cest
 
