@@ -7,7 +7,7 @@ def = containers.Map();
 
 fid = fopen(seq_fn);
 
-while true
+while true && ~feof(fid)
     line = fgetl(fid);
     if (strcmp(line, '[DEFINITIONS]'))
         line = fgetl(fid);
@@ -19,6 +19,10 @@ while true
             end
             line = fgetl(fid);
         end
+        break;
+    end
+    if (strcmp(line, '[BLOCKS]'))
+        warning([seq_fn ' does not contain [DEFINITIONS]!']);
         break;
     end
 end
