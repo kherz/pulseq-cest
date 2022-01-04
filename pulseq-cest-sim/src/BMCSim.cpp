@@ -245,6 +245,7 @@ bool BMCSim::DecodeSeqADCInfo() {
 bool BMCSim::RunSimulation() {
 	bool status = sequenceLoaded;
 	if (status) {
+		Mvec = sp->GetInitialMagnetizationVector()->rowwise().replicate(numberOfADCBlocks);
 		solver->UpdateSimulationParameters(*sp);
 		unsigned int currentADC = 0;
 		float accummPhase = 0; // since we simulate in reference frame, we need to take care of the accummulated phase
