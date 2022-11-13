@@ -21,7 +21,7 @@ satPulse      = mr.makeGaussPulse( 3000*pi/180 , 'Duration', 0.1, 'system',seq.s
 % resample pulse for reduced file size and io time
 satPulse      = resamplePulseForRLE(satPulse, 200); 
 
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,0.1,0.05,1,1e-6*seq.sys.gamma);
+[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,0.1,0.05,1,1e-6*seq.sys.gamma); % get more info on the generated pulse
 
 %% loop through zspec offsets
 B0=3;  % field strength in T
@@ -45,6 +45,7 @@ end
 
 %% write definitions
 seq.setDefinition('seq_id_string', seq_id_string);
+seq.setDefinition('B0', 3);
 seq.write([seq_id_string '.seq'], author);
 
 %% plot
@@ -52,3 +53,7 @@ seq.plot();                 % plots the full sequence
 seq.plotSaturationPhase();  % plots a single preparation phase
 
 toc
+
+%% run simulation
+M_z = simulate_pulseqcest(seq, which('GM_3T_example_bmsim.yaml'));
+figure(9), plot(M_z); hold on;
