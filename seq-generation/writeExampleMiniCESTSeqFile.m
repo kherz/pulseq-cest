@@ -13,7 +13,6 @@ seq_id_string = 'MiniCEST_example'; % unique seq id
 % init sequence
 tic
 seq = SequenceSBB(getScannerLimits()); % standard is a 3T system
-seq.sys
 
 %% create scanner events
 % create pulseq saturation pulse object with FA= 3000 and tp=100ms
@@ -46,7 +45,7 @@ end
 %% write definitions
 seq.setDefinition('seq_id_string', seq_id_string);
 seq.setDefinition('B0', 3);
-seq.write([seq_id_string '.seq'], author);
+seq.write([fullfile(getPulseqCESTRootDir, 'seq-generation', seq_id_string) '.seq'], author);
 
 %% plot
 seq.plot();                 % plots the full sequence
@@ -55,5 +54,5 @@ seq.plotSaturationPhase();  % plots a single preparation phase
 toc
 
 %% run simulation
-M_z = simulate_pulseqcest(seq, which('GM_3T_example_bmsim.yaml'));
+M_z = simulate_pulseqcest(seq, fullfile(getPulseqCESTRootDir, 'examples','GM_3T_example_bmsim.yaml'));
 figure(9), plot(M_z); hold on;

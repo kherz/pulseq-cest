@@ -6,9 +6,9 @@
 
 %% filenames for .seq-file and simulation parameters
 % .seq-file: This file contains the saturation period
-seq_fn   = which('OH_3T_example.seq');
+seq_fn   = fullfile(getPulseqCESTRootDir, 'examples', 'OH_3T_example.seq');
 % .yaml-file: This file contains all the simulation settings
-param_fn = which('GM_3T_example_bmsim.yaml');
+param_fn = fullfile(getPulseqCESTRootDir, 'examples', 'GM_3T_example_bmsim.yaml');
 
 %% read Parameters
 PMEX = readSimulationParameters(param_fn);
