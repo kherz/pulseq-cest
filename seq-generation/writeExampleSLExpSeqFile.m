@@ -8,12 +8,7 @@
 author = 'Kai Herz';
 
 %% get correct path
-script_fp = []; 
-if strcmp(mfilename, 'LiveEditorEvaluationHelperESectionEval')
-    script_fp = fileparts(matlab.desktop.editor.getActiveFilename);
-else
-    script_fp = fileparts(which(mfilename));
-end
+script_fp = fullfile(getPulseqCESTRootDir, 'seq-generation');
 
 %% sequence definitions
 % everything in seq_defs gets written as definition in .seq-file
