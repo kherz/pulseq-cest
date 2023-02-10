@@ -27,3 +27,9 @@ jobs:
         with:
           command: addpath(genpath(pwd)); compile_pulseqcest; cd tests; testResults = runtests(); assert(nnz([testResults.Failed])==0);
           
+      - name: Upload mex
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux_mex-${{ github.sha }}
+          path: ${{github.workspace}}/pulseq-cest-sim/pulseqcestmex.mexa64
+          
