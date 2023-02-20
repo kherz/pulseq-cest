@@ -2,20 +2,12 @@
 %
 % kai.herz@tuebingen.mpg.de
 
-%% filenames for .seq-file and simulation parameters
-% get correct path
-script_fp = []; 
-if strcmp(mfilename, 'LiveEditorEvaluationHelperESectionEval')
-    script_fp = fileparts(matlab.desktop.editor.getActiveFilename);
-else
-    script_fp = fileparts(which(mfilename));
-end
 
 %% filenames
 % .seq-file: This file contains the saturation period
-seq_fn   = fullfile(script_fp, 'APTw_3T_example.seq'); 
+seq_fn   = fullfile(getPulseqCESTRootDir, 'examples', 'APTw_3T_example.seq'); 
 % .yaml-file: This file contains all the simulation settings
-param_fn = fullfile(script_fp, 'GM_3T_example_bmsim.yaml'); 
+param_fn = fullfile(getPulseqCESTRootDir, 'examples', 'GM_3T_example_bmsim.yaml'); 
 
 %% run simulation
 M_z = simulate_pulseqcest(seq_fn, param_fn);

@@ -1,4 +1,4 @@
-% this function prepares long pulse objects for a better perormance of the
+% this function prepares long pulse objects for a better performance of the
 % run length encoding (rle) algorithm used to save the shapes in the pulseq files
 % The pulse signal is first resampled to a chosen amount of samples and
 % then resampled to the original raster using a nearest neigbour
