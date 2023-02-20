@@ -5,7 +5,7 @@ on: pull_request
 jobs:
   matlab:
     name: Matlab build and unit test
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20
     env:
       CC: gcc-7
       CXX: g++-7
