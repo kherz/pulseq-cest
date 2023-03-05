@@ -5,7 +5,7 @@ on: pull_request
 jobs:
   matlab:
     name: Matlab build and unit test
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       CC: gcc-7
       CXX: g++-7
@@ -26,4 +26,10 @@ jobs:
         uses: matlab-actions/run-command@v1
         with:
           command: addpath(genpath(pwd)); compile_pulseqcest; cd tests; testResults = runtests(); assert(nnz([testResults.Failed])==0);
+          
+      - name: Upload mex
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux_mex-${{ github.sha }}
+          path: ${{github.workspace}}/pulseq-cest-sim/pulseqcestmex.mexa64
           

@@ -289,9 +289,9 @@ bool BMCSim::RunSimulation() {
 					solver->SolveBlochEquation(M, pulseSamples->at(p).timestep);
 				}
 				// delay at end of the pulse?
-				if (pulse->deadTime > 0) {
+				if (pulse->ringdownTime > 0) {
 					solver->UpdateBlochMatrix(*sp, 0, 0, 0);
-					solver->SolveBlochEquation(M, pulse->deadTime);
+					solver->SolveBlochEquation(M, pulse->ringdownTime);
 				}
 				int phaseDegree = pulse->length * 1e-6 * 360 * seqBlock->GetRFEvent().freqOffset;
 				phaseDegree %= 360;
