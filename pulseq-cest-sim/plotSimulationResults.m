@@ -38,13 +38,12 @@ Z = Z(idx);
 % both sides of the water, so we can calculate the asym easily.
 % For different .seq-files, different steps may be neccessary
 MTRasym=Z(end:-1:1)-Z;
-MTRasym(1:ceil(end/2)) = NaN;
 
 % finally, plot the Z-spectrum and the MTRasym curve
 subplot(2,1,1), hold on; grid on;
 plot(ppm_sort, Z,'Displayname','Z-spectrum'); set(gca,'xdir','reverse');
 xlabel('\Delta\omega [ppm]'); legend show;
 subplot(2,1,2), hold on; grid on;
-plot(ppm_sort,MTRasym,'Displayname','MTR_{asym}'); set(gca,'xdir','reverse');
+plot(ppm_sort,MTRasym,'Displayname','MTR_{asym}'); set(gca,'xdir','reverse'); xlim([0 Inf]);
 xlabel('\Delta\omega [ppm]'); legend show;
-axis([ppm_sort(1) ppm_sort(end) -(2*max(abs(MTRasym))) (2*max(abs(MTRasym)))]);
+axis([0 ppm_sort(end) -(2*max(abs(MTRasym))) (2*max(abs(MTRasym)))]);
