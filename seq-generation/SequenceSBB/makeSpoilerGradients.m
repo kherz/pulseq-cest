@@ -22,7 +22,7 @@ else
     riseTime = minRiseTime;
 end
     
-spoilDuration = duration+riseTime; % [s]
+spoilDuration = duration+2*riseTime; % [s]
 
 % create pulseq gradient object 
 gx=mr.makeTrapezoid('x','Amplitude',spoilAmplitude,'Duration',spoilDuration,'riseTime', riseTime, 'system',lims);
