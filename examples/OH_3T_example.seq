@@ -4,7 +4,7 @@
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
 # Created by: Kai Herz
-# Created at: 14-Sep-2021 17:04:58
+# Created at: 05-Jul-2023 22:16:41
 
 [VERSION]
 major 1
@@ -14,6 +14,7 @@ revision 1
 [DEFINITIONS]
 B0 3 
 B1cwpe 4 
+B1pa 4 
 DCsat 1 
 M0_offset -300 
 Trec 5 
@@ -23,6 +24,7 @@ n_pulses 1
 num_meas 25 
 offsets_ppm -300 -4 -3.65217391 -3.30434783 -2.95652174 -2.60869565 -2.26086957 -1.91304348 -1.56521739 -1.2173913 -0.869565217 -0.52173913 -0.173913043 0.173913043 0.52173913 0.869565217 1.2173913 1.56521739 1.91304348 2.26086957 2.60869565 2.95652174 3.30434783 3.65217391 4 
 seq_id_string OH_3T_example 
+spoiling 1 
 tp 0.1 
 
 # Format of blocks:
@@ -263,7 +265,7 @@ tp 0.1
 # id amplitude rise flat fall delay
 # ..      Hz/m   us   us   us    us
 [TRAP]
- 1  1.36243e+06 1000 4500 1000   0
+ 1  1.36244e+06 1000 4500 1000   0
 
 # Format of ADC events:
 # id num dwell delay freq phase
@@ -280,7 +282,7 @@ tp 0.1
 [SHAPES]
 
 shape_id 1
-num_samples 12000
+num_samples 12030
 0
 1e-07
 2e-07
@@ -11172,9 +11174,13 @@ num_samples 12000
 0
 0
 0
+-1
+0
+0
+27
 
 shape_id 2
-num_samples 12000
+num_samples 12030
 0.2984818
 0.0012115
 0.0012112
@@ -23845,6 +23851,10 @@ num_samples 12000
 0
 0
 1
+-1
+0
+0
+27
 
 shape_id 3
 num_samples 100030
@@ -23864,7 +23874,7 @@ num_samples 100030
 100028
 
 shape_id 5
-num_samples 12000
+num_samples 12030
 1
 0
 -1e-07
@@ -34748,9 +34758,12 @@ num_samples 12000
 -2e-07
 0
 -1e-07
+0
+0
+28
 
 shape_id 6
-num_samples 12000
+num_samples 12030
 0
 0
 1
@@ -47421,9 +47434,13 @@ num_samples 12000
 0.0012112
 0.0012115
 0.0012119
+-0.7027301
+0
+0
+27
 
 shape_id 7
-num_samples 12000
+num_samples 12030
 0.7015182
 -0.0012115
 -0.0012112
@@ -60093,10 +60110,10 @@ num_samples 12000
 -1e-07
 0
 0
-1
+31
 
 shape_id 8
-num_samples 12000
+num_samples 12030
 1
 0
 0
@@ -72768,4 +72785,8 @@ num_samples 12000
 -0.0012112
 -0.0012115
 -0.0012119
+-0.2972699
+0
+0
+27
 

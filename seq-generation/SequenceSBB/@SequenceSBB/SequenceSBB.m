@@ -42,21 +42,30 @@ classdef SequenceSBB < mr.Sequence
         
         % plots the saturation phase from the first to the second adc
         % event.       
-        function p = plotSaturationPhase(obj)
+        function p = plotSaturationPhase(obj,lim)
+            if nargin<2
+                lim=[1 2];% plot only from first to second ADC,
+            end
             t=0; tADC=[];
             for iB=1:length(obj.blockEvents)
                 block = obj.getBlock(iB);
                 t = t+mr.calcDuration(block);
                 if ~isempty(block.adc)
                     tADC(end+1) = t; % save time of ADC events here
-                    if numel(tADC) == 2
+                    if numel(tADC) == lim(2)
                         break;
                     end
                 end
             end
-            
-            % plot only from first to second ADC,
-            p = obj.plot('TimeRange',[tADC(1)-0.02 tADC(2)],'timeDisp','s');
+            if lim(2)==Inf
+                lim(2)=numel(tADC);
+            end
+            % plot only from first to last ADC,
+            if lim(1)>0
+                p = obj.plot('TimeRange',[tADC(lim(1))-0.02 tADC(lim(2))],'timeDisp','s');
+            else
+                p = obj.plot('TimeRange',[0 tADC(lim(2))],'timeDisp','s');
+            end
             % get the rf axis
             for rf_mag_id = 1:numel(p.Children)
                 if strcmp('RF mag (Hz)', p.Children(rf_mag_id).YLabel.String)
