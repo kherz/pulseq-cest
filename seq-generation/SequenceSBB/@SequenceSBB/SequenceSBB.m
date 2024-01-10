@@ -34,7 +34,7 @@ classdef SequenceSBB < mr.Sequence
             end
             % spoilers
             spoilRiseTime = 1e-3;
-            spoilDuration = 4500e-6+ spoilRiseTime; % [s]
+            spoilDuration = 4500e-6  + 2*spoilRiseTime; % [s]
             % create pulseq gradient object
             [gxSpoil, gySpoil, gzSpoil] = makeSpoilerGradients(lims, spoilDuration, spoilRiseTime);
             addBlock(obj, gxSpoil, gySpoil, gzSpoil);

@@ -1,4 +1,4 @@
-function [gx, gy, gz] = makeSpoilerGradients(lims, duration, riseTime)
+function [gx, gy, gz] = makeSpoilerGradients(lims, spoilDuration, riseTime)
 % This function creates spoiler objects in x y and z direction based on the
 % maximal spoiler amplitude
 % A specified rise-/falltime can be set, otherwise minimum times are used
@@ -22,7 +22,6 @@ else
     riseTime = minRiseTime;
 end
     
-spoilDuration = duration+riseTime; % [s]
 
 % create pulseq gradient object 
 gx=mr.makeTrapezoid('x','Amplitude',spoilAmplitude,'Duration',spoilDuration,'riseTime', riseTime, 'system',lims);
