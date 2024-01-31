@@ -21,9 +21,8 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 
 //! Constructor
 /*!	\param SimPars initial SimulationParameters object */
-BMCSim::BMCSim(SimulationParameters &SimPars)
-{
-	sp = &SimPars;
+BMCSim::BMCSim(SimulationParameters &simPars) {
+	sp = &simPars;
 	InitSolver();
 	sequenceLoaded = false;
 }
