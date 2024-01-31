@@ -1,4 +1,4 @@
-//!  BMCsim.h 
+//!  BMCsim.h
 /*!
 Class that handles the simulation.
 
@@ -25,28 +25,27 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //! A single pulse sample for simulation
 struct PulseSample
 {
-	double magnitude;  /*!< pulse sample amplitude [Hz]*/
-	double phase;      /*!< pulse sample phase [rad]*/
-	double timestep;   /*!< pulse sample duration [rad]*/
+	double magnitude; /*!< pulse sample amplitude [Hz]*/
+	double phase;	  /*!< pulse sample phase [rad]*/
+	double timestep;  /*!< pulse sample duration [rad]*/
 };
 
 //! Pulse Event sctruct that contains the parameters important for simulation
 struct PulseEvent
 {
-	double length;                     /*!< pulse duration [us]*/
-	double deadTime;                   /*!< pulse dead time [s]*/
-	double ringdownTime;               /*!< pulse ringdownTime time [s]*/
-	std::vector<PulseSample> samples;  /*!< vector with all pulse amplitude, phase and time samples*/
+	double length;					  /*!< pulse duration [us]*/
+	double deadTime;				  /*!< pulse dead time [s]*/
+	double ringdownTime;			  /*!< pulse ringdownTime time [s]*/
+	std::vector<PulseSample> samples; /*!< vector with all pulse amplitude, phase and time samples*/
 };
 
-//!  BMCSim class. 
+//!  BMCSim class.
 /*!
   Class that serves as a simulation framework and brings together the SimulationParameters and the ExternalSequence
 */
 class BMCSim
 {
 public:
-
 	// typedef for pulse id with amplitude, phase and time id
 	typedef std::tuple<int, int, int> PulseID;
 
@@ -60,7 +59,7 @@ public:
 	bool LoadExternalSequence(std::string path);
 
 	//! Get unique pulse
-	PulseEvent* GetUniquePulse(PulseID id);
+	PulseEvent *GetUniquePulse(PulseID id);
 
 	//! Set simulations parameters object
 	bool SetSimulationParameters(SimulationParameters &simPars);
@@ -69,7 +68,7 @@ public:
 	SimulationParameters GetSimulationParameters();
 
 	//! Get pointer to magnetization vector after simulation
-	Eigen::MatrixXd* GetMagnetizationVectors();
+	Eigen::MatrixXd *GetMagnetizationVectors();
 
 	//! Get a copy of the magnetization vector object
 	Eigen::MatrixXd GetCopyOfMagnetizationVectors();
@@ -77,19 +76,17 @@ public:
 	//! Run Simulation
 	bool RunSimulation();
 
-
 private:
+	ExternalSequence seq;						/*!< External Pulseq sequence */
+	bool sequenceLoaded;						/*!< true if sequence was succesfully loaded */
+	std::map<PulseID, PulseEvent> uniquePulses; /*!< vector with unique pulse sample */
+	unsigned int numberOfADCBlocks;				/*!< number of ADC blocks in external seq file */
 
-	ExternalSequence seq; /*!< External Pulseq sequence */
-	bool sequenceLoaded; /*!< true if sequence was succesfully loaded */
-	std::map<PulseID, PulseEvent>  uniquePulses; /*!< vector with unique pulse sample */
-	unsigned int numberOfADCBlocks;  /*!< number of ADC blocks in external seq file */
-
-	SimulationParameters* sp; /*!< Pointer to SimulationParameters object */
+	SimulationParameters *sp; /*!< Pointer to SimulationParameters object */
 
 	std::unique_ptr<BlochMcConnellSolverBase> solver; /*!< Templated Bloch McConnell solver  */
 
-	Eigen::MatrixXd Mvec;  /*!< Matrix containing all magnetization vectors */
+	Eigen::MatrixXd Mvec; /*!< Matrix containing all magnetization vectors */
 
 	//! Init solver
 	void InitSolver();

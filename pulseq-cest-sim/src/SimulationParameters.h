@@ -33,12 +33,13 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //! Scanner related info
 struct Scanner
 {
-	double B0;                /*!< static field [T]*/
-	double relB1;             /*!< relative B1 (adapt for B1 inhomogeneity simulation) */
-	double B0Inhomogeneity;   /*!< field inhomogeneity [ppm] */
-	double Gamma;             /*!< gyromagnetic ratio [rad/uT] */
+	double B0;				/*!< static field [T]*/
+	double relB1;			/*!< relative B1 (adapt for B1 inhomogeneity simulation) */
+	double B0Inhomogeneity; /*!< field inhomogeneity [ppm] */
+	double Gamma;			/*!< gyromagnetic ratio [rad/uT] */
+	double coilLeadTime;	/*!< coil lead time (delay before pulse starts in rf event) [s] */
+	double coilHoldTime;	/*!< coil lead time (delay after pulse rf event) [s] */
 };
-
 
 //! Shape of the magnetization transfer pool
 enum MTLineshape
@@ -48,7 +49,8 @@ enum MTLineshape
 	None
 };
 
-//!  Water Pool class. 
+
+//!  Water Pool class.
 /*!
   Class containing  relaxation parameters and fraction of Pools
 */
@@ -82,14 +84,13 @@ public:
 	//! Set f
 	void SetFraction(double nf);
 
-
 protected:
 	double R1; /*!< 1/T1 [Hz]  */
 	double R2; /*!< 1/T1 [Hz]  */
-	double f; /*!< proton fraction  */
+	double f;  /*!< proton fraction  */
 };
 
-//!  CEST Pool class. 
+//!  CEST Pool class.
 /*!
   Class containing relaxation parameters and fraction of Pools
   and an additional chemical shift and an exchange rate
@@ -97,7 +98,6 @@ protected:
 class CESTPool : public WaterPool
 {
 public:
-
 	//! Default Constructor
 	CESTPool();
 
@@ -124,8 +124,7 @@ protected:
 	double k;  /*!< Exchange rate [Hz] */
 };
 
-
-//!  MT Pool class. 
+//!  MT Pool class.
 /*!
   Class containing relaxation parameters and fraction of Pools
   and an additional chemical shift and an exchange rate
@@ -134,7 +133,6 @@ protected:
 class MTPool : public CESTPool
 {
 public:
-
 	//! Default Constructor
 	MTPool();
 
@@ -154,7 +152,6 @@ public:
 	double GetMTLineAtCurrentOffset(double offset, double omega0);
 
 private:
-
 	//! Calculate the SuperLorentzian Lineshape
 	double InterpolateSuperLorentzianShape(double dw);
 
@@ -164,19 +161,19 @@ private:
 	MTLineshape ls; /*!< MT lineshape */
 };
 
-
-
-//!  SimulationParameters class. 
+//!  SimulationParameters class.
 /*!
 	Container for all the relevant simulation parameters
 */
 class SimulationParameters
 {
 public: // TODO: write get and set methods for member variables and make them private
+	// typedef for pulse id with amplitude, phase and time id
+	typedef std::tuple<int, int, int> PulseID;
 
 	//! Constructor
 	SimulationParameters();
-	
+
 	//! Destructor
 	~SimulationParameters();
 
@@ -186,26 +183,40 @@ public: // TODO: write get and set methods for member variables and make them pr
 	//! Get Magnetization vector
 	Eigen::VectorXd* GetInitialMagnetizationVector();
 
+	//! Get external sequence object
+	ExternalSequence *GetExternalSequence();
+
+	//! Init Magnetitazion Vector Array
+	void InitMagnetizationVectors(Eigen::VectorXd &M, unsigned int numOutput);
+
+	//! Get Magnetization vectors
+	Eigen::MatrixXd *GetMagnetizationVectors();
+
+	//! Get Magnetization vectors as an object (not a pointer)
+	Eigen::MatrixXd GetFinalMagnetizationVectors();
+
 	//! Set Water Pool
 	void SetWaterPool(WaterPool waterPool);
 
 	//! Get Water Pool
-	WaterPool* GetWaterPool();
+	WaterPool *GetWaterPool();
 
 	//! Set CEST Pool
 	void SetCESTPool(CESTPool cp, unsigned int poolIdx);
 
 	//! Get CEST Pool
-	CESTPool* GetCESTPool(unsigned int poolIdx);
+	CESTPool *GetCESTPool(unsigned int poolIdx);
 
 	//! Set MT Pool
 	void SetMTPool(MTPool cp);
 
 	//! Get MT Pool
-	MTPool* GetMTPool();
+	MTPool *GetMTPool();
+
+
 
 	//! Init Scanner variables (old call for compat)
-	void InitScanner(double b0, double b1 = 1.0, double b0Inh = 0.0, double gamma = 42.577 * 2 * M_PI);
+	void InitScanner(double b0, double b1 = 1.0, double b0Inh = 0.0, double gamma = 42.577 * 2 * M_PI, double leadTime = 0.0, double holdTime = 0.0);
 
 	//! Init Scanner variables
 	void InitScanner(Scanner s);
@@ -221,6 +232,12 @@ public: // TODO: write get and set methods for member variables and make them pr
 
 	//! Get Scanner Gamma
 	double GetScannerGamma();
+
+	//! Get coil lead time
+	double GetScannerCoilLeadTime();
+
+	//! Get coil hold time
+	double GetScannerCoilHoldTime();
 
 	//! Set Scanner relative B1
 	void SetScannerRelB1(double rb1);
@@ -255,22 +272,17 @@ public: // TODO: write get and set methods for member variables and make them pr
 	//! Get number of max pulse samples
 	unsigned int GetMaxNumberOfPulseSamples();
 
-
 protected:
-
-	WaterPool waterPool;             /*!< Water Pool */
-	MTPool mtPool;                   /*!< MT Pool */
+	WaterPool waterPool;			 /*!< Water Pool */
+	MTPool mtPool;					 /*!< MT Pool */
 	std::vector<CESTPool> cestPools; /*!< CEST Pool(s) */
-	Eigen::VectorXd M;               /*!< Initial Magnetization vector */
+	Eigen::VectorXd M;				 /*!< Initial Magnetization vector */
 
-	Scanner scanner;                 /*!< Sruct with field related info */
-	
-	bool simulateMTPool;             /*!< true if MT should be simulated */
+	Scanner scanner; /*!< Sruct with field related info */
 
-	bool verboseMode;                      /*!< true, if you want to have some output information */
-	bool useInitMagnetization;             /*!< true, if the magnetization vector should be reset to the initial magnetization after each adc */
-	unsigned int maxNumberOfPulseSamples;  /*!< number of pulse samples for shaped pulses */
+	bool simulateMTPool; /*!< true if MT should be simulated */
 
+	bool verboseMode;					  /*!< true, if you want to have some output information */
+	bool useInitMagnetization;			  /*!< true, if the magnetization vector should be reset to the initial magnetization after each adc */
+	unsigned int maxNumberOfPulseSamples; /*!< number of pulse samples for shaped pulses */
 };
-
-

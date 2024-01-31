@@ -25,7 +25,7 @@ if has_git %good, we can just clone everything
     disp(['Running git in ' script_fp]);
     
     %clone pulseq
-    cloneRepo(pulseq_path, 'https://github.com/pulseq/pulseq.git', 'commit', 'ed8cf4231dc7a5caaf828211486287afcdbac230');
+    cloneRepo(pulseq_path, 'https://github.com/pulseq/pulseq.git');
     % clone pulseq-cest-library
     cloneRepo(lib_path, 'https://github.com/kherz/pulseq-cest-library.git');
     % clone yamlmatlab
