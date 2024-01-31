@@ -3,7 +3,7 @@
 
 cmake_minimum_required(VERSION 3.18.0)
 
-project(pulseqcestmex)
+project(Sim_pulseqSBB)
 
 # need c++11 standards
 set (CMAKE_CXX_STANDARD 11)
@@ -21,7 +21,6 @@ endif()
 
 # we need matlab
 find_package(Matlab REQUIRED)
-include_directories(Matlab_INCLUDE_DIRS)
 
 # and eigen
 set(EIGEN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/eigen3/Eigen CACHE PATH "eigen source directory")
@@ -31,22 +30,17 @@ else()
    message(FATAL_ERROR "eigen not found in expected folder, please specify path to eigen src directory" ...)
 endif()
 
-# and pulseq
-set(PULSEQ_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../pulseq/src/ CACHE PATH "Pulseq src directory")
-if(EXISTS ${PULSEQ_SRC_DIR})
-   include_directories(${PULSEQ_SRC_DIR})
-else()
-   message(FATAL_ERROR "Pulseq not found in expected folder, please specify path to Pulseq src directory" ...)
-endif()
+include_directories(3rdParty/pulseq-master/src)
+include_directories(Matlab_INCLUDE_DIRS)
 
-
-set(SOURCE_FILES PulseqCESTmex.cpp
+set(SOURCE_FILES Sim_pulseqSBB.cpp
                  BlochMcConnellSolver.h
                  SimulationParameters.h
                  SimulationParameters.cpp
-                 BMCSim.h
-                 BMCSim.cpp
-                 ${PULSEQ_SRC_DIR}/ExternalSequence.h
-                 ${PULSEQ_SRC_DIR}/ExternalSequence.cpp)
-				 
-matlab_add_mex(NAME pulseqcestmex SRC ${SOURCE_FILES})
+				 BMCSim.h
+				 BMCSim.cpp
+				 3rdParty/pulseq-master/src/ExternalSequence.h
+                 3rdParty/pulseq-master/src/ExternalSequence.cpp)
+			 		
+matlab_add_mex(NAME Sim_pulseqSBB SRC ${SOURCE_FILES})
+

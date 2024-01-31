@@ -22,7 +22,6 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 
 #include "ExternalSequence.h"
 #include "Eigen"
-#include <memory>
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -37,6 +36,8 @@ struct Scanner
 	double relB1;             /*!< relative B1 (adapt for B1 inhomogeneity simulation) */
 	double B0Inhomogeneity;   /*!< field inhomogeneity [ppm] */
 	double Gamma;             /*!< gyromagnetic ratio [rad/uT] */
+	double coilLeadTime;      /*!< coil lead time (delay before pulse starts in rf event) [s] */
+	double coilHoldTime;      /*!< coil lead time (delay after pulse rf event) [s] */
 };
 
 
@@ -103,6 +104,9 @@ public:
 
 	//! Constructor
 	CESTPool(double nR1, double nR2, double nf, double ndw, double nk);
+
+	//! Copy Constructor
+	CESTPool(CESTPool* c);
 
 	//! Default destructor
 	~CESTPool();
@@ -192,6 +196,9 @@ public: // TODO: write get and set methods for member variables and make them pr
 	//! Get Water Pool
 	WaterPool* GetWaterPool();
 
+	//! Init CEST pools
+	void InitCESTPoolMemory(unsigned int numPools);
+
 	//! Set CEST Pool
 	void SetCESTPool(CESTPool cp, unsigned int poolIdx);
 
@@ -205,7 +212,7 @@ public: // TODO: write get and set methods for member variables and make them pr
 	MTPool* GetMTPool();
 
 	//! Init Scanner variables (old call for compat)
-	void InitScanner(double b0, double b1 = 1.0, double b0Inh = 0.0, double gamma = 42.577 * 2 * M_PI);
+	void InitScanner(double b0, double b1 = 1.0, double b0Inh = 0.0, double gamma = 42.577 * 2 * M_PI, double leadTime = 0.0, double holdTime = 0.0);
 
 	//! Init Scanner variables
 	void InitScanner(Scanner s);
@@ -222,6 +229,12 @@ public: // TODO: write get and set methods for member variables and make them pr
 	//! Get Scanner Gamma
 	double GetScannerGamma();
 
+	//! Get coil lead time
+	double GetScannerCoilLeadTime();
+
+	//! Get coil hold time
+	double GetScannerCoilHoldTime();
+
 	//! Set Scanner relative B1
 	void SetScannerRelB1(double rb1);
 
@@ -230,9 +243,6 @@ public: // TODO: write get and set methods for member variables and make them pr
 
 	//! Get bool if MT should be simulated
 	bool IsMTActive();
-
-	//! Set Number of CEST Pools
-	void SetNumberOfCESTPools(unsigned int nPools);
 
 	//! Get Number of CEST Pools
 	unsigned int GetNumberOfCESTPools();
@@ -258,14 +268,17 @@ public: // TODO: write get and set methods for member variables and make them pr
 
 protected:
 
-	WaterPool waterPool;             /*!< Water Pool */
-	MTPool mtPool;                   /*!< MT Pool */
-	std::vector<CESTPool> cestPools; /*!< CEST Pool(s) */
-	Eigen::VectorXd M;               /*!< Initial Magnetization vector */
+	WaterPool waterPool; /*!< Water Pool */
+	MTPool mtPool;       /*!< MT Pool */
+	CESTPool* cestPools; /*!< CEST Pool(s) */
+	Eigen::VectorXd M;   /*!< Initial Magnetization vector */
 
-	Scanner scanner;                 /*!< Sruct with field related info */
+	Scanner scanner;     /*!< Sruct with field related info */
 	
-	bool simulateMTPool;             /*!< true if MT should be simulated */
+	bool simulateMTPool;    /*!< true if MT should be simulated */
+
+	unsigned int numberOfCESTPools; /*!< number of CEST Pools */
+	bool cestMemAllocated;          /*!< true if memory for cest pools was allocated*/
 
 	bool verboseMode;                      /*!< true, if you want to have some output information */
 	bool useInitMagnetization;             /*!< true, if the magnetization vector should be reset to the initial magnetization after each adc */

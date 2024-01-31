@@ -34,8 +34,7 @@ struct PulseSample
 struct PulseEvent
 {
 	double length;                     /*!< pulse duration [us]*/
-	double deadTime;                   /*!< pulse dead time [s]*/
-	double ringdownTime;               /*!< pulse ringdownTime time [s]*/
+	double deadTime;                   /*!< pulse dead time [us]*/
 	std::vector<PulseSample> samples;  /*!< vector with all pulse amplitude, phase and time samples*/
 };
 
@@ -68,11 +67,8 @@ public:
 	//! Get simulations parameters object
 	SimulationParameters GetSimulationParameters();
 
-	//! Get pointer to magnetization vector after simulation
-	Eigen::MatrixXd* GetMagnetizationVectors();
-
-	//! Get a copy of the magnetization vector object
-	Eigen::MatrixXd GetCopyOfMagnetizationVectors();
+	//! Get magnetization vector after simulation
+	Eigen::MatrixXd GetMagnetizationVectors();
 
 	//! Run Simulation
 	bool RunSimulation();
@@ -87,7 +83,7 @@ private:
 
 	SimulationParameters* sp; /*!< Pointer to SimulationParameters object */
 
-	std::unique_ptr<BlochMcConnellSolverBase> solver; /*!< Templated Bloch McConnell solver  */
+	BlochMcConnellSolverBase* solver; /*!< Templated Bloch McConnell solver  */
 
 	Eigen::MatrixXd Mvec;  /*!< Matrix containing all magnetization vectors */
 

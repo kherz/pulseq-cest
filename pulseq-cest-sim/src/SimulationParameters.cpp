@@ -78,6 +78,12 @@ CESTPool::CESTPool() : dw(0), k(0) {}
 */
 CESTPool::CESTPool(double nR1, double nR2, double nf, double ndw, double nk) : WaterPool(nR1, nR2, nf), dw(ndw), k(nk) {}
 
+//! Copy Constructor
+/*!
+  \param c pointer to existing CESTPool class object
+*/
+CESTPool::CESTPool(CESTPool* c) : WaterPool(c->R1, c->R2, c->f), dw(c->dw), k(c->k) {}
+
 //! Default destructor
 CESTPool::~CESTPool() {}
 
@@ -235,7 +241,9 @@ double MTPool::CubicHermiteSplineInterpolation(double px_int, std::vector<double
 //! Constructor
 SimulationParameters::SimulationParameters()
 {
+	numberOfCESTPools = 0;
 	simulateMTPool = false;
+	cestMemAllocated = false;
 	verboseMode = false;
 	useInitMagnetization = true;
 	maxNumberOfPulseSamples = 100;
@@ -245,6 +253,8 @@ SimulationParameters::SimulationParameters()
 //! Destructor
 SimulationParameters::~SimulationParameters()
 {
+	if (numberOfCESTPools > 0 && cestMemAllocated)
+		delete[] cestPools;
 }
 
 //! Get Magnetization vectors
@@ -275,6 +285,17 @@ WaterPool* SimulationParameters::GetWaterPool()
 	return &waterPool;
 }
 
+//! Init CEST pool memory
+/*!
+	Allocate heap memory for CEST pools
+	\param numPools number of CEST pools that should be simulated
+*/
+void  SimulationParameters::InitCESTPoolMemory(unsigned int numPools)
+{
+	numberOfCESTPools = numPools;
+	cestPools = new CESTPool[numberOfCESTPools];
+	cestMemAllocated = true;
+}
 
 //! Set CEST Pool
 /*!
@@ -283,7 +304,7 @@ WaterPool* SimulationParameters::GetWaterPool()
 */
 void  SimulationParameters::SetCESTPool(CESTPool cp, unsigned int poolIdx)
 {
-	if (poolIdx < cestPools.size())
+	if (poolIdx < numberOfCESTPools)
 		cestPools[poolIdx] = cp;
 }
 
@@ -294,7 +315,7 @@ void  SimulationParameters::SetCESTPool(CESTPool cp, unsigned int poolIdx)
 */
 CESTPool* SimulationParameters::GetCESTPool(unsigned int poolIdx)
 {
-	return poolIdx < cestPools.size() ? &cestPools[poolIdx] : NULL;
+	return poolIdx < numberOfCESTPools ? &cestPools[poolIdx] : NULL;
 }
 
 //! Set MT Pool
@@ -314,17 +335,18 @@ MTPool* SimulationParameters::GetMTPool()
 
 //! Set Scanner related info
 /*!
-	\param b0 static field [T]
-	\param relB1 relative B1
-	\param B0Inhomogeneity field inhomogeneity [ppm]
-	\param Gamma gyromagnetic ratio [rad/uT]
+    \param b0 static field [T]
+    \param relB1 relative B1
+    \param B0Inhomogeneity field inhomogeneity [ppm]
+    \param Gamma gyromagnetic ratio [rad/uT]
 	\param leadtime coil lead time [s]
 	\param holdtime coil hold time [s]
 */
-void SimulationParameters::InitScanner(double b0, double b1, double b0Inh, double gamma)
+void SimulationParameters::InitScanner(double b0, double b1, double b0Inh, double gamma, double leadtime, double holdtime)
 {
-	Scanner s{ b0,b1,b0Inh,gamma};
+	Scanner s{ b0,b1,b0Inh,gamma,leadtime,holdtime };
 	this->InitScanner(s);
+
 }
 
 //! Set Scanner related info
@@ -376,6 +398,20 @@ double SimulationParameters::GetScannerGamma()
 	return scanner.Gamma;
 }
 
+//! Get coil lead time
+/*!	\return coil lead time [s] */
+double SimulationParameters::GetScannerCoilLeadTime()
+{
+	return scanner.coilLeadTime;
+}
+
+//! Get coil hold time
+/*!	\return coil hold time [s] */
+double SimulationParameters::GetScannerCoilHoldTime()
+{
+	return scanner.coilHoldTime;
+}
+
 //! Get bool if MT should be simulated
 /*!	\return true, if an MT pool should be simulated */
 bool SimulationParameters::IsMTActive()
@@ -383,18 +419,11 @@ bool SimulationParameters::IsMTActive()
 	return simulateMTPool;
 }
 
-//! Set Number of CEST Pools
-/*!	\param total number of CEST pools that should be simulates */
-void SimulationParameters::SetNumberOfCESTPools(unsigned int nPools)
-{
-	cestPools.resize(nPools);
-}
-
 //! Get Number of CEST Pools
 /*!	\return total number of CEST pools that should be simulates */
 unsigned int SimulationParameters::GetNumberOfCESTPools()
 {
-	return cestPools.size();
+	return numberOfCESTPools;
 }
 
 //! Set Verbose mode
