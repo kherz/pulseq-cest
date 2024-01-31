@@ -49,20 +49,6 @@ enum MTLineshape
 	None
 };
 
-//! A single pulse sample for simulation
-struct PulseSample
-{
-	double magnitude; /*!< pulse sample amplitude [Hz]*/
-	double phase;	  /*!< pulse sample phase [rad]*/
-	double timestep;  /*!< pulse sample duration [rad]*/
-};
-
-struct PulseEvent
-{
-	double length;
-	double deadTime;
-	std::vector<PulseSample> samples;
-};
 
 //!  Water Pool class.
 /*!
@@ -194,6 +180,9 @@ public: // TODO: write get and set methods for member variables and make them pr
 	//! Set Magnetization vector
 	void SetInitialMagnetizationVector(Eigen::VectorXd MagVec);
 
+	//! Get Magnetization vector
+	Eigen::VectorXd* GetInitialMagnetizationVector();
+
 	//! Get external sequence object
 	ExternalSequence *GetExternalSequence();
 
@@ -224,8 +213,7 @@ public: // TODO: write get and set methods for member variables and make them pr
 	//! Get MT Pool
 	MTPool *GetMTPool();
 
-	//! Init Scanner variables (old call for compat)
-	void InitScanner(double b0, double b1 = 1.0, double b0Inh = 0.0, double gamma = 42.577 * 2 * M_PI);
+
 
 	//! Init Scanner variables (old call for compat)
 	void InitScanner(double b0, double b1 = 1.0, double b0Inh = 0.0, double gamma = 42.577 * 2 * M_PI, double leadTime = 0.0, double holdTime = 0.0);
@@ -284,35 +272,15 @@ public: // TODO: write get and set methods for member variables and make them pr
 	//! Get number of max pulse samples
 	unsigned int GetMaxNumberOfPulseSamples();
 
-	//! Get unique pulse
-	PulseEvent *GetUniquePulse(PulseID id);
-
 protected:
 	WaterPool waterPool;			 /*!< Water Pool */
 	MTPool mtPool;					 /*!< MT Pool */
 	std::vector<CESTPool> cestPools; /*!< CEST Pool(s) */
 	Eigen::VectorXd M;				 /*!< Initial Magnetization vector */
 
-	ExternalSequence sequence;					/*!< pulseq sequence */
-	void DecodeSeqInfo();						/*!< decosed the info from the pulseq file */
-	std::map<PulseID, PulseEvent> uniquePulses; /*!< vector with unique pulse sample */
-
-	Eigen::MatrixXd Mvec; /*!< Matrix containing all magnetization vectors */
-
-	WaterPool waterPool; /*!< Water Pool */
-	MTPool mtPool;		 /*!< MT Pool */
-	CESTPool *cestPools; /*!< CEST Pool(s) */
-
 	Scanner scanner; /*!< Sruct with field related info */
 
 	bool simulateMTPool; /*!< true if MT should be simulated */
-
-	unsigned int numberOfCESTPools; /*!< number of CEST Pools */
-	bool cestMemAllocated;			/*!< true if memory for cest pools was allocated*/
-
-	bool verboseMode;					  /*!< true, if you want to have some output information */
-	bool useInitMagnetization;			  /*!< true, if the magnetization vector should be reset to the initial magnetization after each adc */
-	unsigned int maxNumberOfPulseSamples; /*!< number of pulse samples for shaped pulses */
 
 	bool verboseMode;					  /*!< true, if you want to have some output information */
 	bool useInitMagnetization;			  /*!< true, if the magnetization vector should be reset to the initial magnetization after each adc */

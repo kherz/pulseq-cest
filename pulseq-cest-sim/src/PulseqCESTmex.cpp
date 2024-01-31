@@ -303,87 +303,52 @@ void Initialize(int nrhs, const mxArray *prhs[])
 
 //! Enry point for MATLAB mex function
 /*!
-	\param nlhs number of output arguments
+    \param nlhs number of output arguments
 	\param plhs Array of pointers to the mxArray output arguments
 	\param nrhs number of input arguments
 	\param prhs Array of pointers to the mxArray input arguments
 */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	ExternalSequence seq;
-	ReadExternalSequence(nrhs, prhs, seq);
-
-	// Get number of ADC -> equivalent to number of Blocks
-	unsigned int numberOfADCBlocks = 0;
-	for (unsigned int nSample = 0; nSample < seq.GetNumberOfBlocks(); nSample++)
+	try
 	{
-		SeqBlock *seqBlock = seq.GetBlock(nSample);
-		if (seqBlock->isADC())
+		switch (GetCallMode(nrhs, prhs))
 		{
-			numberOfADCBlocks++;
+		case INIT:
+			mexLock(); // start with locking mex
+			Initialize(nrhs, prhs);
+			break;
+		case UPDATE:
+			ParseInputStruct(nrhs, prhs, sp);
+			break;
+		case RUN:
+			simFramework->RunSimulation();
+			ReturnResultToMATLAB(plhs, simFramework->GetMagnetizationVectors());
+			break;
+		case CLOSE:
+			if (mexIsLocked()) {
+				mexUnlock();
+			}
+			break;
+		case INVALID:
+			throw(MatlabError("pulseqcestmex:mexFunction", "Invalid call mode, no function is called"));
+			break;
+		default:
+			throw(MatlabError("pulseqcestmex:mexFunction", "Unspecified Error"));
 		}
-		delete seqBlock; // pointer gets allocate with new in the GetBlock() function
 	}
-	if (numberOfADCBlocks == 0)
+	catch (MatlabError matlabError)
 	{
-		mexErrMsgIdAndTxt("MRF_CEST:Sim_pulseqSBB", "No ADC event found in .seq file");
+		if (mexIsLocked()) {
+			mexUnlock();
+		}
+		mexErrMsgIdAndTxt(matlabError.errorID.c_str(), matlabError.errorMessage.c_str());
 	}
-
-	// Init sim parameters
-	SimulationParameters sp;
-	sp.SetExternalSequence(seq);
-
-	// init the simulation interface and read the input
-	ParseInputStruct(nrhs, prhs, sp, numberOfADCBlocks);
-
-	// disp info about input
-	if (sp.IsVerbose())
+	catch (...) // clean up if sth didn't work
 	{
-		mexPrintf("Read parameters succesfully! \n");
-		mexPrintf("Found %i CEST pool(s) and %i MT Pool(s) \n", sp.GetNumberOfCESTPools(), sp.IsMTActive() ? 1 : 0);
+		if (mexIsLocked()) {
+			mexUnlock();
+		}	
+		mexErrMsgIdAndTxt("pulseqcestmex:mexFunction", "Unspecified Error! Cleaning up...");
 	}
-
-	/* For a small number of pools the matrix size can be set at compile time. This ensures allocation on the stack and therefore a faster simulation.
-	   This speed advantade vanishes for more pools and can even result in a stack overflow for very large matrices
-	   In this case more than 3 pools are simulated with dynamic matrices, but this could be expanded eventually
-	*/
-	BlochMcConnellSolverBase *solver;
-	switch (sp.GetNumberOfCESTPools())
-	{
-	case 0: // only water
-		if (sp.IsMTActive())
-			solver = new BlochMcConnellSolver<4>(sp);
-		else
-			solver = new BlochMcConnellSolver<3>(sp);
-		break;
-	case 1: // one cest pool
-		if (sp.IsMTActive())
-			solver = new BlochMcConnellSolver<7>(sp);
-		else
-			solver = new BlochMcConnellSolver<6>(sp);
-		break;
-	case 2: // two cest pools
-		if (sp.IsMTActive())
-			solver = new BlochMcConnellSolver<10>(sp);
-		else
-			solver = new BlochMcConnellSolver<9>(sp);
-		break;
-	case 3: // three cest pools
-		if (sp.IsMTActive())
-			solver = new BlochMcConnellSolver<13>(sp);
-		else
-			solver = new BlochMcConnellSolver<2>(sp);
-		break;
-	default:
-		solver = new BlochMcConnellSolver<Dynamic>(sp); // > three pools
-		break;
-	}
-
-	// it is possible to change parameters now and update the function like this:
-	// sp.SetScannerB0Inhom(1.0);
-	// solver->UpdateSimulationParameters(sp);
-	solver->RunSimulation(sp);
-
-	ReturnResultToMATLAB(plhs, sp.GetMagnetizationVectors()); // return results after simulation
-	delete solver;
 }

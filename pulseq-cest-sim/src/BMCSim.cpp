@@ -31,7 +31,7 @@ BMCSim::BMCSim(SimulationParameters &SimPars)
 //! Destructor
 BMCSim::~BMCSim()
 {
-	delete solver;
+
 }
 
 //! Load external Pulseq sequence
@@ -59,7 +59,7 @@ bool BMCSim::LoadExternalSequence(std::string path)
 	\param SimPars new SimulationParameters object
 	\return true if SimPars hase the same amount of pool as the initial sp
 */
-bool BMCSim::SetSimulationParameters(SimulationParameters &SimPars)
+bool BMCSim::SetSimulationParameters(SimulationParameters &simPars)
 {
 	// sim parameters can only be updated if number of pools did not change
 	bool newSimParamsValid = (sp->GetNumberOfCESTPools() == simPars.GetNumberOfCESTPools() && sp->IsMTActive() == simPars.IsMTActive());
@@ -129,7 +129,7 @@ void BMCSim::DecodeSeqRFInfo()
 {
 	float rfRaster = 1e-6;
 	if (seq.GetVersion() >= 1004000)
-		rfRaster = seq.GetRFRasterTime() * 1e-6;
+		rfRaster = seq.GetDefinition("RadiofrequencyRasterTime")[0];
 	std::vector<PulseID> uniquePuleIDs;
 	for (unsigned int nSample = 0; nSample < seq.GetNumberOfBlocks(); nSample++)
 	{
